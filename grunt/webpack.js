@@ -13,6 +13,8 @@
  *
  */
 
+'use strict';
+
 module.exports = {
   grandpa: {
     entry: [
@@ -20,11 +22,18 @@ module.exports = {
     ],
     output: {
       path: 'build',
-      filename: 'grandpa.js',
+      filename: 'grandpa.dev.js',
       publicPath: '/'
     },
+    module: {
+      loaders: [{
+        test: /\.js$/,
+        exclude: /node_modules/,
+        loader: 'babel-loader'
+      }]
+    },
     env: {
-      NODE_PATH: './src'
+      NODE_PATH: './src/app'
     }
   }
 };

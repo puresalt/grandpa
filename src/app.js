@@ -17,23 +17,26 @@
 
 'use strict';
 
-import Player from 'player';
+import StateMachine from './vendor/stateMachine';
 
 (function app() {
 
-  let player = new Player();
-  let npcs = [];
+  const stateMachine = StateMachine.factory({
+    init: 'loading',
+    events: [
+      { name: 'ready',  from: 'loading',               to: 'menu'     }, // initial page loads images and sounds then transitions to 'menu'
+      { name: 'start',  from: 'menu',                  to: 'starting' }, // start a new game from the menu
+      { name: 'load',   from: ['starting', 'playing'], to: 'loading'  }, // start loading a new level (either to start a new game, or next level while playing)
+      { name: 'play',   from: 'loading',               to: 'playing'  }, // play the level after loading it
+      { name: 'help',   from: ['loading', 'playing'],  to: 'help'     }, // pause the game to show a help topic
+      { name: 'resume', from: 'help',                  to: 'playing'  }, // resume playing after showing a help topic
+      { name: 'lose',   from: 'playing',               to: 'lost'     }, // player died
+      { name: 'quit',   from: 'playing',               to: 'lost'     }, // player quit
+      { name: 'win',    from: 'playing',               to: 'won'      }, // player won
+      { name: 'finish', from: ['won', 'lost'],         to: 'menu'     }  // back to menu
+    ]
+  });
 
-  function render(delta) {
 
-    player.render(delta);
-    npcs.forEach((npc) => {
-      npc.render(delta);
-    });
 
-    /** Our main event loop, this is where all state will interact with our canvas */
-    requestAnimationFrame(render);
-  }
-
-  requestAnimationFrame(render);
 })();

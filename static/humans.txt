@@ -1,0 +1,10 @@
+/* TEAM */
+	Creator: John Mullanaphy
+	Contact: kandy [at] puresalt.gg
+	Twitter: @KandyOppa
+	From: New Jersey, USA
+
+/* SITE */
+	Language: English
+	Doctype: HTML5
+	IDE: IntelliJ

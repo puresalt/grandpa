@@ -1,5 +1,3 @@
-
-
 /**
  * NUMBER ONE GRANDPA
  *
@@ -17,6 +15,7 @@
 
 'use strict';
 
+const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
 const routeState = require('./router/state');
@@ -29,16 +28,17 @@ const routeState = require('./router/state');
  */
 const runServer = function(environment) {
   let app = express();
-  app.use('/assets', express.static(__dirname + '/assets'));
-  app.use('/build', express.static(__dirname + '/build'));
-  app.use(express.static(__dirname + '/static'));
+  app.use('/assets', express.static(path.join(__dirname, '../', 'assets')));
+  app.use('/build', express.static(path.join(__dirname, '../', 'build')));
+  app.use(express.static(path.join(__dirname, '../', '/static')));
   app.use(bodyParser.urlencoded({extended: false}));
+  app.use(bodyParser.json());
 
   app.use('/state', routeState);
 
   /* If we're in a dev environment then we should show coverage */
   if (environment === 'development') {
-    app.use('/coverage', express.static(__dirname + '/coverage/lcov-report'));
+    app.use('/coverage', express.static(path.join(__dirname, '../', 'coverage/lcov-report')));
   }
 
   return app;

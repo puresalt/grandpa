@@ -17,7 +17,7 @@
 
 'use strict';
 
-const helper = require('../../helper');
+const helper = require('../../server/helper');
 
 describe('Helper', () => {
   it('generateId should return a bigint string starting with i', () => {

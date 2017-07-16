@@ -15,7 +15,7 @@
 
 'use strict';
 
-import Sprite from 'sprite';
+import Sprite from './sprite';
 
 const DEFAULT_STATE = {
   name: 'Gramps',
@@ -35,4 +35,10 @@ export default class Player extends Sprite {
     super(state, DEFAULT_STATE);
   }
 
+  /**
+   * {@inheritDoc}
+   */
+  render(delta) {
+    console.log('Time since last movement: ', delta);
+  }
 }

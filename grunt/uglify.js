@@ -13,6 +13,8 @@
  *
  */
 
+'use strict';
+
 /* jshint ignore:start */
 const mangleProperties = {regex: /^_/};
 
@@ -44,7 +46,7 @@ module.exports = {
     mangleProperties: mangleProperties,
     options: options,
     files: {
-      'build/grandpa.js': 'build/grandpa.js'
+      'build/grandpa.js': 'build/grandpa.dev.js'
     }
   }
 };

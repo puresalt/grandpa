@@ -19,10 +19,10 @@ const FlakeIdGenerator = require('flake-idgen');
 const flakeIdGenerator = new FlakeIdGenerator();
 const intFormat = require('biguint-format');
 
-const helper = {};
-
-helper.generateId = () => {
-  return 'i' + intFormat(flakeIdGenerator.next(), 'dec');
+const helper = {
+  generateId: () => {
+    return 'i' + intFormat(flakeIdGenerator.next(), 'dec');
+  }
 };
 
 module.exports = helper;

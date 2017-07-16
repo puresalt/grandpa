@@ -20,9 +20,6 @@ module.exports = function(grunt) {
   /* Load all installed grunt-* tasks */
   require('load-grunt-tasks')(grunt);
 
-  /* Load our custom tasks */
-  grunt.loadTasks('grunt/tasks');
-
   /* Load our configs */
   require('load-grunt-config')(grunt);
 };
