@@ -30,7 +30,7 @@ export default class Sprite {
    * Create our sprite, set it's current state and go from there.
    *
    * @param {Object} state
-   * @param {Object} defaultState
+   * @param {Object?} defaultState
    */
   constructor(state, defaultState) {
     this._defaultState = defaultState || _.clone(DEFAULT_POSITION);

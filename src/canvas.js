@@ -19,18 +19,34 @@
 
 export default class Canvas {
 
-  constructor(canvas) {
-    this.setCanvas(canvas);
+  /**
+   * Canvas will wrap our canvas tag and work as a middle man.
+   *
+   * @param {HTMLCanvasElement} element
+   */
+  constructor(element) {
+    this.setElement(element);
     this.clearEntities();
     this.clearTilesets();
   }
 
+  /**
+   * Get our canvas element.
+   *
+   * @returns {CanvasRenderingContext2D}
+   */
   getCanvas() {
-    return this._canvas;
+    return this._element;
   }
 
-  setCanvas(canvas) {
-    this._canvas = canvas.getContext('2d');
+  /**
+   * Set the canvas element for our canvas.
+   *
+   * @param {HTMLCanvasElement} canvas
+   * @returns {Canvas}
+   */
+  setElement(canvas) {
+    this._element = canvas.getContext('2d');
     return this;
   }
 
@@ -82,7 +98,7 @@ export default class Canvas {
     this._entities.forEach(item => {
       let state = item.getState();
       let tileset = this._tilesets[state.tileset.id];
-      this._canvas.drawImage(
+      this._element.drawImage(
         tileset.image,
         state.tileset.x,
         state.tileset.y,

@@ -15,27 +15,37 @@
 
 'use strict';
 
-import _ from 'lodash/fp';
+import keyboardInput from './input/keyboard';
 
-const DEFAULT_KEYS = {
-  LEFT: 37,
-  RIGHT: 39,
-  UP: 38,
-  A: 65,
-  D: 68,
-  W: 87,
-  SPACE: 32
+const allowedInputs = {
+  keyboard: keyboardInput
 };
 
-export default class Controller {
+export default {
 
-  constructor(keys) {
-    this.KEYS = _.clone(DEFAULT_KEYS);
-    this.setKeys(keys);
+  KEY: {
+    LEFT: 'LEFT',
+    RIGHT: 'RIGHT',
+    UP: 'UP',
+    DOWN: 'DOWN',
+    PUNCH: 'PUNCH',
+    KICK: 'KICK',
+    JUMP: 'JUMP',
+    CROUCH: 'CROUCH',
+    MENU: 'MENU'
+  },
+
+  /**
+   * Build our input.
+   *
+   * @param {Object} config
+   * @param {Array} events
+   * @param {StateMachine?} context
+   */
+  factory: (config, events, context) => {
+    if (allowedInputs[config.type]) {
+      return allowedInputs[config.type](config, events, context);
+    }
+    allowedInputs.keyboard(config, events, context);
   }
-
-  setKeys(keys) {
-    this.KEYS = _.defaults(keys || {}, this.KEYS);
-  }
-
-}
+};

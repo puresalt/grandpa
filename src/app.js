@@ -13,30 +13,94 @@
  *
  */
 
-/* globals requestAnimationFrame */
-
 'use strict';
 
 import StateMachine from './vendor/stateMachine';
+import Input from './input';
 
 (function app() {
+
+  const config = {
+    input: {
+      type: 'keyboard'
+    }
+  };
 
   const stateMachine = StateMachine.factory({
     init: 'loading',
     events: [
-      { name: 'ready',  from: 'loading',               to: 'menu'     }, // initial page loads images and sounds then transitions to 'menu'
-      { name: 'start',  from: 'menu',                  to: 'starting' }, // start a new game from the menu
-      { name: 'load',   from: ['starting', 'playing'], to: 'loading'  }, // start loading a new level (either to start a new game, or next level while playing)
-      { name: 'play',   from: 'loading',               to: 'playing'  }, // play the level after loading it
-      { name: 'help',   from: ['loading', 'playing'],  to: 'help'     }, // pause the game to show a help topic
-      { name: 'resume', from: 'help',                  to: 'playing'  }, // resume playing after showing a help topic
-      { name: 'lose',   from: 'playing',               to: 'lost'     }, // player died
-      { name: 'quit',   from: 'playing',               to: 'lost'     }, // player quit
-      { name: 'win',    from: 'playing',               to: 'won'      }, // player won
-      { name: 'finish', from: ['won', 'lost'],         to: 'menu'     }  // back to menu
+      {name: 'ready', from: 'loading', to: 'menu'}, // initial page loads images and sounds then transitions to 'menu'
+      {name: 'start', from: 'menu', to: 'starting'}, // start a new game from the menu
+      {name: 'load', from: ['starting', 'playing'], to: 'loading'}, // start loading a new leve
+      {name: 'play', from: 'loading', to: 'playing'}, // play the level after loading it
+      {name: 'help', from: ['loading', 'playing'], to: 'help'}, // pause the game to show a help topic
+      {name: 'resume', from: 'help', to: 'playing'}, // resume playing after showing a help topic
+      {name: 'lose', from: 'playing', to: 'lost'}, // player died
+      {name: 'quit', from: 'playing', to: 'lost'}, // player quit
+      {name: 'win', from: 'playing', to: 'won'}, // player won
+      {name: 'finish', from: ['won', 'lost'], to: 'menu'}  // back to menu
     ]
   });
 
+  stateMachine.on('loading', () => {
 
+  });
+
+  Input.factory(config.input, [
+    {
+      input: Input.KEY.LEFT,
+      state: 'playing',
+      callback: () => {
+      }
+    },
+    {
+      input: Input.KEY.RIGHT,
+      state: 'playing',
+      callback: () => {
+      }
+    },
+    {
+      input: Input.KEY.UP,
+      state: 'playing',
+      callback: () => {
+      }
+    },
+    {
+      input: Input.KEY.DOWN,
+      state: 'playing',
+      callback: () => {
+      }
+    },
+    {
+      input: Input.KEY.PUNCH,
+      state: 'playing',
+      callback: () => {
+      }
+    },
+    {
+      input: Input.KEY.KICK,
+      state: 'playing',
+      callback: () => {
+      }
+    },
+    {
+      input: Input.KEY.JUMP,
+      state: 'playing',
+      callback: () => {
+      }
+    },
+    {
+      input: Input.KEY.CROUCH,
+      state: 'playing',
+      callback: () => {
+      }
+    },
+    {
+      input: Input.KEY.MENU,
+      state: 'playing',
+      callback: () => {
+      }
+    }
+  ], stateMachine);
 
 })();
