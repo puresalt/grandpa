@@ -17,105 +17,65 @@
 
 'use strict';
 
-export default class Canvas {
+function elementLoader(element, callback) {
+  let loaded = false;
+  element.onload = element.onreadystatechange = function() {
+    if (!loaded && (!this.readyState || this.readyState === 'loaded' || this.readyState === 'complete')) {
+      loaded = true;
+      element.onload = element.onreadystatechange = null;
+      callback && callback();
+    }
+  };
+}
 
-  /**
-   * Canvas will wrap our canvas tag and work as a middle man.
-   *
-   * @param {HTMLCanvasElement} element
-   */
-  constructor(element) {
-    this.setElement(element);
-    this.clearEntities();
-    this.clearTilesets();
+function createImageElementForTileset(tileset, callback) {
+  let element = document.createElement('image');
+  element.src = tileset.src;
+  element.id = 'tileset-' + tileset.id;
+
+  if (callback) {
+    elementLoader(element.callback);
   }
 
-  /**
-   * Get our canvas element.
-   *
-   * @returns {CanvasRenderingContext2D}
-   */
-  getCanvas() {
-    return this._element;
-  }
+  return element;
+}
 
-  /**
-   * Set the canvas element for our canvas.
-   *
-   * @param {HTMLCanvasElement} canvas
-   * @returns {Canvas}
-   */
-  setElement(canvas) {
-    this._element = canvas.getContext('2d');
-    return this;
-  }
+export default function Canvas(canvas) {
 
-  addEntity(element) {
-    this._entities.push(element);
-    return this;
-  }
+  const element = canvas.getContext('2d');
+  let entities = [];
 
-  clearEntities() {
-    this.setEntities([]);
-    return this;
-  }
+  return {
+    draw: () => {
+      entities.forEach(entity => {
+        let state = entity.getState();
+        let tileset = this._tilesets[state.tileset.id];
+        element.drawImage(
+          tileset.image,
+          state.tileset.x,
+          state.tileset.y,
+          tileset.x,
+          tileset.y,
+          state.x,
+          state.y,
+          tileset.x,
+          tileset.y
+        );
+      });
+    },
 
-  removeEntity(element) {
-    this._entities = this._entities.filter(item => {
-      return item.id !== element.id;
-    });
-    return this;
-  }
+    addEntity: (entity) => {
+      entities.push(entity);
+    },
 
-  setEntities(elements) {
-    this._entities = elements;
-    return this;
-  }
+    removeEntity: (entity) => {
+      entities = entities.filter(item => {
+        return item.id !== entity.id;
+      });
+    },
 
-  addTileset(tileset) {
-    this._tilesets[tileset.id] = tileset;
-    return this;
-  }
-
-  clearTilesets() {
-    this.setTilesets({});
-    return this;
-  }
-
-  removeTileset(tileset) {
-    this._tilesets = this._entities.filter(item => {
-      return item.id !== tileset.id;
-    });
-    return this;
-  }
-
-  setTilesets(tilesets) {
-    this._tilesets = tilesets;
-    return this;
-  }
-
-  render(gameLoop) {
-    this._entities.forEach(item => {
-      let state = item.getState();
-      let tileset = this._tilesets[state.tileset.id];
-      this._element.drawImage(
-        tileset.image,
-        state.tileset.x,
-        state.tileset.y,
-        tileset.x,
-        tileset.y,
-        state.x,
-        state.y,
-        tileset.x,
-        tileset.y
-      );
-    });
-  }
-
-  static createImageElementForTileset(tileset) {
-    let element = document.createElement('image');
-    element.src = tileset.src;
-    element.id = 'tileset-' + tileset.id;
-    return element;
-  }
+    clearEntities: () => {
+      entities = [];
+    }
+  };
 }

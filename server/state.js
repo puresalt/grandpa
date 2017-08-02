@@ -42,7 +42,7 @@ const State = (() => {
         if (!_data[id]) {
           return false;
         }
-        return _.extend({id: id}, _data[id]);
+        return _data[id];
       },
 
       /**

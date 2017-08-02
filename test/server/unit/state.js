@@ -67,6 +67,15 @@ describe('State', () => {
       expect(state.get(id).a).to.be.equal(1);
     });
 
+    it('should remove id from data', () => {
+      const state = STATE();
+      const id = 123;
+      const data = {a: 1, id: id};
+
+      state.save(id, data);
+      expect(state.get(id).id).to.not.exist;
+    });
+
     it('should overwrite a value', () => {
       const state = STATE();
       const id = 123;
@@ -109,9 +118,28 @@ describe('State', () => {
       const replaced = state.replace(id, {c: 3});
       expect(replaced).to.be.false;
     });
+
+    it('should remove id from data', () => {
+      const state = STATE();
+      const id = 123;
+      const data = {a: 1};
+
+      state.save(id, data);
+      const replaced = state.replace(id, {id: id});
+      expect(replaced).to.be.true;
+      expect(state.get(id).a).to.not.exist;
+      expect(state.get(id).id).to.not.exist;
+    });
   });
 
   describe('remove', () => {
+    it('should do nothing if the object doesn\'t exist', () => {
+      const state = STATE();
+      const id = 123;
+
+      expect(state.remove(id)).to.be.false;
+    });
+
     it('should remove an entire object if data isn\'t provided', () => {
       const state = STATE();
       const id = 123;

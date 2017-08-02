@@ -15,22 +15,16 @@
 
 'use strict';
 
-import keyboardInput from './input/keyboard';
-
-const allowedInputs = {
-  keyboard: keyboardInput
+const KEY = {
+  LEFT: 'LEFT',
+  RIGHT: 'RIGHT',
+  UP: 'UP',
+  DOWN: 'DOWN',
+  PUNCH: 'PUNCH',
+  KICK: 'KICK',
+  JUMP: 'JUMP',
+  CROUCH: 'CROUCH',
+  MENU: 'MENU'
 };
 
-/**
- * Build our input.
- *
- * @param {Object} config
- * @param {Array} events
- * @param {StateMachine?} context
- */
-export default function(config, events, context) {
-  if (allowedInputs[config.type]) {
-    return allowedInputs[config.type](config, events, context);
-  }
-  return allowedInputs.keyboard(config, events, context);
-}
+export default KEY;

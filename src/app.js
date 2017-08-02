@@ -16,7 +16,8 @@
 'use strict';
 
 import StateMachine from './vendor/stateMachine';
-import Input from './input';
+import input from './input';
+import KEY from './input/key';
 
 (function app() {
 
@@ -42,58 +43,57 @@ import Input from './input';
     ]
   });
 
-  Input.factory(config.input, [
-
+  input(config.input, [
     {
-      input: Input.KEY.LEFT,
+      input: KEY.LEFT,
       state: 'playing',
       callback: () => {
       }
     },
     {
-      input: Input.KEY.RIGHT,
+      input: KEY.RIGHT,
       state: 'playing',
       callback: () => {
       }
     },
     {
-      input: Input.KEY.UP,
+      input: KEY.UP,
       state: 'playing',
       callback: () => {
       }
     },
     {
-      input: Input.KEY.DOWN,
+      input: KEY.DOWN,
       state: 'playing',
       callback: () => {
       }
     },
     {
-      input: Input.KEY.PUNCH,
+      input: KEY.PUNCH,
       state: 'playing',
       callback: () => {
       }
     },
     {
-      input: Input.KEY.KICK,
+      input: KEY.KICK,
       state: 'playing',
       callback: () => {
       }
     },
     {
-      input: Input.KEY.JUMP,
+      input: KEY.JUMP,
       state: 'playing',
       callback: () => {
       }
     },
     {
-      input: Input.KEY.CROUCH,
+      input: KEY.CROUCH,
       state: 'playing',
       callback: () => {
       }
     },
     {
-      input: Input.KEY.MENU,
+      input: KEY.MENU,
       state: 'playing',
       callback: () => {
       }

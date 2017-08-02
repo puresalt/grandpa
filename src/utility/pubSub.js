@@ -15,17 +15,31 @@
 
 'use strict';
 
+/**
+ * Our PubSub object.
+ *
+ * @returns {{subscribe: (function(String, Function)), unsubscribe: (function(String, Function)), publish: (function(String)), clear: (function(String=))}}
+ * @constructor
+ */
 export default function PubSub() {
 
-  let events = {};
+  const events = {};
 
   return {
-    subscribe: (event, listener) => {
+
+    /**
+     * Subscribe an event.
+     *
+     * @param {String} event
+     * @param {Function} callback
+     * @returns {{unsubscribe: Function}}
+     */
+    subscribe: (event, callback) => {
       if (!events.hasOwnProperty(event)) {
         events[event] = [];
       }
 
-      let id = events[event].push(listener) - 1;
+      const id = events[event].push(callback) - 1;
 
       return {
         unsubscribe: () => {
@@ -34,8 +48,14 @@ export default function PubSub() {
       };
     },
 
+    /**
+     * Unsubscribe an event.
+     *
+     * @param {String} event
+     * @param {Function} callback
+     */
     unsubscribe: (event, callback) => {
-      let filter = item => {
+      const filter = item => {
         return item !== callback;
       };
       for (let key in events) {
@@ -46,24 +66,38 @@ export default function PubSub() {
       }
     },
 
+    /**
+     * Trigger a given event if it exists.
+     *
+     * @param {String} event
+     */
     publish: (event) => {
       if (!events.hasOwnProperty(event)) {
         return;
       }
-
-      let args = Array.prototype.slice.call(arguments);
+      const args = Array.prototype.slice.call(arguments);
       args.shift();
       events[event].forEach(item => {
         item.apply(this, args);
       });
     },
 
+    /**
+     * Remove ever a specific event or all if no event is provided.
+     *
+     * @param {String?} event
+     */
     clear: (event) => {
       if (event) {
         delete events[event];
         return;
       }
-      events = {};
+      for (let key in events) {
+        if (!events.hasOwnProperty(key)) {
+          continue;
+        }
+        delete events[key];
+      }
     }
   };
 }

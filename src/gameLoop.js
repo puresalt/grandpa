@@ -17,7 +17,7 @@
 
 'use strict';
 
-const _ = require('lodash');
+import _ from 'lodash/fp';
 
 export default class GameLoop {
 

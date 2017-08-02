@@ -13,24 +13,20 @@
  *
  */
 
-'use strict';
+/* exported _,chai,expect,document,window,stateMachine */
 
-import keyboardInput from './input/keyboard';
+global._ = require('lodash');
+global.chai = require('chai');
+global.expect = global.chai.expect;
 
-const allowedInputs = {
-  keyboard: keyboardInput
-};
+require('jsdom-global')();
 
-/**
- * Build our input.
- *
- * @param {Object} config
- * @param {Array} events
- * @param {StateMachine?} context
- */
-export default function(config, events, context) {
-  if (allowedInputs[config.type]) {
-    return allowedInputs[config.type](config, events, context);
-  }
-  return allowedInputs.keyboard(config, events, context);
-}
+const StateMachine = require('../../../../src/vendor/stateMachine');
+global.stateMachine = StateMachine.factory({
+  init: 'loading',
+  events: [
+    {name: 'ready', from: 'loading', to: 'playing'}
+  ]
+});
+global.stateMachine.ready();
+
