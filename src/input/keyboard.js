@@ -18,52 +18,58 @@
 'use strict';
 
 import _ from 'lodash/fp';
-import Input from '../input';
-
-const DEFAULT_STATE = {
-  element: document,
-
-  keys: [
-    {input: Input.KEY.LEFT, keyCode: 97},
-    {input: Input.KEY.RIGHT, keyCode: 100},
-    {input: Input.KEY.UP, keyCode: 119},
-    {input: Input.KEY.DOWN, keyCode: 115},
-    {input: Input.KEY.PUNCH, keyCode: 106},
-    {input: Input.KEY.KICK, keyCode: 107},
-    {input: Input.KEY.JUMP, keyCode: 32},
-    {input: Input.KEY.CROUCH, keyCode: 108},
-    {input: Input.KEY.MENU, keyCode: 13}
-  ]
-};
 
 /**
- * Function to first map a configuration to our Input.KEY enum, and then to map that to an event lookup and attach it to
- * our element's event listener.
  *
- * @param {Object} config
- * @param {Array} events
- * @param {StateMachine?} context
+ * @param {Object} KEY
+ * @returns {Function}
  */
-export default function keyboardInput(config, events, context) {
-  const extendedConfig = _.defaults(config || _.clone(DEFAULT_STATE));
-  const invertedLookup = _generateInvertedLookup(extendedConfig.keys);
-  const eventLookup = _generateEventLookup(events, invertedLookup);
+export default function(KEY) {
+  const DEFAULT_STATE = {
+    element: document,
 
-  extendedConfig.element.addEventListener('keypress', (event) => {
-    let found = eventLookup[event.keyCode];
+    keys: [
+      {input: KEY.LEFT, keyCode: 97},
+      {input: KEY.RIGHT, keyCode: 100},
+      {input: KEY.UP, keyCode: 119},
+      {input: KEY.DOWN, keyCode: 115},
+      {input: KEY.PUNCH, keyCode: 106},
+      {input: KEY.KICK, keyCode: 107},
+      {input: KEY.JUMP, keyCode: 32},
+      {input: KEY.CROUCH, keyCode: 108},
+      {input: KEY.MENU, keyCode: 13}
+    ]
+  };
 
-    if (!found || !_triggerEvent(event, found, context)) {
-      return;
-    }
+  /**
+   * Function to first map a configuration to our Input.KEY enum, and then to map that to an event lookup and attach it to
+   * our element's event listener.
+   *
+   * @param {Object} config
+   * @param {Array} events
+   * @param {StateMachine?} context
+   * @returns {Function}
+   */
+  return function keyboardInput(config, events, context) {
+    const extendedConfig = _.defaults(config || {}, _.clone(DEFAULT_STATE));
+    const invertedLookup = _generateInvertedLookup(extendedConfig.keys);
+    const eventLookup = _generateEventLookup(events, invertedLookup);
 
-    if (event.preventDefault) {
-      event.preventDefault();
-    }
-    event.cancelBubble = true;
-    event.returnValue = false;
-    return false;
-  });
+    extendedConfig.element.addEventListener('keypress', (event) => {
+      let found = eventLookup[event.keyCode];
 
+      if (!found || !_triggerEvent(event, found, context)) {
+        return;
+      }
+
+      if (event.preventDefault) {
+        event.preventDefault();
+      }
+      event.cancelBubble = true;
+      event.returnValue = false;
+      return false;
+    });
+  };
 }
 
 /**

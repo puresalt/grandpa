@@ -17,35 +17,37 @@
 
 import keyboardInput from './input/keyboard';
 
-const allowedInputs = {
-  keyboard: keyboardInput
+const KEY = {
+  LEFT: 'LEFT',
+  RIGHT: 'RIGHT',
+  UP: 'UP',
+  DOWN: 'DOWN',
+  PUNCH: 'PUNCH',
+  KICK: 'KICK',
+  JUMP: 'JUMP',
+  CROUCH: 'CROUCH',
+  MENU: 'MENU'
 };
 
-export default {
+const allowedInputs = {
+  keyboard: keyboardInput(KEY)
+};
 
-  KEY: {
-    LEFT: 'LEFT',
-    RIGHT: 'RIGHT',
-    UP: 'UP',
-    DOWN: 'DOWN',
-    PUNCH: 'PUNCH',
-    KICK: 'KICK',
-    JUMP: 'JUMP',
-    CROUCH: 'CROUCH',
-    MENU: 'MENU'
-  },
-
-  /**
-   * Build our input.
-   *
-   * @param {Object} config
-   * @param {Array} events
-   * @param {StateMachine?} context
-   */
-  factory: (config, events, context) => {
-    if (allowedInputs[config.type]) {
-      return allowedInputs[config.type](config, events, context);
-    }
-    allowedInputs.keyboard(config, events, context);
+/**
+ * Build our input.
+ *
+ * @param {Object} config
+ * @param {Array} events
+ * @param {StateMachine?} context
+ */
+function factory(config, events, context) {
+  if (allowedInputs[config.type]) {
+    return allowedInputs[config.type](config, events, context);
   }
+  allowedInputs.keyboard(config, events, context);
+}
+
+export default {
+  KEY: KEY,
+  factory: factory
 };

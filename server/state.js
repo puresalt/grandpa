@@ -17,69 +17,94 @@
 
 const _ = require('lodash');
 
-/** @TODO Transfer this to a datastore and add authentication on top of this router. */
-const State = (function() {
-  const _data = {};
+/** @TODO Transfer this to a datastore and add authentication on top of this. */
+const State = (() => {
+  return () => {
+    const _data = {};
 
-  return {
-    /**
-     * Get all of the possible saved states.
-     *
-     * @returns {Array}
-     */
-    all: () => {
-      return Object.keys(_data);
-    },
+    return {
+      /**
+       * Get all of the possible saved states.
+       *
+       * @returns {Array}
+       */
+      all: () => {
+        return Object.keys(_data);
+      },
 
-    /**
-     * Get our data if it exists.
-     *
-     * @param {String} id
-     * @returns {Object|false}
-     */
-    get: (id) => {
-      if (!_data[id]) {
-        return false;
+      /**
+       * Get our data if it exists.
+       *
+       * @param {String} id
+       * @returns {Object|false}
+       */
+      get: (id) => {
+        if (!_data[id]) {
+          return false;
+        }
+        return _.extend({id: id}, _data[id]);
+      },
+
+      /**
+       * See if a state exists.
+       *
+       * @param {String} id
+       * @returns {Boolean}
+       */
+      has: (id) => {
+        return typeof _data[id] !== 'undefined';
+      },
+
+      /**
+       * Remove a state.
+       *
+       * @param {String} id
+       * @param {Array?} properties
+       * @returns {Boolean}
+       */
+      remove: (id, properties) => {
+        if (!_data[id]) {
+          return false;
+        } else if (!properties) {
+          delete _data[id];
+        } else {
+          for (let i = 0, count = properties.length; i < count; ++i) {
+            delete _data[id][properties[i]];
+          }
+        }
+        return true;
+      },
+
+      /**
+       * Save our state.
+       *
+       * @param {String} id
+       * @param {Object} data
+       */
+      save: (id, data) => {
+        _data[id] = _.defaults(data, _data[id] || {});
+        if (_data[id].id) {
+          delete _data[id].id;
+        }
+      },
+
+      /**
+       * Replace a state object if it exists.
+       *
+       * @param {String} id
+       * @param {Object} data
+       */
+      replace: (id, data) => {
+        if (!_data[id]) {
+          return false;
+        }
+        _data[id] = data;
+        if (_data[id].id) {
+          delete _data[id].id;
+        }
+        return true;
       }
-      return _.extend({id: id}, _data[id]);
-    },
-
-    /**
-     * See if a state exists.
-     *
-     * @param {String} id
-     * @returns {Boolean}
-     */
-    has: (id) => {
-      return typeof _data[id] !== 'undefined';
-    },
-
-    /**
-     * Remove a state.
-     *
-     * @param {String} id
-     * @returns {Boolean}
-     */
-    remove: (id) => {
-      if (!_data[id]) {
-        return false;
-      }
-      delete _data[id];
-      return true;
-    },
-
-    /**
-     * Save our state.
-     *
-     * @param {String} id
-     * @param {Object} data
-     */
-    save: (id, data) => {
-      _data[id] = _.extend(_data[id], data);
-      if (_data[id].id) {
-        delete _data[id].id;
-      }
-    }
+    };
   };
 })();
 

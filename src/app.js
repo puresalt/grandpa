@@ -42,11 +42,8 @@ import Input from './input';
     ]
   });
 
-  stateMachine.on('loading', () => {
-
-  });
-
   Input.factory(config.input, [
+
     {
       input: Input.KEY.LEFT,
       state: 'playing',

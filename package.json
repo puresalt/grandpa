@@ -34,7 +34,9 @@
   },
   "devDependencies": {
     "chai": "3.5.0",
+    "grunt-contrib-watch": "^1.0.0",
     "istanbul": "0.4.5",
+    "jsdom": "^11.1.0",
     "mocha": "2.2.5"
   },
   "scripts": {
@@ -42,6 +44,9 @@
     "coverage": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- --harmony --full-trace --check-leaks --recursive ./test/unit",
     "start": "node server/app.js grandpa-server",
     "stop": "killall -SIGINT grandpa-server",
-    "test": "./node_modules/.bin/istanbul test ./node_modules/.bin/_mocha -- --harmony --full-trace --check-leaks --recursive ./test/unit"
+    "test": "npm run test-app;npm run test-server",
+    "test-app": "./node_modules/.bin/istanbul test ./node_modules/.bin/_mocha -- --harmony --full-trace --check-leaks --recursive ./test/src/unit",
+    "test-server": "./node_modules/.bin/istanbul test ./node_modules/.bin/_mocha -- --harmony --full-trace --check-leaks --recursive ./test/server/unit",
+    "watch": "./node_modules/.bin/grunt watch"
   }
 }
