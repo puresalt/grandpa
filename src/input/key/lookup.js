@@ -90,5 +90,3 @@ export default function keyLookup(key) {
     ? LOOKUP[key]
     : false;
 }
-
-
