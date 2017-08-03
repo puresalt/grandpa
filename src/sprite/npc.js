@@ -32,11 +32,11 @@ export default function Npc(loadState) {
     tileset: {
       id: 'blank',
       src: '/assets/sprite/ryan.gif',
-      height: 30,
-      width: 30,
-      x: 0,
-      y: 0
+      x: 47,
+      y: 3
     },
+    height: 66,
+    width: 36,
 
     /**
      * {@inheritDoc}

@@ -17,6 +17,8 @@
 
 'use strict';
 
+import sizer from './sizer';
+
 /**
  * And a callback when an element successfully loads.
  *
@@ -58,8 +60,6 @@ function createImageElementForTileset(tileset, callback) {
 export default function canvasFunction(element) {
   const _element = element.getContext('2d');
   const _tilesets = {};
-  const _width = element.clientWidth;
-  const _height = element.clientHeight;
   let _entities = [];
 
   const methods = {
@@ -69,21 +69,22 @@ export default function canvasFunction(element) {
      * @param {Number} fps
      */
     render(fps) {
-      _element.clearRect(0, 0, _width, _height);
+      console.log(sizer);
+      _element.clearRect(0, 0, sizer.width, sizer.height);
       _entities.sort((entity1, entity2) => {
         return entity1.x > entity2.x || (entity1.x === entity2.x && entity1.y > entity2.y);
       }).forEach(entity => {
         const tileset = _tilesets[entity.tileset.id];
         _element.drawImage(
-          tileset,
+          tileset.image,
           entity.tileset.x,
           entity.tileset.y,
-          entity.tileset.height,
-          entity.tileset.width,
+          entity.width,
+          entity.height,
           entity.x,
           entity.y,
-          entity.height,
-          entity.width
+          sizer.relativeSize(entity.width),
+          sizer.relativeSize(entity.height)
         );
       });
     },
@@ -152,7 +153,11 @@ export default function canvasFunction(element) {
       let replied = false;
       tilesets.forEach(tileset => {
         createImageElementForTileset(tileset, element => {
-          _tilesets[tileset.id] = element;
+          _tilesets[tileset.id] = {
+            image: element,
+            height: element.height,
+            width: element.width
+          };
           if (!replied && Object.keys(_tilesets).length >= waitingFor) {
             replied = true;
             callback();

@@ -16,9 +16,9 @@
 'use strict';
 
 /* @TODO This is just for testing */
-const canvas = document.getElementById('app');
 
 import DIRECTION from './movement/direction';
+import sizer from './sizer';
 import MathUtility from './utility/math';
 import movementFactory from './movement';
 
@@ -40,8 +40,6 @@ export default function Sprite(loadState) {
     tileset: {
       id: 'blank',
       src: '/assets/sprite/ryan.gif',
-      height: 30,
-      width: 30,
       x: 0,
       y: 0
     },
@@ -49,10 +47,10 @@ export default function Sprite(loadState) {
       x: 5,
       y: 5
     },
-    height: 60,
-    width: 60,
     x: 0,
     y: 0,
+    height: 30,
+    width: 30,
     movement: movementFactory(),
 
     /**
@@ -72,8 +70,8 @@ export default function Sprite(loadState) {
         return;
       }
 
-      const maxX = canvas.width - this.width;
-      const maxY = canvas.height - this.height;
+      const maxX = sizer.width - sizer.relativeSize(this.width);
+      const maxY = sizer.height - sizer.relativeSize(this.height);
 
       let x = this.x;
       let y = this.y;
@@ -87,32 +85,32 @@ export default function Sprite(loadState) {
 
       switch (movement.moving) {
         case DIRECTION.UP_RIGHT:
-          x = x + speedX;
-          y = y - speedY;
+          x = x + sizer.relativeSize(speedX);
+          y = y - sizer.relativeSize(speedY);
           break;
         case DIRECTION.UP_LEFT:
-          x = x - speedX;
-          y = y - speedY;
+          x = x - sizer.relativeSize(speedX);
+          y = y - sizer.relativeSize(speedY);
           break;
         case DIRECTION.DOWN_RIGHT:
-          x = x + speedX;
-          y = y + speedY;
+          x = x + sizer.relativeSize(speedX);
+          y = y + sizer.relativeSize(speedY);
           break;
         case DIRECTION.DOWN_LEFT:
-          x = x - speedX;
-          y = y + speedY;
+          x = x - sizer.relativeSize(speedX);
+          y = y + sizer.relativeSize(speedY);
           break;
         case DIRECTION.RIGHT:
-          x = x + speedX;
+          x = x + sizer.relativeSize(speedX);
           break;
         case DIRECTION.LEFT:
-          x = x - speedX;
+          x = x - sizer.relativeSize(speedX);
           break;
         case DIRECTION.UP:
-          y = y - speedY;
+          y = y - sizer.relativeSize(speedY);
           break;
         case DIRECTION.DOWN:
-          y = y + speedY;
+          y = y + sizer.relativeSize(speedY);
           break;
       }
 

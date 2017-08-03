@@ -25,6 +25,7 @@ import playerFactory from './sprite/player';
 import canvasFactory from './canvas';
 import npcFactory from './sprite/npc';
 import debug from './debug';
+import sizer from './sizer';
 
 (function app() {
   const config = {
@@ -35,7 +36,36 @@ import debug from './debug';
       type: 'keyboard'
     }
   };
+
   const canvasElement = document.getElementById(config.element.id);
+  sizer.update(canvasElement);
+
+  (() => {
+    const throttle = (type, name, obj) => {
+      obj = obj || window;
+      let running = false;
+      const func = () => {
+        if (running) {
+          return;
+        }
+        running = true;
+        requestAnimationFrame(() => {
+          obj.dispatchEvent(new CustomEvent(name));
+          running = false;
+        });
+      };
+      obj.addEventListener(type, func);
+    };
+
+    /* init - you can init any event */
+    throttle('resize', 'optimizedResize');
+  })();
+
+// handle event
+  window.addEventListener('optimizedResize', () => {
+    sizer.update(canvasElement);
+  });
+
   const canvas = canvasFactory(canvasElement);
 
   const stateMachine = new StateMachine({

@@ -35,11 +35,11 @@ export default function Player(loadState) {
     tileset: {
       id: 'blank',
       src: '/assets/sprite/ryan.gif',
-      height: 30,
-      width: 30,
-      x: 0,
-      y: 0
+      x: 3,
+      y: 2
     },
+    height: 67,
+    width: 36,
 
     /**
      * {@inheritDoc}

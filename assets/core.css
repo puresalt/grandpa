@@ -5,12 +5,13 @@
 }
 
 html, body {
+    background: #000;
     height: 100%;
     width: 100%;
 }
 
 canvas {
-    background: #000;
+    background: #c0c0c0;
     height: 100%;
     width: 100%;
 }
