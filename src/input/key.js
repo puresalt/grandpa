@@ -24,7 +24,8 @@ const KEY = {
   KICK: 'KICK',
   JUMP: 'JUMP',
   CROUCH: 'CROUCH',
-  MENU: 'MENU'
+  MENU: 'MENU',
+  DEBUG: 'DEBUG'
 };
 
 export default KEY;

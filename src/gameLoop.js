@@ -14,7 +14,7 @@
  */
 
 /* jshint maxstatements:16 */
-/* globals requestAnimationFrame */
+/* globals requestAnimationFrame,window */
 
 'use strict';
 
@@ -24,7 +24,7 @@
  * @param {Object?} options
  */
 export default function GameLoop(options) {
-  let _paused = false;
+  let _paused = null;
   let _delta = 0;
   let _lastRun = 0;
   let _lastFpsUpdate = 0;
@@ -66,6 +66,9 @@ export default function GameLoop(options) {
      * @returns {Object}
      */
     pause() {
+      if (_paused === true) {
+        return this;
+      }
       _paused = true;
       _lastFpsUpdate = 0;
       _framesThisSecond = 0;
@@ -78,6 +81,11 @@ export default function GameLoop(options) {
      * @returns {Object}
      */
     start() {
+      if (_paused === false) {
+        return this;
+      }
+      _delta = 0;
+      _lastRun = window.performance.now();
       _paused = false;
       requestAnimationFrame(_run);
       return this;

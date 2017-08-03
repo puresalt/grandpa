@@ -16,6 +16,7 @@
 'use strict';
 
 import KEY from './key';
+import debug from '../debug';
 
 /**
  * Get our initial state.
@@ -118,6 +119,12 @@ export default function InputState(movement, loadState) {
       state: 'playing',
       trigger: () => {
         // do nothing.
+      }
+    },
+    {
+      input: KEY.DEBUG,
+      trigger: (direction) => {
+        debug.toggle(direction === 'press');
       }
     }
   ];

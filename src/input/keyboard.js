@@ -32,7 +32,8 @@ const _defaultConfig = {
     {input: KEY.KICK, keyCode: 75},
     {input: KEY.JUMP, keyCode: 32},
     {input: KEY.CROUCH, keyCode: 16},
-    {input: KEY.MENU, keyCode: 27}
+    {input: KEY.MENU, keyCode: 27},
+    {input: KEY.DEBUG, keyCode: 112}
   ]
 };
 
