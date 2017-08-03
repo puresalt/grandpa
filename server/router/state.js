@@ -18,13 +18,14 @@
 const express = require('express');
 const router = express.Router();
 const helper = require('../helper');
-const State = require('../state');
+const STATE = require('../state');
+const state = STATE();
 
 /**
  * Get all of the ids from our states.
  */
 router.get('/', (req, res) => {
-  res.status(200).json(State.all());
+  res.status(200).json(state.all());
 });
 
 /**
@@ -46,9 +47,9 @@ router.delete('/', (req, res) => {
  */
 router.post('/', (req, res) => {
   let id = helper.generateId();
-  State.save(id, req.body);
-  console.log('CREATED:', id, State.get(id));
-  res.status(200).json(State.get(id));
+  state.save(id, req.body);
+  console.log('CREATED:', id, state.get(id));
+  res.status(200).json(state.get(id));
 });
 
 /**
@@ -56,10 +57,10 @@ router.post('/', (req, res) => {
  */
 router.get('/:id', (req, res) => {
   let id = req.params.id;
-  if (!State.has(id)) {
+  if (!state.has(id)) {
     return res.status(404).json({});
   }
-  let data = State.get(id);
+  let data = state.get(id);
   console.log('LOADED:', id, data);
   res.status(200).json(data);
 });
@@ -69,12 +70,12 @@ router.get('/:id', (req, res) => {
  */
 router.post('/:id', (req, res) => {
   let id = req.params.id;
-  if (State.has(id)) {
+  if (state.has(id)) {
     return res.status(403).json({});
   }
-  State.save(id, req.body);
-  console.log('SAVED:', id, State.get(id));
-  res.status(200).json(State.get(id));
+  state.save(id, req.body);
+  console.log('SAVED:', id, state.get(id));
+  res.status(200).json(state.get(id));
 });
 
 /**
@@ -82,12 +83,12 @@ router.post('/:id', (req, res) => {
  */
 router.put('/:id', (req, res) => {
   let id = req.params.id;
-  if (!State.has(id)) {
+  if (!state.has(id)) {
     return res.status(404).json({});
   }
-  State.save(id, req.body);
-  console.log('UPDATED:', id, State.get(id));
-  res.status(200).json(State.get(id));
+  state.save(id, req.body);
+  console.log('UPDATED:', id, state.get(id));
+  res.status(200).json(state.get(id));
 });
 
 /**
@@ -95,10 +96,10 @@ router.put('/:id', (req, res) => {
  */
 router.delete('/:id', (req, res) => {
   let id = req.params.id;
-  if (!State.has(id)) {
+  if (!state.has(id)) {
     return res.status(404).json({});
   }
-  State.remove(id);
+  state.remove(id);
   console.log('REMOVED:', id);
   res.status(204);
 });

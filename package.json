@@ -28,6 +28,7 @@
     "load-grunt-config": "^0.19.2",
     "load-grunt-tasks": "^3.5.2",
     "lodash": "^4.17.4",
+    "pm2": "^2.6.1",
     "uglify-js": "^2.8.29",
     "webpack": "^1.15.0",
     "webpack-dev-server": "^1.16.5"
@@ -45,8 +46,8 @@
     "coverage": "npm run coverage-app;npm run coverage-server",
     "coverage-app": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- --harmony --full-trace --check-leaks --recursive ./test/src/unit",
     "coverage-server": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- --harmony --full-trace --check-leaks --recursive ./test/server/unit",
-    "start": "NODE_ENV=development node server/app.js grandpa-server",
-    "stop": "killall -SIGINT grandpa-server",
+    "start": "./node_modules/.bin/pm2 start pm2.yml",
+    "stop": "./node_modules/.bin/pm2 stop pm2.yml",
     "test": "npm run test-app;npm run test-server",
     "test-app": "./node_modules/.bin/istanbul test ./node_modules/.bin/_mocha -- --harmony --full-trace --check-leaks --recursive ./test/src/unit",
     "test-server": "./node_modules/.bin/istanbul test ./node_modules/.bin/_mocha -- --harmony --full-trace --check-leaks --recursive ./test/server/unit",

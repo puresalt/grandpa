@@ -22,11 +22,10 @@ global.expect = global.chai.expect;
 require('jsdom-global')();
 
 const StateMachine = require('../../../../src/vendor/stateMachine');
-global.stateMachine = StateMachine.factory({
+global.stateMachine = new StateMachine({
   init: 'loading',
   events: [
     {name: 'ready', from: 'loading', to: 'playing'}
   ]
 });
 global.stateMachine.ready();
-
