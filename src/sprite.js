@@ -15,43 +15,101 @@
 
 'use strict';
 
-import _ from 'lodash/fp';
+/* @TODO This is just for testing */
+const canvas = document.getElementById('app');
 
-const DEFAULT_STATE = {
-  tileset: {
-    id: 'blank',
-    src: '/assets/sprite/ryan.gif',
-    height: 30,
-    width: 30,
-    x: 0,
-    y: 0
-  },
-  height: 60,
-  width: 60,
-  x: 0,
-  y: 0
-};
+import DIRECTION from './movement/direction';
+import MathUtility from './utility/math';
+import movementFactory from './movement';
 
 /**
  * Create a sprite.
  *
- * @param {Object} loadState
- * @param {Object} extendedDefaultState
+ * @param {Object?} loadState
  * @returns {Object}
  */
-export default function Sprite(loadState, extendedDefaultState) {
-  const _defaultState = _.defaults(_.cloneDeep(DEFAULT_STATE), _.cloneDeep(extendedDefaultState));
-  const _state = _.defaults(_defaultState, loadState);
+export default function Sprite(loadState) {
+  return Object.assign(Object.create({
+    equipment: {
+      leftHand: null,
+      rightHand: null,
+      head: null,
+      boots: null,
+      accessories: []
+    },
+    tileset: {
+      id: 'blank',
+      src: '/assets/sprite/ryan.gif',
+      height: 30,
+      width: 30,
+      x: 0,
+      y: 0
+    },
+    speed: {
+      x: 5,
+      y: 5
+    },
+    height: 60,
+    width: 60,
+    x: 0,
+    y: 0,
+    update() {
 
-  /**
-   * Trigger an update.
-   *
-   * @param {Number} fps
-   * @param {Object} gameLoop
-   */
-  _state.update = (fps, gameLoop) => {
-    // do nothing.
-  };
+    },
+    movement: movementFactory(),
+    detectMovement() {
+      const movement = this.movement;
 
-  return _state;
+      if (movement.stunned) {
+        return;
+      }
+
+      const maxX = canvas.width - this.width;
+      const maxY = canvas.height - this.height;
+
+      let x = this.x;
+      let y = this.y;
+
+      let speedX = this.speed.x;
+      let speedY = this.speed.y;
+      if (movement.running) {
+        speedX = Math.round(speedX * 1.75);
+        speedY = Math.round(speedY * 1.75);
+      }
+
+      switch (movement.moving) {
+        case DIRECTION.UP_RIGHT:
+          x = x + speedX;
+          y = y - speedY;
+          break;
+        case DIRECTION.UP_LEFT:
+          x = x - speedX;
+          y = y - speedY;
+          break;
+        case DIRECTION.DOWN_RIGHT:
+          x = x + speedX;
+          y = y + speedY;
+          break;
+        case DIRECTION.DOWN_LEFT:
+          x = x - speedX;
+          y = y + speedY;
+          break;
+        case DIRECTION.RIGHT:
+          x = x + speedX;
+          break;
+        case DIRECTION.LEFT:
+          x = x - speedX;
+          break;
+        case DIRECTION.UP:
+          y = y - speedY;
+          break;
+        case DIRECTION.DOWN:
+          y = y + speedY;
+          break;
+      }
+
+      this.x = MathUtility.minMax(x, 0, maxX);
+      this.y = MathUtility.minMax(y, 0, maxY);
+    }
+  }, loadState || {}));
 }

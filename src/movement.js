@@ -17,19 +17,8 @@
 
 'use strict';
 
-import _ from 'lodash/fp';
 import KEY from './input/key';
 import DIRECTION from './movement/direction';
-
-const DEFAULT_STATE = {
-  crouching: false,
-  facing: DIRECTION.RIGHT,
-  kicking: false,
-  punching: false,
-  jumping: 0,
-  moving: null,
-  running: false
-};
 
 /**
  * Resolve any direction issues and keep the state internal.
@@ -39,70 +28,97 @@ const DEFAULT_STATE = {
  * @constructor
  */
 export default function InputMovement(loadState) {
-  const _movement = _.defaults(_.clone(DEFAULT_STATE), loadState);
-
-  _movement.trigger = {
-    direction: (pressed) => {
+  let _lastRight = 0;
+  let _lastLeft = 0;
+  return Object.assign(Object.create({
+    crouching: false,
+    facing: DIRECTION.RIGHT,
+    kicking: false,
+    punching: false,
+    jumping: 0,
+    moving: null,
+    running: false,
+    stunned: false,
+    direction(pressed) {
       if (pressed[KEY.UP].pressed && pressed[KEY.RIGHT].pressed) {
-        _movement.moving = DIRECTION.UP_RIGHT;
-        _movement.facing = DIRECTION.RIGHT;
+        this.running = false;
+        this.moving = DIRECTION.UP_RIGHT;
+        this.facing = DIRECTION.RIGHT;
       } else if (pressed[KEY.UP].pressed && pressed[KEY.LEFT].pressed) {
-        _movement.moving = DIRECTION.UP_LEFT;
-        _movement.facing = DIRECTION.LEFT;
+        this.running = false;
+        this.moving = DIRECTION.UP_LEFT;
+        this.facing = DIRECTION.LEFT;
       } else if (pressed[KEY.DOWN].pressed && pressed[KEY.RIGHT].pressed) {
-        _movement.moving = DIRECTION.DOWN_RIGHT;
-        _movement.facing = DIRECTION.RIGHT;
+        this.running = false;
+        this.moving = DIRECTION.DOWN_RIGHT;
+        this.facing = DIRECTION.RIGHT;
       } else if (pressed[KEY.DOWN].pressed && pressed[KEY.LEFT].pressed) {
-        _movement.moving = DIRECTION.DOWN_LEFT;
-        _movement.facing = DIRECTION.LEFT;
+        this.running = false;
+        this.moving = DIRECTION.DOWN_LEFT;
+        this.facing = DIRECTION.LEFT;
       } else if (pressed[KEY.RIGHT].pressed) {
-        _movement.moving = DIRECTION.RIGHT;
-        _movement.facing = DIRECTION.RIGHT;
+        if (_lastRight) {
+          this.running = Date.now() - _lastRight < 100;
+          _lastRight = 0;
+        }
+        this.moving = DIRECTION.RIGHT;
+        this.facing = DIRECTION.RIGHT;
       } else if (pressed[KEY.LEFT].pressed) {
-        _movement.moving = DIRECTION.LEFT;
-        _movement.facing = DIRECTION.LEFT;
+        if (_lastLeft) {
+          this.running = Date.now() - _lastLeft < 100;
+          _lastLeft = 0;
+        }
+        this.moving = DIRECTION.LEFT;
+        this.facing = DIRECTION.LEFT;
       } else if (pressed[KEY.UP].pressed) {
-        _movement.moving = DIRECTION.UP;
+        this.running = false;
+        this.moving = DIRECTION.UP;
       } else if (pressed[KEY.DOWN].pressed) {
-        _movement.moving = DIRECTION.DOWN;
+        this.running = false;
+        this.moving = DIRECTION.DOWN;
       } else {
-        _movement.moving = null;
+        if (this.facing === DIRECTION.RIGHT) {
+          _lastRight = Date.now();
+          this.running = false;
+        } else if (this.facing === DIRECTION.LEFT) {
+          _lastLeft = Date.now();
+          this.running = false;
+        }
+        this.moving = null;
       }
     },
-    crouch: (active) => {
-      _movement.crouching = active;
+    crouch(active) {
+      this.crouching = active;
     },
-    jump: () => {
-      if (_movement.jumping) {
+    jump() {
+      if (this.jumping > 0) {
         return;
       }
-      _movement.jumping = 240;
-      switch (_movement.moving) {
+      this.jumping = 30;
+      switch (this.moving) {
         case DIRECTION.UP_LEFT:
 
           break;
       }
     },
-    kick: (active) => {
+    kick(active) {
       if (active) {
-        if (!_movement.punching && !_movement.kicking) {
-          _movement.kicking = Date.now();
+        if (!this.punching && !this.kicking) {
+          this.kicking = Date.now();
         }
       }
     },
-    punch: (active) => {
+    punch(active) {
       if (!active) {
-        _movement.punching = false;
+        this.punching = false;
       } else {
-        if (!_movement.punching) {
-          _movement.punching = Date.now();
+        if (!this.punching) {
+          this.punching = Date.now();
         }
       }
     },
-    lastPunch: () => {
-      return _movement.punching;
+    lastPunch() {
+      return this.punching;
     }
-  };
-
-  return _movement;
+  }), loadState || {});
 }

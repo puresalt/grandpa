@@ -46,14 +46,14 @@ export default function InputState(movement, loadState) {
   const _movementDirection = (key) => {
     return (direction) => {
       _keys[key].pressed = direction === 'press';
-      movement.trigger.direction(_keys);
+      movement.direction(_keys);
     };
   };
 
   const _toggleMovementAction = (key, action) => {
     return (direction) => {
       _keys[key].pressed = direction === 'press';
-      action(_keys[key].pressed);
+      movement[action](_keys[key].pressed);
     };
   };
 
@@ -81,22 +81,22 @@ export default function InputState(movement, loadState) {
     {
       input: KEY.PUNCH,
       state: 'playing',
-      trigger: _toggleMovementAction(KEY.PUNCH, movement.trigger.punch)
+      trigger: _toggleMovementAction(KEY.PUNCH, 'punch')
     },
     {
       input: KEY.KICK,
       state: 'playing',
-      trigger: _toggleMovementAction(KEY.KICK, movement.trigger.kick)
+      trigger: _toggleMovementAction(KEY.KICK, 'kick')
     },
     {
       input: KEY.JUMP,
       state: 'playing',
-      trigger: movement.trigger.jump
+      trigger: _toggleMovementAction(KEY.JUMP, 'jump')
     },
     {
       input: KEY.CROUCH,
       state: 'playing',
-      trigger: _toggleMovementAction(KEY.CROUCH, movement.trigger.crouch)
+      trigger: _toggleMovementAction(KEY.CROUCH, 'crouch')
     },
     {
       input: KEY.MENU,

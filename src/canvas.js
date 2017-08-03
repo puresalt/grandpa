@@ -68,9 +68,11 @@ export default function canvasFunction(element) {
      *
      * @param {Number} fps
      */
-    render: (fps) => {
+    render(fps) {
       _element.clearRect(0, 0, _width, _height);
-      _entities.forEach(entity => {
+      _entities.sort((entity1, entity2) => {
+        return entity1.x > entity2.x || (entity1.x === entity2.x && entity1.y > entity2.y);
+      }).forEach(entity => {
         const tileset = _tilesets[entity.tileset.id];
         _element.drawImage(
           tileset,
@@ -92,7 +94,7 @@ export default function canvasFunction(element) {
      * @param {Object} entity
      * @returns {Object}
      */
-    addEntity: (entity) => {
+    addEntity(entity) {
       _entities.push(entity);
       return methods;
     },
@@ -103,8 +105,11 @@ export default function canvasFunction(element) {
      * @param {Array} entities
      * @returns {Object}
      */
-    setEntities: (entities) => {
-      _entities = entities;
+    setEntities(entities) {
+      methods.clearEntities();
+      for (let i = 0, count = entities.length; i < count; i = i + 1) {
+        _entities.push(entities[i]);
+      }
       return methods;
     },
 
@@ -114,7 +119,7 @@ export default function canvasFunction(element) {
      * @param {Object} entity
      * @returns {Object}
      */
-    removeEntity: (entity) => {
+    removeEntity(entity) {
       _entities = _entities.filter(item => {
         return item.id !== entity.id;
       });
@@ -126,19 +131,22 @@ export default function canvasFunction(element) {
      *
      * @returns {Object}
      */
-    clearEntities: () => {
-      _entities = [];
+    clearEntities() {
+      for (let i = 0, count = _entities.length; i < count; i = i + 1) {
+        _entities[i] = null;
+      }
+      _entities.length = 0;
       return methods;
     },
 
     /**
-     * Define the tilesets to use for a given level. Trigger `ready` when all images are loaded.
+     * Define the tilesets to use for a given level. Trigger `callback` when all images are loaded.
      *
      * @param {Array} tilesets
-     * @param {Function} ready
+     * @param {Function} callback
      * @returns {Object}
      */
-    setTilesets: (tilesets, ready) => {
+    setTilesets(tilesets, callback) {
       methods.clearTilesets();
       const waitingFor = tilesets.length;
       let replied = false;
@@ -147,7 +155,7 @@ export default function canvasFunction(element) {
           _tilesets[tileset.id] = element;
           if (!replied && Object.keys(_tilesets).length >= waitingFor) {
             replied = true;
-            ready();
+            callback();
           }
         });
       });
@@ -159,7 +167,7 @@ export default function canvasFunction(element) {
      *
      * @returns {Object}
      */
-    clearTilesets: () => {
+    clearTilesets() {
       for (let key in _tilesets) {
         if (!_tilesets.hasOwnProperty(key)) {
           continue;
@@ -171,5 +179,5 @@ export default function canvasFunction(element) {
     }
   };
 
-  return methods;
+  return Object.freeze(methods);
 }

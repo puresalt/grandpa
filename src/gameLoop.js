@@ -18,83 +18,79 @@
 
 'use strict';
 
-import _ from 'lodash/fp';
-
-const DEFAULT_STATE = {
-  fps: 60,
-  panicLimit: 240,
-  panic: (gameLoop) => {
-    gameLoop.pause().start();
-    return true;
-  },
-  render: (gameLoop) => {
-    throw new Error(gameLoop.name + ' is missing a render callback.');
-  },
-  update: (fps, gameLoop) => {
-    throw new Error(gameLoop.name + ' is missing a render callback. (' + fps + ')');
-  }
-};
-
 /**
  * Create our Game Loop. This will delegate rendering based off of state changes.
  *
  * @param {Object?} options
  */
 export default function GameLoop(options) {
-  const gameLoop = _.defaults(_.clone(DEFAULT_STATE), options || {});
-
   let _paused = false;
   let _delta = 0;
   let _lastRun = 0;
   let _lastFpsUpdate = 0;
   let _framesThisSecond = 0;
-  let _renderingFps = gameLoop.fps;
-  let _interval = 1000 / gameLoop.fps;
+  let _renderingFps = options.fps || 60;
+  let _interval = 1000 / (options.fps || 60);
+
+  const gameLoop = Object.assign(Object.create({
+    fps: 60,
+    panicLimit: 240,
+    panic() {
+      this.pause().start();
+      return true;
+    },
+    render() {
+      throw new Error(this.name + ' is missing a render callback.');
+    },
+    update(fps) {
+      throw new Error(this.name + ' is missing a render callback. (' + fps + ')');
+    },
+
+    /**
+     * Pause our Game Loop.
+     *
+     * @returns {Object}
+     */
+    pause() {
+      _paused = true;
+      _lastFpsUpdate = 0;
+      _framesThisSecond = 0;
+      return this;
+    },
+
+    /**
+     * Resume our Game Loop.
+     *
+     * @returns {Object}
+     */
+    start() {
+      _paused = false;
+      requestAnimationFrame(_run);
+      return this;
+    },
+
+    /**
+     * Get our rendering fps.
+     *
+     * @returns {Number}
+     */
+    getRenderedFps() {
+      return _renderingFps;
+    }
+  }), options);
 
   Object.defineProperty(gameLoop, 'fps', {
     set: function(value) {
-      gameLoop.fps = value;
+      this.fps = value;
       _renderingFps = value;
       _interval = 1000 / value;
     }
   });
 
   /**
-   * Pause our Game Loop.
-   *
-   * @returns {Object}
-   */
-  gameLoop.pause = () => {
-    _paused = true;
-    _lastRun = 0;
-    _delta = 0;
-    return gameLoop;
-  };
-
-  /**
-   * Resume our Game Loop.
-   *
-   * @returns {Object}
-   */
-  gameLoop.start = () => {
-    _paused = false;
-    requestAnimationFrame(_run);
-    return gameLoop;
-  };
-
-  /**
-   * Get the rendered FPS.
-   *
-   * @returns {Number}
-   */
-  gameLoop.getRenderedFps = () => {
-    return _renderingFps;
-  };
-
-  /**
    * Run our GameLoop
    *
-   * @param {Number?} now
+   * @param {Number} now
    */
   function _run(now) {
     if (_paused) {

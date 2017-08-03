@@ -18,20 +18,15 @@
 'use strict';
 
 import StateMachine from './vendor/stateMachine';
-import gameLoopFunction from './gameLoop';
-import inputFunction from './input';
-import inputStateFunction from './input/state';
-import playerFunction from './sprite/player';
-import canvasFunction from './canvas';
-import npcFunction from './sprite/npc';
+import gameLoopFactory from './gameLoop';
+import inputFactory from './input';
+import inputStateFactory from './input/state';
+import playerFactory from './sprite/player';
+import canvasFactory from './canvas';
+import npcFactory from './sprite/npc';
 
 const overlay = document.createElement('div');
-overlay.style.color = '#fff';
-overlay.style.position = 'absolute';
-overlay.style.bottom = '10px';
-overlay.style.left = '10px';
-overlay.style.backgroundColor = 'rgba(255, 255, 255, 0.75);';
-overlay.style.zIndex = 100;
+overlay.id = 'debug-output';
 document.body.appendChild(overlay);
 
 (function app() {
@@ -44,7 +39,7 @@ document.body.appendChild(overlay);
     }
   };
   const canvasElement = document.getElementById(config.element.id);
-  const canvas = canvasFunction(canvasElement);
+  const canvas = canvasFactory(canvasElement);
 
   const stateMachine = new StateMachine({
     init: 'loading',
@@ -62,13 +57,12 @@ document.body.appendChild(overlay);
     ]
   });
 
-  const ready = () => {
-    stateMachine.play();
-  };
-
-  const player = playerFunction();
-  const npcs = [player, npcFunction()];
-  const tilesets = npcs.reduce((gathered, item) => {
+  const player = playerFactory();
+  const entities = [
+    player,
+    npcFactory()
+  ];
+  const tilesets = entities.reduce((gathered, item) => {
     for (let i = 0, count = gathered.length; i < count; i = i + 1) {
       if (gathered[i].id === item.tileset.id) {
         return gathered;
@@ -78,29 +72,65 @@ document.body.appendChild(overlay);
     return gathered;
   }, []);
 
-  canvas.setEntities(npcs);
-  canvas.setTilesets(tilesets, ready);
+  canvas.setEntities(entities);
+  canvas.setTilesets(tilesets, () => {
+    stateMachine.play();
+  });
 
-  const inputState = inputStateFunction(player.movement/* , loadState */);
+  const inputState = inputStateFactory(player.movement/* , loadState */);
 
-  inputFunction(config.input, inputState.getEvents(), stateMachine);
+  inputFactory(config.input, inputState.getEvents(), stateMachine);
 
-  const gameLoop = gameLoopFunction({
-    render: (fps) => {
+  const movementKeys = [
+    'crouching',
+    'facing',
+    'kicking',
+    'punching',
+    'jumping',
+    'moving',
+    'running',
+    'stunned'
+  ];
+
+  const gameLoop = gameLoopFactory({
+    render(fps) {
       if (stateMachine.state === 'loading') {
         return;
       }
       canvas.render(fps);
     },
-    update: (fps, loop) => {
+    update(fps) {
       if (stateMachine.state === 'loading') {
         return;
       }
       const movement = player.movement;
-      player.update(fps, loop);
-      overlay.innerHTML = '<pre><strong>FPS:   </strong> ' + loop.getRenderedFps() + '\n<strong>FACING:</strong> ' + movement.facing + '\n<strong>MOVING:</strong> ' + (movement.moving === null ? '<em>null</em>' : movement.moving) + '</pre>';
+      entities.map(item => {
+        item.update(fps, this);
+      });
+
+      let stats = [
+        '<strong>FPS       :</strong> ' + this.getRenderedFps()
+      ];
+
+      for (let i = 0, count = movementKeys.length; i < count; i = i + 1) {
+        let key = movementKeys[i];
+        stats.push('<strong>' + String(key + '         ').slice(0, 9) + ' : </strong>' + (
+          movement[key] === null || movement[key] === true || movement[key] === false ? '<em>' + movement[key] + '</em>' : movement[key]));
+      }
+
+      overlay.innerHTML = '<pre>' + stats.join('\n') + '</pre>';
     }
   });
-  gameLoop.start();
+
+  if (!document.hidden) {
+    gameLoop.start();
+  }
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      gameLoop.pause();
+    } else {
+      gameLoop.start();
+    }
+  });
 
 })();

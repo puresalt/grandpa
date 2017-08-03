@@ -20,7 +20,7 @@
 import _ from 'lodash/fp';
 import KEY from './key';
 
-const DEFAULT_STATE = {
+const _defaultConfig = {
   element: document,
 
   keys: [
@@ -46,7 +46,7 @@ const DEFAULT_STATE = {
  * @returns {Function}
  */
 export default function KeyboardInput(config, events, context) {
-  const _extendedConfig = _.defaults(_.clone(DEFAULT_STATE), config || {});
+  const _extendedConfig = _.defaults(_defaultConfig, config || {});
   const _invertedLookup = _generateInvertedLookup(_extendedConfig.keys);
   const _eventLookup = _generateEventLookup(events, _invertedLookup);
 

@@ -16,28 +16,9 @@
 'use strict';
 
 import _ from 'lodash/fp';
-import baseSprite from '../sprite';
-import movement from '../movement';
-
-const DEFAULT_STATE = {
-  equipment: {
-    leftHand: null,
-    rightHand: null,
-    head: null,
-    boots: null,
-    accessories: []
-  },
-  hp: 20,
-  name: 'NPC',
-  tileset: {
-    id: 'blank',
-    src: '/assets/sprite/ryan.gif',
-    height: 30,
-    width: 30,
-    x: 0,
-    y: 0
-  }
-};
+import DIRECTION from '../movement/direction';
+import MathUtility from '../utility/math';
+import baseSpriteFactory from '../sprite';
 
 /**
  * Load our player.
@@ -45,14 +26,34 @@ const DEFAULT_STATE = {
  * @param {Object?} loadState
  */
 export default function Npc(loadState) {
-  const _sprite = baseSprite(loadState || {}, _.cloneDeep(DEFAULT_STATE));
-  _sprite.movement = movement();
+  return Object.assign(_.extend(baseSpriteFactory(), {
+    hp: 20,
+    name: 'NPC',
+    tileset: {
+      id: 'blank',
+      src: '/assets/sprite/ryan.gif',
+      height: 30,
+      width: 30,
+      x: 0,
+      y: 0
+    },
+    update() {
 
-  _sprite.update = (_baseUpdate => {
-    return (fps, gameLoop) => {
-      _baseUpdate(fps, gameLoop);
-    };
-  })(_sprite.update);
+      if (MathUtility.randomBoolean()) {
+        this.movement.moving = MathUtility.randomChoice([
+          DIRECTION.UP_RIGHT,
+          DIRECTION.UP_LEFT,
+          DIRECTION.DOWN_RIGHT,
+          DIRECTION.DOWN_LEFT,
+          DIRECTION.RIGHT,
+          DIRECTION.LEFT,
+          DIRECTION.UP,
+          DIRECTION.DOWN,
+          null
+        ]);
+      }
 
-  return _sprite;
+      this.detectMovement();
+    }
+  }), loadState || {});
 }
