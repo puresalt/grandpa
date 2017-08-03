@@ -37,6 +37,10 @@ export default function Npc(loadState) {
       x: 0,
       y: 0
     },
+
+    /**
+     * {@inheritDoc}
+     */
     update() {
 
       if (MathUtility.randomBoolean()) {

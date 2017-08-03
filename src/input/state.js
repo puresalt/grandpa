@@ -43,6 +43,13 @@ function setInitial() {
 export default function InputState(movement, loadState) {
   let _keys = loadState || setInitial();
 
+  /**
+   * Send a call to movement with all keys pressed, including this key's pressed state.
+   *
+   * @param {String} key
+   * @returns {function(*)}
+   * @private
+   */
   const _movementDirection = (key) => {
     return (direction) => {
       _keys[key].pressed = direction === 'press';
@@ -50,6 +57,14 @@ export default function InputState(movement, loadState) {
     };
   };
 
+  /**
+   * Send a regular call to a movement action with true/false being passed along.
+   *
+   * @param {String} key
+   * @param {String} action
+   * @returns {function(*)}
+   * @private
+   */
   const _toggleMovementAction = (key, action) => {
     return (direction) => {
       _keys[key].pressed = direction === 'press';
@@ -108,8 +123,22 @@ export default function InputState(movement, loadState) {
   ];
 
   return {
-    getEvents: () => {
+    /**
+     * Return an array of all the defined events for movement.
+     *
+     * @returns {Array}
+     */
+    getEvents() {
       return _events;
+    },
+
+    /**
+     * Get defined keys.
+     *
+     * @returns {Object}
+     */
+    getKeys() {
+      return _keys;
     }
   };
 }

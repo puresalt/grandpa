@@ -50,6 +50,13 @@ export default function KeyboardInput(config, events, context) {
   const _invertedLookup = _generateInvertedLookup(_extendedConfig.keys);
   const _eventLookup = _generateEventLookup(events, _invertedLookup);
 
+  /**
+   * Helper function to add our event listener on both up and down.
+   *
+   * @param {String} state
+   * @returns {function(*=)}
+   * @private
+   */
   const _eventListener = (state) => {
     return (event) => {
       let found = _eventLookup[event.keyCode];
@@ -67,6 +74,17 @@ export default function KeyboardInput(config, events, context) {
 
   _extendedConfig.element.addEventListener('keyup', _eventListener('release'));
   _extendedConfig.element.addEventListener('keydown', _eventListener('press'));
+
+  return {
+    /**
+     * Get the current config.
+     *
+     * @returns {*}
+     */
+    getConfig() {
+      return _extendedConfig;
+    }
+  };
 }
 
 /**

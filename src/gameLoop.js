@@ -35,13 +35,27 @@ export default function GameLoop(options) {
   const gameLoop = Object.assign(Object.create({
     fps: 60,
     panicLimit: 240,
+
+    /**
+     * Damn, something happened and we need to panic!
+     *
+     * @returns {Boolean}
+     */
     panic() {
       this.pause().start();
       return true;
     },
+
+    /**
+     * Trigger a canvas rendering.
+     */
     render() {
       throw new Error(this.name + ' is missing a render callback.');
     },
+
+    /**
+     * Method to trigger anytime an update happens.
+     */
     update(fps) {
       throw new Error(this.name + ' is missing a render callback. (' + fps + ')');
     },

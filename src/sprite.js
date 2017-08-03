@@ -53,10 +53,18 @@ export default function Sprite(loadState) {
     width: 60,
     x: 0,
     y: 0,
+    movement: movementFactory(),
+
+    /**
+     * Render an update.
+     */
     update() {
 
     },
-    movement: movementFactory(),
+
+    /**
+     * Detect if we have any movement and change state accordingly.
+     */
     detectMovement() {
       const movement = this.movement;
 

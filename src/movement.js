@@ -39,6 +39,12 @@ export default function InputMovement(loadState) {
     moving: null,
     running: false,
     stunned: false,
+
+    /**
+     * Resolve a given direction and trigger movement logic.
+     *
+     * @param {Object} pressed
+     */
     direction(pressed) {
       if (pressed[KEY.UP].pressed && pressed[KEY.RIGHT].pressed) {
         this.running = false;
@@ -87,11 +93,23 @@ export default function InputMovement(loadState) {
         this.moving = null;
       }
     },
+
+    /**
+     * Start getting your crouch going.
+     *
+     * @param {Boolean} active
+     */
     crouch(active) {
       this.crouching = active;
     },
-    jump() {
-      if (this.jumping > 0) {
+
+    /**
+     * Try and jump.
+     *
+     * @param {Boolean} active;
+     */
+    jump(active) {
+      if (!active || this.jumping > 0) {
         return;
       }
       this.jumping = 30;
@@ -101,24 +119,31 @@ export default function InputMovement(loadState) {
           break;
       }
     },
+
+    /**
+     * Kicking time.
+     *
+     * @param {Boolean} active
+     */
     kick(active) {
-      if (active) {
-        if (!this.punching && !this.kicking) {
-          this.kicking = Date.now();
-        }
+      if (!active) {
+        this.kicking = false;
+      } else if (!this.punching && !this.kicking) {
+        this.kicking = Date.now();
       }
     },
+
+    /**
+     * Throw the punch.
+     *
+     * @param {Boolean} active
+     */
     punch(active) {
       if (!active) {
         this.punching = false;
-      } else {
-        if (!this.punching) {
-          this.punching = Date.now();
-        }
+      } else if (!this.punching && !this.kicking) {
+        this.punching = Date.now();
       }
-    },
-    lastPunch() {
-      return this.punching;
     }
   }), loadState || {});
 }

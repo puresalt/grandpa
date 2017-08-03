@@ -40,6 +40,10 @@ export default function Player(loadState) {
       x: 0,
       y: 0
     },
+
+    /**
+     * {@inheritDoc}
+     */
     update() {
       if (this.movement.jumping) {
         this.movement.jumping = MathUtility.coolDown(this.movement.jumping);

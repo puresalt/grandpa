@@ -24,6 +24,7 @@ import inputStateFactory from './input/state';
 import playerFactory from './sprite/player';
 import canvasFactory from './canvas';
 import npcFactory from './sprite/npc';
+import inputKeyLookup from './input/key/lookup';
 
 const overlay = document.createElement('div');
 overlay.id = 'debug-output';
@@ -79,7 +80,7 @@ document.body.appendChild(overlay);
 
   const inputState = inputStateFactory(player.movement/* , loadState */);
 
-  inputFactory(config.input, inputState.getEvents(), stateMachine);
+  const debugInput = inputFactory(config.input, inputState.getEvents(), stateMachine);
 
   const movementKeys = [
     'crouching',
@@ -91,6 +92,13 @@ document.body.appendChild(overlay);
     'running',
     'stunned'
   ];
+  const definedKeys = debugInput.getConfig().keys;
+  let keys = [
+    '<strong>KEYS:</strong><hr>'
+  ];
+  for (let i = 0, count = definedKeys.length; i < count; i = i + 1) {
+    keys.push('<strong>' + String(definedKeys[i].input + '         ').slice(0, 9) + ' : </strong>' + inputKeyLookup(definedKeys[i].keyCode));
+  }
 
   const gameLoop = gameLoopFactory({
     render(fps) {
@@ -109,6 +117,7 @@ document.body.appendChild(overlay);
       });
 
       let stats = [
+        '<strong>STATE:</strong><hr>',
         '<strong>FPS       :</strong> ' + this.getRenderedFps()
       ];
 
@@ -118,7 +127,7 @@ document.body.appendChild(overlay);
           movement[key] === null || movement[key] === true || movement[key] === false ? '<em>' + movement[key] + '</em>' : movement[key]));
       }
 
-      overlay.innerHTML = '<pre>' + stats.join('\n') + '</pre>';
+      overlay.innerHTML = '<pre>' + stats.join('\n') + '</pre><pre>' + keys.join('\n') + '</pre><br>';
     }
   });
 
