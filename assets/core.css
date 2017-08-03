@@ -36,6 +36,18 @@ canvas {
     border-top: solid 1px #fff;
 }
 
+#debug-output em {
+    color: #ccc;
+}
+
+#debug-output .off {
+    color: #c00;
+}
+
+#debug-output .on {
+    color: #0c0;
+}
+
 #debug-output br {
     clear: both;
 }

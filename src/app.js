@@ -97,8 +97,18 @@ document.body.appendChild(overlay);
     '<strong>KEYS:</strong><hr>'
   ];
   for (let i = 0, count = definedKeys.length; i < count; i = i + 1) {
-    keys.push('<strong>' + String(definedKeys[i].input + '         ').slice(0, 9) + ' : </strong>' + inputKeyLookup(definedKeys[i].keyCode));
+    keys.push('<strong>' + String(definedKeys[i].input + '         ').slice(0, 9) + ' : </strong><span class="on">' + inputKeyLookup(definedKeys[i].keyCode) + '</span>');
   }
+
+  const stylize = (value) => {
+    if (value === null) {
+      return '<em>null</em>';
+    } else if (value === false || value === 0) {
+      return '<span class="off">' + value + '</span>';
+    } else {
+      return '<span class="on">' + value + '</span>';
+    }
+  };
 
   const gameLoop = gameLoopFactory({
     render(fps) {
@@ -118,13 +128,12 @@ document.body.appendChild(overlay);
 
       let stats = [
         '<strong>STATE:</strong><hr>',
-        '<strong>FPS       :</strong> ' + this.getRenderedFps()
+        '<strong>FPS       :</strong> ' + stylize(this.getRenderedFps())
       ];
 
       for (let i = 0, count = movementKeys.length; i < count; i = i + 1) {
         let key = movementKeys[i];
-        stats.push('<strong>' + String(key + '         ').slice(0, 9) + ' : </strong>' + (
-          movement[key] === null || movement[key] === true || movement[key] === false ? '<em>' + movement[key] + '</em>' : movement[key]));
+        stats.push('<strong>' + String(key + '         ').slice(0, 9) + ' : </strong>' + stylize(movement[key]));
       }
 
       overlay.innerHTML = '<pre>' + stats.join('\n') + '</pre><pre>' + keys.join('\n') + '</pre><br>';
