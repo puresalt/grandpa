@@ -13,21 +13,38 @@
  *
  */
 
+/* globals document */
+
 'use strict';
 
-import GameLoop from './gameLoop';
 import StateMachine from './vendor/stateMachine';
+import gameLoopFunction from './gameLoop';
 import inputFunction from './input';
 import inputStateFunction from './input/state';
 import playerFunction from './sprite/player';
+import canvasFunction from './canvas';
+import npcFunction from './sprite/npc';
+
+const overlay = document.createElement('div');
+overlay.style.color = '#fff';
+overlay.style.position = 'absolute';
+overlay.style.bottom = '10px';
+overlay.style.left = '10px';
+overlay.style.backgroundColor = 'rgba(255, 255, 255, 0.75);';
+overlay.style.zIndex = 100;
+document.body.appendChild(overlay);
 
 (function app() {
-
   const config = {
+    element: {
+      id: 'app'
+    },
     input: {
       type: 'keyboard'
     }
   };
+  const canvasElement = document.getElementById(config.element.id);
+  const canvas = canvasFunction(canvasElement);
 
   const stateMachine = new StateMachine({
     init: 'loading',
@@ -45,22 +62,43 @@ import playerFunction from './sprite/player';
     ]
   });
 
-  stateMachine.play();
+  const ready = () => {
+    stateMachine.play();
+  };
 
   const player = playerFunction();
+  const npcs = [player, npcFunction()];
+  const tilesets = npcs.reduce((gathered, item) => {
+    for (let i = 0, count = gathered.length; i < count; i = i + 1) {
+      if (gathered[i].id === item.tileset.id) {
+        return gathered;
+      }
+    }
+    gathered.push(item.tileset);
+    return gathered;
+  }, []);
+
+  canvas.setEntities(npcs);
+  canvas.setTilesets(tilesets, ready);
 
   const inputState = inputStateFunction(player.movement/* , loadState */);
 
   inputFunction(config.input, inputState.getEvents(), stateMachine);
 
-  const gameLoop = GameLoop({
-    render: (delta) => {
+  const gameLoop = gameLoopFunction({
+    render: (fps) => {
+      if (stateMachine.state === 'loading') {
+        return;
+      }
+      canvas.render(fps);
     },
-    update: (delta, loop) => {
+    update: (fps, loop) => {
+      if (stateMachine.state === 'loading') {
+        return;
+      }
       const movement = player.movement;
-      console.log('Fps:', loop.getRenderedFps());
-      console.log('Facing:', movement.facing);
-      console.log('Moving:', movement.moving);
+      player.update(fps, loop);
+      overlay.innerHTML = '<pre><strong>FPS:   </strong> ' + loop.getRenderedFps() + '\n<strong>FACING:</strong> ' + movement.facing + '\n<strong>MOVING:</strong> ' + (movement.moving === null ? '<em>null</em>' : movement.moving) + '</pre>';
     }
   });
   gameLoop.start();

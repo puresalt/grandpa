@@ -37,9 +37,7 @@ export default function PubSub() {
       if (!_events.hasOwnProperty(event)) {
         _events[event] = [];
       }
-
       const id = _events[event].push(callback) - 1;
-
       return {
         unsubscribe: () => {
           _events[event].splice(id, 1);
@@ -88,6 +86,7 @@ export default function PubSub() {
      */
     clear: (event) => {
       if (event) {
+        _events[event] = null;
         delete _events[event];
         return;
       }
@@ -95,6 +94,7 @@ export default function PubSub() {
         if (!_events.hasOwnProperty(key)) {
           continue;
         }
+        _events[key] = null;
         delete _events[key];
       }
     }

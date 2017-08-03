@@ -53,11 +53,9 @@ export default function KeyboardInput(config, events, context) {
   const _eventListener = (state) => {
     return (event) => {
       let found = _eventLookup[event.keyCode];
-
       if (!found || !_triggerEvent(state, event, found, context)) {
         return;
       }
-
       if (event.preventDefault) {
         event.preventDefault();
       }

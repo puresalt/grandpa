@@ -19,17 +19,7 @@
 
 import _ from 'lodash/fp';
 import KEY from './input/key';
-
-const DIRECTION = {
-  UP_RIGHT: 'UP_RIGHT',
-  UP_LEFT: 'UP_LEFT',
-  DOWN_RIGHT: 'DOWN_RIGHT',
-  DOWN_LEFT: 'DOWN_LEFT',
-  RIGHT: 'RIGHT',
-  LEFT: 'LEFT',
-  UP: 'UP',
-  DOWN: 'DOWN'
-};
+import DIRECTION from './movement/direction';
 
 const DEFAULT_STATE = {
   crouching: false,

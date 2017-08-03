@@ -16,20 +16,36 @@
 'use strict';
 
 import _ from 'lodash/fp';
+import DIRECTION from '../movement/direction';
+import MathUtility from '../utility/math';
 import baseSprite from '../sprite';
 import movement from '../movement';
 
 const DEFAULT_STATE = {
-  name: 'Gramps',
-  hp: 100,
   equipment: {
     leftHand: null,
     rightHand: null,
     head: null,
     boots: null,
     accessories: []
+  },
+  hp: 100,
+  name: 'Gramps',
+  speed: {
+    x: 10,
+    y: 10
+  },
+  tileset: {
+    id: 'blank',
+    src: '/assets/sprite/ryan.gif',
+    height: 30,
+    width: 30,
+    x: 0,
+    y: 0
   }
 };
+
+const canvas = document.getElementById('app');
 
 /**
  * Load our player.
@@ -40,15 +56,46 @@ export default function Player(loadState) {
   const _sprite = baseSprite(loadState || {}, _.cloneDeep(DEFAULT_STATE));
   _sprite.movement = movement();
 
-  _sprite.render = (_baseRender => {
-    return (delta) => {
-      _baseRender(delta);
-    };
-  })(_sprite.render);
+  const maxX = canvas.clientWidth - _sprite.width;
+  const maxY = canvas.clientHeight - _sprite.height;
 
   _sprite.update = (_baseUpdate => {
-    return (delta, gameLoop) => {
-      _baseUpdate(delta, gameLoop);
+    return (fps, gameLoop) => {
+      const movement = _sprite.movement;
+      let x = _sprite.x;
+      let y = _sprite.y;
+      switch (movement.moving) {
+        case DIRECTION.UP_RIGHT:
+          x = _sprite.x + _sprite.speed.x;
+          y = _sprite.y - _sprite.speed.y;
+          break;
+        case DIRECTION.UP_LEFT:
+          x = _sprite.x - _sprite.speed.x;
+          y = _sprite.y - _sprite.speed.y;
+          break;
+        case DIRECTION.DOWN_RIGHT:
+          x = _sprite.x + _sprite.speed.x;
+          y = _sprite.y + _sprite.speed.y;
+          break;
+        case DIRECTION.DOWN_LEFT:
+          x = _sprite.x - _sprite.speed.x;
+          y = _sprite.y + _sprite.speed.y;
+          break;
+        case DIRECTION.RIGHT:
+          x = _sprite.x + _sprite.speed.x;
+          break;
+        case DIRECTION.LEFT:
+          x = _sprite.x - _sprite.speed.x;
+          break;
+        case DIRECTION.UP:
+          y = _sprite.y - _sprite.speed.y;
+          break;
+        case DIRECTION.DOWN:
+          y = _sprite.y + _sprite.speed.y;
+          break;
+      }
+      _sprite.x = MathUtility.minMax(0, x, maxX);
+      _sprite.y = MathUtility.minMax(0, y, maxY);
     };
   })(_sprite.update);
 

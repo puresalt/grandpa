@@ -16,8 +16,19 @@
 'use strict';
 
 import _ from 'lodash/fp';
+import baseSprite from '../sprite';
+import movement from '../movement';
 
 const DEFAULT_STATE = {
+  equipment: {
+    leftHand: null,
+    rightHand: null,
+    head: null,
+    boots: null,
+    accessories: []
+  },
+  hp: 20,
+  name: 'NPC',
   tileset: {
     id: 'blank',
     src: '/assets/sprite/ryan.gif',
@@ -25,33 +36,23 @@ const DEFAULT_STATE = {
     width: 30,
     x: 0,
     y: 0
-  },
-  height: 60,
-  width: 60,
-  x: 0,
-  y: 0
+  }
 };
 
 /**
- * Create a sprite.
+ * Load our player.
  *
- * @param {Object} loadState
- * @param {Object} extendedDefaultState
- * @returns {Object}
+ * @param {Object?} loadState
  */
-export default function Sprite(loadState, extendedDefaultState) {
-  const _defaultState = _.defaults(_.cloneDeep(DEFAULT_STATE), _.cloneDeep(extendedDefaultState));
-  const _state = _.defaults(_defaultState, loadState);
+export default function Npc(loadState) {
+  const _sprite = baseSprite(loadState || {}, _.cloneDeep(DEFAULT_STATE));
+  _sprite.movement = movement();
 
-  /**
-   * Trigger an update.
-   *
-   * @param {Number} fps
-   * @param {Object} gameLoop
-   */
-  _state.update = (fps, gameLoop) => {
-    // do nothing.
-  };
+  _sprite.update = (_baseUpdate => {
+    return (fps, gameLoop) => {
+      _baseUpdate(fps, gameLoop);
+    };
+  })(_sprite.update);
 
-  return _state;
+  return _sprite;
 }

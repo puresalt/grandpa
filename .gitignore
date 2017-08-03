@@ -3,3 +3,4 @@ logs
 build
 .idea
 *.iml
+assets/sprite

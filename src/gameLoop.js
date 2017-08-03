@@ -30,8 +30,8 @@ const DEFAULT_STATE = {
   render: (gameLoop) => {
     throw new Error(gameLoop.name + ' is missing a render callback.');
   },
-  update: (delta, gameLoop) => {
-    throw new Error(gameLoop.name + ' is missing a render callback.', delta);
+  update: (fps, gameLoop) => {
+    throw new Error(gameLoop.name + ' is missing a render callback. (' + fps + ')');
   }
 };
 
@@ -59,6 +59,11 @@ export default function GameLoop(options) {
     }
   });
 
+  /**
+   * Pause our Game Loop.
+   *
+   * @returns {Object}
+   */
   gameLoop.pause = () => {
     _paused = true;
     _lastRun = 0;
@@ -67,7 +72,7 @@ export default function GameLoop(options) {
   };
 
   /**
-   * Resume our GameLoop.
+   * Resume our Game Loop.
    *
    * @returns {Object}
    */
@@ -95,20 +100,15 @@ export default function GameLoop(options) {
     if (_paused) {
       return;
     }
-
-    // Throttle the frame rate.
     if (now < _lastRun + _interval) {
       return requestAnimationFrame(_run);
     }
-
     _delta = _delta + now - _lastRun;
     _lastRun = now;
-
     _logFps(now);
     if (_runUpdate()) {
       gameLoop.render(gameLoop);
     }
-
     requestAnimationFrame(_run);
   }
 
@@ -121,7 +121,7 @@ export default function GameLoop(options) {
   function _runUpdate() {
     let numUpdateSteps = 0;
     while (_delta >= _interval) {
-      gameLoop.update(_delta, gameLoop);
+      gameLoop.update(_renderingFps, gameLoop);
       _delta -= _interval;
       numUpdateSteps = numUpdateSteps + 1;
       if (numUpdateSteps >= gameLoop.panicLimit) {
@@ -131,6 +131,12 @@ export default function GameLoop(options) {
     return true;
   }
 
+  /**
+   * Log our FPS as it runs.
+   *
+   * @param {Number} now
+   * @private
+   */
   function _logFps(now) {
     if (now > _lastFpsUpdate + 1000) {
       _renderingFps = 0.25 * _framesThisSecond + 0.75 * _renderingFps;

@@ -42,47 +42,78 @@ function elementLoader(element, callback) {
  * @returns {HTMLImageElement}
  */
 function createImageElementForTileset(tileset, callback) {
-  let element = document.createElement('image');
+  let element = document.createElement('img');
   element.src = tileset.src;
   element.id = 'tileset-' + tileset.id;
   elementLoader(element, callback);
   return element;
 }
 
-export default function canvasFunction(canvas) {
-  const _element = canvas.getContext('2d');
-  let _tilesets = {};
+/**
+ * Delegate our canvas rendering.
+ *
+ * @param {HTMLElement} element
+ * @returns {Object}
+ */
+export default function canvasFunction(element) {
+  const _element = element.getContext('2d');
+  const _tilesets = {};
+  const _width = element.clientWidth;
+  const _height = element.clientHeight;
   let _entities = [];
 
   const methods = {
-    draw: () => {
+    /**
+     * Render our canvas.
+     *
+     * @param {Number} fps
+     */
+    render: (fps) => {
+      _element.clearRect(0, 0, _width, _height);
       _entities.forEach(entity => {
-        const state = entity.getState();
-        const tileset = _tilesets[state.tileset.id];
+        const tileset = _tilesets[entity.tileset.id];
         _element.drawImage(
-          tileset.image,
-          state.tileset.x,
-          state.tileset.y,
-          tileset.x,
-          tileset.y,
-          state.x,
-          state.y,
-          tileset.x,
-          tileset.y
+          tileset,
+          entity.tileset.x,
+          entity.tileset.y,
+          entity.tileset.height,
+          entity.tileset.width,
+          entity.x,
+          entity.y,
+          entity.height,
+          entity.width
         );
       });
     },
 
+    /**
+     * Add an entity to be drawn.
+     *
+     * @param {Object} entity
+     * @returns {Object}
+     */
     addEntity: (entity) => {
       _entities.push(entity);
       return methods;
     },
 
+    /**
+     * Set all of the entities for our canvas.
+     *
+     * @param {Array} entities
+     * @returns {Object}
+     */
     setEntities: (entities) => {
       _entities = entities;
       return methods;
     },
 
+    /**
+     * Remove a specific entity.
+     *
+     * @param {Object} entity
+     * @returns {Object}
+     */
     removeEntity: (entity) => {
       _entities = _entities.filter(item => {
         return item.id !== entity.id;
@@ -90,20 +121,31 @@ export default function canvasFunction(canvas) {
       return methods;
     },
 
+    /**
+     * Clear all of the defined entities.
+     *
+     * @returns {Object}
+     */
     clearEntities: () => {
       _entities = [];
       return methods;
     },
 
+    /**
+     * Define the tilesets to use for a given level. Trigger `ready` when all images are loaded.
+     *
+     * @param {Array} tilesets
+     * @param {Function} ready
+     * @returns {Object}
+     */
     setTilesets: (tilesets, ready) => {
+      methods.clearTilesets();
       const waitingFor = tilesets.length;
       let replied = false;
-      _tilesets = {};
       tilesets.forEach(tileset => {
-        createImageElementForTileset(tileset, (element) => {
-          _tilesets[tileset.id] = tileset;
-          _tilesets[tileset.image] = element;
-          if (!replied && _tilesets.length >= waitingFor) {
+        createImageElementForTileset(tileset, element => {
+          _tilesets[tileset.id] = element;
+          if (!replied && Object.keys(_tilesets).length >= waitingFor) {
             replied = true;
             ready();
           }
@@ -112,8 +154,19 @@ export default function canvasFunction(canvas) {
       return methods;
     },
 
+    /**
+     * Clear all of the current tiles.
+     *
+     * @returns {Object}
+     */
     clearTilesets: () => {
-      _tilesets = {};
+      for (let key in _tilesets) {
+        if (!_tilesets.hasOwnProperty(key)) {
+          continue;
+        }
+        _tilesets[key] = null;
+        delete _tilesets[key];
+      }
       return methods;
     }
   };
