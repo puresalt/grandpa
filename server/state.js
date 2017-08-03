@@ -68,7 +68,7 @@ const State = (() => {
         } else if (!properties) {
           delete _data[id];
         } else {
-          for (let i = 0, count = properties.length; i < count; ++i) {
+          for (let i = 0, count = properties.length; i < count; i = i + 1) {
             delete _data[id][properties[i]];
           }
         }

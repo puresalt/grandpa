@@ -24,15 +24,15 @@ const DEFAULT_STATE = {
   element: document,
 
   keys: [
-    {input: KEY.LEFT, keyCode: 97},
-    {input: KEY.RIGHT, keyCode: 100},
-    {input: KEY.UP, keyCode: 119},
-    {input: KEY.DOWN, keyCode: 115},
-    {input: KEY.PUNCH, keyCode: 106},
-    {input: KEY.KICK, keyCode: 107},
+    {input: KEY.LEFT, keyCode: 65},
+    {input: KEY.RIGHT, keyCode: 68},
+    {input: KEY.UP, keyCode: 87},
+    {input: KEY.DOWN, keyCode: 83},
+    {input: KEY.PUNCH, keyCode: 74},
+    {input: KEY.KICK, keyCode: 75},
     {input: KEY.JUMP, keyCode: 32},
-    {input: KEY.CROUCH, keyCode: 108},
-    {input: KEY.MENU, keyCode: 13}
+    {input: KEY.CROUCH, keyCode: 16},
+    {input: KEY.MENU, keyCode: 27}
   ]
 };
 
@@ -46,24 +46,29 @@ const DEFAULT_STATE = {
  * @returns {Function}
  */
 export default function KeyboardInput(config, events, context) {
-  const extendedConfig = _.defaults(config || {}, _.clone(DEFAULT_STATE));
-  const invertedLookup = _generateInvertedLookup(extendedConfig.keys);
-  const eventLookup = _generateEventLookup(events, invertedLookup);
+  const _extendedConfig = _.defaults(_.clone(DEFAULT_STATE), config || {});
+  const _invertedLookup = _generateInvertedLookup(_extendedConfig.keys);
+  const _eventLookup = _generateEventLookup(events, _invertedLookup);
 
-  extendedConfig.element.addEventListener('keypress', (event) => {
-    let found = eventLookup[event.keyCode];
+  const _eventListener = (state) => {
+    return (event) => {
+      let found = _eventLookup[event.keyCode];
 
-    if (!found || !_triggerEvent(event, found, context)) {
-      return;
-    }
+      if (!found || !_triggerEvent(state, event, found, context)) {
+        return;
+      }
 
-    if (event.preventDefault) {
-      event.preventDefault();
-    }
-    event.cancelBubble = true;
-    event.returnValue = false;
-    return false;
-  });
+      if (event.preventDefault) {
+        event.preventDefault();
+      }
+      event.cancelBubble = true;
+      event.returnValue = false;
+      return false;
+    };
+  };
+
+  _extendedConfig.element.addEventListener('keyup', _eventListener('release'));
+  _extendedConfig.element.addEventListener('keydown', _eventListener('press'));
 }
 
 /**
@@ -93,7 +98,7 @@ function _generateEventLookup(events, invertedLookup) {
       throw new Error('Missing input for: ' + item.input);
     }
     gathered[invertedLookup[item.input]] = gathered[invertedLookup[item.input]] || [];
-    gathered[invertedLookup[item.input]].push(item.callback);
+    gathered[invertedLookup[item.input]].push(item);
     return gathered;
   }, {});
 }
@@ -101,23 +106,24 @@ function _generateEventLookup(events, invertedLookup) {
 /**
  * Trigger an event, which if we do we will return true so our keyboard method can short circuit the event.
  *
+ * @param {String} state
  * @param {Event} event
  * @param {Array} items
  * @param {StateMachine?} context
  */
-function _triggerEvent(event, items, context) {
+function _triggerEvent(state, event, items, context) {
   return items.reduce((gathered, item) => {
     if (
       item.state
       && context
       && (
-        item.state !== context.current
-        || (_.isArray(item.state) && !_.indexOf(item.state, context.current))
+        item.state !== context.state
+        || (_.isArray(item.state) && !_.indexOf(item.state, context.state))
       )
     ) {
       return gathered;
     }
-    item.callback(event);
+    item.trigger(state, event);
     return true;
   }, false);
 }

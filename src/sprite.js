@@ -17,44 +17,35 @@
 
 import _ from 'lodash/fp';
 
-const DEFAULT_POSITION = {
+const DEFAULT_STATE = {
   x: 0,
   y: 0,
   height: 0,
   width: 0
 };
 
-export default class Sprite {
+export default function Sprite(loadState, extendedDefaultState) {
+  const _defaultState = _.defaults(_.cloneDeep(DEFAULT_STATE), _.cloneDeep(extendedDefaultState));
+  const _state = _.defaults(_defaultState, loadState);
 
   /**
-   * Create our sprite, set it's current state and go from there.
+   * Render our sprite.
    *
-   * @param {Object} state
-   * @param {Object?} defaultState
+   * @param delta
    */
-  constructor(state, defaultState) {
-    this._defaultState = defaultState || _.clone(DEFAULT_POSITION);
-    this.setState(state);
-  }
+  _state.render = (delta) => {
+    throw new ReferenceError(_state.constructor.name + ' is missing a `render` definition. (' + parseInt(delta) + ')');
+  };
 
   /**
-   * Set the current state of our object.
-   *
-   * @param {Object} state
-   * @returns {Sprite}
-   */
-  setState(state) {
-    this._state = _.defaults(state, this._defaultState);
-    return this;
-  }
-
-  /**
-   * Send the render command to our sprite to let it know it needs to update it's state.
+   * Trigger an update.
    *
    * @param {Number} delta
-   * @returns {Boolean}
+   * @param {GameLoop} gameLoop
    */
-  render(delta) {
-    throw new ReferenceError(this.constructor.name + ' is missing a `render` definition.');
-  }
+  _state.update = (delta, gameLoop) => {
+    throw new ReferenceError(_state.constructor.name + ' is missing an `update` definition. (' + parseInt(delta) + ', ' + gameLoop + ')');
+  };
+
+  return _state;
 }

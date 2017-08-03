@@ -15,7 +15,9 @@
 
 'use strict';
 
-import Sprite from './sprite';
+import _ from 'lodash/fp';
+import baseSprite from '../sprite';
+import movement from '../movement';
 
 const DEFAULT_STATE = {
   name: 'Gramps',
@@ -29,16 +31,26 @@ const DEFAULT_STATE = {
   }
 };
 
-export default class Player extends Sprite {
+/**
+ * Load our player.
+ *
+ * @param {Object?} loadState
+ */
+export default function Player(loadState) {
+  const _sprite = baseSprite(loadState || {}, _.cloneDeep(DEFAULT_STATE));
+  _sprite.movement = movement();
 
-  constructor(state) {
-    super(state, DEFAULT_STATE);
-  }
+  _sprite.render = (_baseRender => {
+    return (delta) => {
+      _baseRender(delta);
+    };
+  })(_sprite.render);
 
-  /**
-   * {@inheritDoc}
-   */
-  render(delta) {
-    console.log('Time since last movement: ', delta);
-  }
+  _sprite.update = (_baseUpdate => {
+    return (delta, gameLoop) => {
+      _baseUpdate(delta, gameLoop);
+    };
+  })(_sprite.update);
+
+  return _sprite;
 }

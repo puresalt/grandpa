@@ -22,8 +22,7 @@
  * @constructor
  */
 export default function PubSub() {
-
-  const events = {};
+  const _events = {};
 
   return {
 
@@ -35,15 +34,15 @@ export default function PubSub() {
      * @returns {{unsubscribe: Function}}
      */
     subscribe: (event, callback) => {
-      if (!events.hasOwnProperty(event)) {
-        events[event] = [];
+      if (!_events.hasOwnProperty(event)) {
+        _events[event] = [];
       }
 
-      const id = events[event].push(callback) - 1;
+      const id = _events[event].push(callback) - 1;
 
       return {
         unsubscribe: () => {
-          events[event].splice(id, 1);
+          _events[event].splice(id, 1);
         }
       };
     },
@@ -58,11 +57,11 @@ export default function PubSub() {
       const filter = item => {
         return item !== callback;
       };
-      for (let key in events) {
-        if (!events.hasOwnProperty(key)) {
+      for (let key in _events) {
+        if (!_events.hasOwnProperty(key)) {
           continue;
         }
-        events[event] = events[event].filter(filter);
+        _events[event] = _events[event].filter(filter);
       }
     },
 
@@ -72,12 +71,12 @@ export default function PubSub() {
      * @param {String} event
      */
     publish: (event) => {
-      if (!events.hasOwnProperty(event)) {
+      if (!_events.hasOwnProperty(event)) {
         return;
       }
       const args = Array.prototype.slice.call(arguments);
       args.shift();
-      events[event].forEach(item => {
+      _events[event].forEach(item => {
         item.apply(this, args);
       });
     },
@@ -89,14 +88,14 @@ export default function PubSub() {
      */
     clear: (event) => {
       if (event) {
-        delete events[event];
+        delete _events[event];
         return;
       }
-      for (let key in events) {
-        if (!events.hasOwnProperty(key)) {
+      for (let key in _events) {
+        if (!_events.hasOwnProperty(key)) {
           continue;
         }
-        delete events[key];
+        delete _events[key];
       }
     }
   };

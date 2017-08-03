@@ -15,9 +15,11 @@
 
 'use strict';
 
+import GameLoop from './gameLoop';
 import StateMachine from './vendor/stateMachine';
-import input from './input';
-import KEY from './input/key';
+import inputFunction from './input';
+import inputStateFunction from './input/state';
+import playerFunction from './sprite/player';
 
 (function app() {
 
@@ -27,9 +29,9 @@ import KEY from './input/key';
     }
   };
 
-  const stateMachine = StateMachine.factory({
+  const stateMachine = new StateMachine({
     init: 'loading',
-    events: [
+    transitions: [
       {name: 'ready', from: 'loading', to: 'menu'}, // initial page loads images and sounds then transitions to 'menu'
       {name: 'start', from: 'menu', to: 'starting'}, // start a new game from the menu
       {name: 'load', from: ['starting', 'playing'], to: 'loading'}, // start loading a new leve
@@ -43,61 +45,24 @@ import KEY from './input/key';
     ]
   });
 
-  input(config.input, [
-    {
-      input: KEY.LEFT,
-      state: 'playing',
-      callback: () => {
-      }
+  stateMachine.play();
+
+  const player = playerFunction();
+
+  const inputState = inputStateFunction(player.movement/* , loadState */);
+
+  inputFunction(config.input, inputState.getEvents(), stateMachine);
+
+  const gameLoop = GameLoop({
+    render: (delta) => {
     },
-    {
-      input: KEY.RIGHT,
-      state: 'playing',
-      callback: () => {
-      }
-    },
-    {
-      input: KEY.UP,
-      state: 'playing',
-      callback: () => {
-      }
-    },
-    {
-      input: KEY.DOWN,
-      state: 'playing',
-      callback: () => {
-      }
-    },
-    {
-      input: KEY.PUNCH,
-      state: 'playing',
-      callback: () => {
-      }
-    },
-    {
-      input: KEY.KICK,
-      state: 'playing',
-      callback: () => {
-      }
-    },
-    {
-      input: KEY.JUMP,
-      state: 'playing',
-      callback: () => {
-      }
-    },
-    {
-      input: KEY.CROUCH,
-      state: 'playing',
-      callback: () => {
-      }
-    },
-    {
-      input: KEY.MENU,
-      state: 'playing',
-      callback: () => {
-      }
+    update: (delta, loop) => {
+      const movement = player.movement;
+      console.log('Fps:', loop.getRenderedFps());
+      console.log('Facing:', movement.facing);
+      console.log('Moving:', movement.moving);
     }
-  ], stateMachine);
+  });
+  gameLoop.start();
 
 })();

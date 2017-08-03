@@ -13,151 +13,132 @@
  *
  */
 
+/* jshint maxstatements:16 */
 /* globals requestAnimationFrame */
 
 'use strict';
 
 import _ from 'lodash/fp';
 
-export default class GameLoop {
+const DEFAULT_STATE = {
+  fps: 60,
+  panicLimit: 240,
+  panic: (gameLoop) => {
+    gameLoop.pause().start();
+    return true;
+  },
+  render: (gameLoop) => {
+    throw new Error(gameLoop.name + ' is missing a render callback.');
+  },
+  update: (delta, gameLoop) => {
+    throw new Error(gameLoop.name + ' is missing a render callback.', delta);
+  }
+};
+
+/**
+ * Create our Game Loop. This will delegate rendering based off of state changes.
+ *
+ * @param {Object?} options
+ */
+export default function GameLoop(options) {
+  const gameLoop = _.defaults(_.clone(DEFAULT_STATE), options || {});
+
+  let _paused = false;
+  let _delta = 0;
+  let _lastRun = 0;
+  let _lastFpsUpdate = 0;
+  let _framesThisSecond = 0;
+  let _renderingFps = gameLoop.fps;
+  let _interval = 1000 / gameLoop.fps;
+
+  Object.defineProperty(gameLoop, 'fps', {
+    set: function(value) {
+      gameLoop.fps = value;
+      _renderingFps = value;
+      _interval = 1000 / value;
+    }
+  });
+
+  gameLoop.pause = () => {
+    _paused = true;
+    _lastRun = 0;
+    _delta = 0;
+    return gameLoop;
+  };
 
   /**
+   * Resume our GameLoop.
    *
-   * @param {Object} options
+   * @returns {Object}
    */
-  constructor(options) {
-    this._paused = false;
-    this._delta = 0;
-    this._lastRun = 0;
+  gameLoop.start = () => {
+    _paused = false;
+    requestAnimationFrame(_run);
+    return gameLoop;
+  };
 
-    options = _.defaults(options || {}, {
-      fps: 60,
-      panicLimit: 240,
-      panic: function(gameLoop) {
-        gameLoop.pause().resume();
-        return true;
-      },
-      render: function(gameLoop) {
-        throw new Error(gameLoop.name + ' is missing a render callback.');
-      },
-      update: function(delta, gameLoop) {
-        throw new Error(gameLoop.name + ' is missing a render callback.', delta);
-      }
-    });
-    this.setFps(options.fps);
-    this.setUpdate(options.update);
-    this.setRender(options.render);
-    this.setPanic(options.panic);
-    this.setPanicLimit(options.panicLimit);
-  }
+  /**
+   * Get the rendered FPS.
+   *
+   * @returns {Number}
+   */
+  gameLoop.getRenderedFps = () => {
+    return _renderingFps;
+  };
 
-  pause() {
-    this._paused = true;
-    this._lastRun = 0;
-    this._delta = 0;
-    return this;
-  }
-
-  resume() {
-    this._paused = false;
-    this.run();
-    return this;
-  }
-
-  run(now) {
-    if (this._paused) {
+  /**
+   * Run our GameLoop
+   *
+   * @param {Number?} now
+   */
+  function _run(now) {
+    if (_paused) {
       return;
     }
 
     // Throttle the frame rate.
-    if (now < this._lastRun + this._interval) {
-      return requestAnimationFrame(this.run);
+    if (now < _lastRun + _interval) {
+      return requestAnimationFrame(_run);
     }
 
-    this._delta += now - this._lastRun;
-    this._lastRun = now;
+    _delta = _delta + now - _lastRun;
+    _lastRun = now;
 
-    if (this._runUpdate(now)) {
-      this._render(this);
+    _logFps(now);
+    if (_runUpdate()) {
+      gameLoop.render(gameLoop);
     }
 
-    requestAnimationFrame(this.run);
+    requestAnimationFrame(_run);
   }
 
   /**
    * Render updates between game loops. Panic if we hit too many steps.
    *
-   * @param {Number} now
    * @returns {Boolean}
    * @private
    */
-  _runUpdate(now) {
+  function _runUpdate() {
     let numUpdateSteps = 0;
-    while (this._delta >= this._interval) {
-      this._update(this._delta, this);
-      this._delta -= now;
-      numUpdateSteps += 1;
-      if (numUpdateSteps >= this._panicLimit) {
-        return this._panic(this);
+    while (_delta >= _interval) {
+      gameLoop.update(_delta, gameLoop);
+      _delta -= _interval;
+      numUpdateSteps = numUpdateSteps + 1;
+      if (numUpdateSteps >= gameLoop.panicLimit) {
+        return gameLoop.panic(gameLoop);
       }
     }
     return true;
   }
 
-  /**
-   * Set the FPS for the game loop.
-   *
-   * @param {Number} fps
-   * @returns {GameLoop}
-   */
-  setFps(fps) {
-    this._fps = fps;
-    this._interval = 1000 / this._fps;
-    return this;
+  function _logFps(now) {
+    if (now > _lastFpsUpdate + 1000) {
+      _renderingFps = 0.25 * _framesThisSecond + 0.75 * _renderingFps;
+      _lastFpsUpdate = now;
+      _framesThisSecond = 0;
+    }
+    _framesThisSecond = _framesThisSecond + 1;
   }
 
-  /**
-   * Set the panic limit of steps before panic calls instead of continuing our game loop.
-   *
-   * @param {Number} panicLimit
-   * @returns {GameLoop}
-   */
-  setPanicLimit(panicLimit) {
-    this._panicLimit = panicLimit;
-    return this;
-  }
-
-  /**
-   * Set an update command. Signature is `function(Number: delta, GameLoop: GameLoop);`
-   *
-   * @param {Function} callback
-   * @returns {GameLoop}
-   */
-  setUpdate(callback) {
-    this._update = callback;
-    return this;
-  }
-
-  /**
-   * Set an render command. Signature is `function(GameLoop: GameLoop);`
-   *
-   * @param {Function} callback
-   * @returns {GameLoop}
-   */
-  setRender(callback) {
-    this._render = callback;
-    return this;
-  }
-
-  /**
-   * Set an panic command. Signature is `function(GameLoop: GameLoop);`
-   *
-   * @param {Function} callback
-   * @returns {GameLoop}
-   */
-  setPanic(callback) {
-    this._panic = callback;
-    return this;
-  }
-
+  return gameLoop;
 }

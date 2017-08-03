@@ -17,40 +17,49 @@
 
 'use strict';
 
+/**
+ * And a callback when an element successfully loads.
+ *
+ * @param {HTMLElement} element
+ * @param {Function} callback
+ */
 function elementLoader(element, callback) {
   let loaded = false;
   element.onload = element.onreadystatechange = function() {
     if (!loaded && (!this.readyState || this.readyState === 'loaded' || this.readyState === 'complete')) {
       loaded = true;
       element.onload = element.onreadystatechange = null;
-      callback && callback();
+      callback(element);
     }
   };
 }
 
+/**
+ * Create an image from a given tileset config.
+ *
+ * @param {Object} tileset
+ * @param {Function?} callback
+ * @returns {HTMLImageElement}
+ */
 function createImageElementForTileset(tileset, callback) {
   let element = document.createElement('image');
   element.src = tileset.src;
   element.id = 'tileset-' + tileset.id;
-
-  if (callback) {
-    elementLoader(element.callback);
-  }
-
+  elementLoader(element, callback);
   return element;
 }
 
-export default function Canvas(canvas) {
+export default function canvasFunction(canvas) {
+  const _element = canvas.getContext('2d');
+  let _tilesets = {};
+  let _entities = [];
 
-  const element = canvas.getContext('2d');
-  let entities = [];
-
-  return {
+  const methods = {
     draw: () => {
-      entities.forEach(entity => {
-        let state = entity.getState();
-        let tileset = this._tilesets[state.tileset.id];
-        element.drawImage(
+      _entities.forEach(entity => {
+        const state = entity.getState();
+        const tileset = _tilesets[state.tileset.id];
+        _element.drawImage(
           tileset.image,
           state.tileset.x,
           state.tileset.y,
@@ -65,17 +74,49 @@ export default function Canvas(canvas) {
     },
 
     addEntity: (entity) => {
-      entities.push(entity);
+      _entities.push(entity);
+      return methods;
+    },
+
+    setEntities: (entities) => {
+      _entities = entities;
+      return methods;
     },
 
     removeEntity: (entity) => {
-      entities = entities.filter(item => {
+      _entities = _entities.filter(item => {
         return item.id !== entity.id;
       });
+      return methods;
     },
 
     clearEntities: () => {
-      entities = [];
+      _entities = [];
+      return methods;
+    },
+
+    setTilesets: (tilesets, ready) => {
+      const waitingFor = tilesets.length;
+      let replied = false;
+      _tilesets = {};
+      tilesets.forEach(tileset => {
+        createImageElementForTileset(tileset, (element) => {
+          _tilesets[tileset.id] = tileset;
+          _tilesets[tileset.image] = element;
+          if (!replied && _tilesets.length >= waitingFor) {
+            replied = true;
+            ready();
+          }
+        });
+      });
+      return methods;
+    },
+
+    clearTilesets: () => {
+      _tilesets = {};
+      return methods;
     }
   };
+
+  return methods;
 }

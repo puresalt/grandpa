@@ -16,8 +16,8 @@
 'use strict';
 
 const KEY = {
-  LEFT: 'LEFT',
   RIGHT: 'RIGHT',
+  LEFT: 'LEFT',
   UP: 'UP',
   DOWN: 'DOWN',
   PUNCH: 'PUNCH',

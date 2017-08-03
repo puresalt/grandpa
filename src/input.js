@@ -22,13 +22,13 @@ const allowedInputs = {
 };
 
 /**
- * Build our input.
+ * Build a factory of our allowed Inputs.
  *
  * @param {Object} config
  * @param {Array} events
  * @param {StateMachine?} context
  */
-export default function(config, events, context) {
+export default function InputFactory(config, events, context) {
   if (allowedInputs[config.type]) {
     return allowedInputs[config.type](config, events, context);
   }
