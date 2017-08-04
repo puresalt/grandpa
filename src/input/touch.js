@@ -210,7 +210,7 @@ function _handleDirectionalEvent(inputState, event, context) {
     if (touchY > radius) {
       triggered = _triggerDirectionalEvents([KEY.DOWN], inputState, event, context);
     } else {
-      triggered = _([KEY.UP]);
+      triggered = _triggerDirectionalEvents([KEY.UP], inputState, event, context);
     }
   } else {
     // Otherwise we're triggering two directions.
