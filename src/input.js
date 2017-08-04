@@ -16,21 +16,23 @@
 'use strict';
 
 import keyboardInput from './input/keyboard';
+import touchInput from './input/touch';
 
 const allowedInputs = {
-  keyboard: keyboardInput
+  keyboard: keyboardInput,
+  touch: touchInput
 };
 
 /**
  * Build a factory of our allowed Inputs.
  *
  * @param {Object} config
- * @param {Array} events
+ * @param {Object} inputState
  * @param {StateMachine?} context
  */
-export default function InputFactory(config, events, context) {
+export default function InputFactory(config, inputState, context) {
   if (allowedInputs[config.type]) {
-    return allowedInputs[config.type](config, events, context);
+    return allowedInputs[config.type](config, inputState, context);
   }
-  return allowedInputs.keyboard(config, events, context);
+  return allowedInputs.keyboard(config, inputState, context);
 }

@@ -18,7 +18,7 @@
 /* @TODO This is just for testing */
 
 import DIRECTION from './movement/direction';
-import sizer from './sizer';
+import SIZER from './sizer';
 import MathUtility from './utility/math';
 import movementFactory from './movement';
 
@@ -70,8 +70,8 @@ export default function Sprite(loadState) {
         return;
       }
 
-      const maxX = sizer.width - sizer.relativeSize(this.width);
-      const maxY = sizer.height - sizer.relativeSize(this.height);
+      const maxX = SIZER.width - SIZER.relativeSize(this.width);
+      const maxY = SIZER.height - SIZER.relativeSize(this.height);
 
       let x = this.x;
       let y = this.y;
@@ -85,32 +85,32 @@ export default function Sprite(loadState) {
 
       switch (movement.moving) {
         case DIRECTION.UP_RIGHT:
-          x = x + sizer.relativeSize(speedX);
-          y = y - sizer.relativeSize(speedY);
+          x = x + SIZER.relativeSize(speedX);
+          y = y - SIZER.relativeSize(speedY);
           break;
         case DIRECTION.UP_LEFT:
-          x = x - sizer.relativeSize(speedX);
-          y = y - sizer.relativeSize(speedY);
+          x = x - SIZER.relativeSize(speedX);
+          y = y - SIZER.relativeSize(speedY);
           break;
         case DIRECTION.DOWN_RIGHT:
-          x = x + sizer.relativeSize(speedX);
-          y = y + sizer.relativeSize(speedY);
+          x = x + SIZER.relativeSize(speedX);
+          y = y + SIZER.relativeSize(speedY);
           break;
         case DIRECTION.DOWN_LEFT:
-          x = x - sizer.relativeSize(speedX);
-          y = y + sizer.relativeSize(speedY);
+          x = x - SIZER.relativeSize(speedX);
+          y = y + SIZER.relativeSize(speedY);
           break;
         case DIRECTION.RIGHT:
-          x = x + sizer.relativeSize(speedX);
+          x = x + SIZER.relativeSize(speedX);
           break;
         case DIRECTION.LEFT:
-          x = x - sizer.relativeSize(speedX);
+          x = x - SIZER.relativeSize(speedX);
           break;
         case DIRECTION.UP:
-          y = y - sizer.relativeSize(speedY);
+          y = y - SIZER.relativeSize(speedY);
           break;
         case DIRECTION.DOWN:
-          y = y + sizer.relativeSize(speedY);
+          y = y + SIZER.relativeSize(speedY);
           break;
       }
 

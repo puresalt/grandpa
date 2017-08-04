@@ -24,47 +24,25 @@ import inputStateFactory from './input/state';
 import playerFactory from './sprite/player';
 import canvasFactory from './canvas';
 import npcFactory from './sprite/npc';
-import debug from './debug';
-import sizer from './sizer';
+import DEBUG from './debug';
+import SIZER from './sizer';
 
 (function app() {
+  const touchscreen = 'ontouchstart' in document.documentElement;
+
   const config = {
     element: {
       id: 'app'
     },
     input: {
-      type: 'keyboard'
+      type: touchscreen
+        ? 'touch'
+        : 'keyboard'
     }
   };
 
   const canvasElement = document.getElementById(config.element.id);
-  sizer.update(canvasElement);
-
-  (() => {
-    const throttle = (type, name, obj) => {
-      obj = obj || window;
-      let running = false;
-      const func = () => {
-        if (running) {
-          return;
-        }
-        running = true;
-        requestAnimationFrame(() => {
-          obj.dispatchEvent(new CustomEvent(name));
-          running = false;
-        });
-      };
-      obj.addEventListener(type, func);
-    };
-
-    /* init - you can init any event */
-    throttle('resize', 'optimizedResize');
-  })();
-
-// handle event
-  window.addEventListener('optimizedResize', () => {
-    sizer.update(canvasElement);
-  });
+  SIZER.init(canvasElement).update();
 
   const canvas = canvasFactory(canvasElement);
 
@@ -105,8 +83,7 @@ import sizer from './sizer';
   });
 
   const inputState = inputStateFactory(player.movement/* , loadState */);
-
-  const debugInput = inputFactory(config.input, inputState.getEvents(), stateMachine);
+  const debugInput = inputFactory(config.input, inputState, stateMachine);
 
   const gameLoop = gameLoopFactory({
     render(fps) {
@@ -122,11 +99,11 @@ import sizer from './sizer';
       entities.map(item => {
         item.update(fps, this);
       });
-      debug.update(player, debugInput, this);
+      DEBUG.update(player, debugInput, this);
     }
   });
 
-  debug.init(true);
+  DEBUG.init(!touchscreen);
   if (!document.hidden) {
     gameLoop.start();
   }
@@ -137,15 +114,12 @@ import sizer from './sizer';
       gameLoop.start();
     }
   });
-
   window.addEventListener('focus', () => {
     if (!document.hidden) {
       gameLoop.start();
     }
   });
-
   window.addEventListener('blur', () => {
     gameLoop.pause();
   });
-
 })();

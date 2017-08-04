@@ -17,7 +17,7 @@
 
 'use strict';
 
-import sizer from './sizer';
+import SIZER from './sizer';
 
 /**
  * And a callback when an element successfully loads.
@@ -69,8 +69,7 @@ export default function canvasFunction(element) {
      * @param {Number} fps
      */
     render(fps) {
-      console.log(sizer);
-      _element.clearRect(0, 0, sizer.width, sizer.height);
+      _element.clearRect(0, 0, SIZER.width, SIZER.height);
       _entities.sort((entity1, entity2) => {
         return entity1.x > entity2.x || (entity1.x === entity2.x && entity1.y > entity2.y);
       }).forEach(entity => {
@@ -83,8 +82,8 @@ export default function canvasFunction(element) {
           entity.height,
           entity.x,
           entity.y,
-          sizer.relativeSize(entity.width),
-          sizer.relativeSize(entity.height)
+          SIZER.relativeSize(entity.width),
+          SIZER.relativeSize(entity.height)
         );
       });
     },

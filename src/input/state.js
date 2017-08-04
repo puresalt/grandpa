@@ -15,6 +15,7 @@
 
 'use strict';
 
+import _ from 'lodash/fp';
 import KEY from './key';
 import debug from '../debug';
 
@@ -39,7 +40,7 @@ function setInitial() {
  *
  * @param {Object} movement
  * @param {{key: Object, movement: String}?} loadState
- * @returns {{getEvents: (function()), getKeys: (function()), getMovement: (function())}}
+ * @returns {{getKeys: (function()), triggerEvent: (function())}}
  */
 export default function InputState(movement, loadState) {
   let _keys = loadState || setInitial();
@@ -129,16 +130,9 @@ export default function InputState(movement, loadState) {
     }
   ];
 
-  return {
-    /**
-     * Return an array of all the defined events for movement.
-     *
-     * @returns {Array}
-     */
-    getEvents() {
-      return _events;
-    },
+  const _eventLookup = _generateEventLookup(_events);
 
+  return {
     /**
      * Get defined keys.
      *
@@ -146,6 +140,48 @@ export default function InputState(movement, loadState) {
      */
     getKeys() {
       return _keys;
+    },
+
+    /**
+     * Trigger an event, which if we do we will return true so our keyboard method can short circuit the event.
+     *
+     * @param {String} state
+     * @param {Event} event
+     * @param {String} key
+     * @param {StateMachine?} context
+     */
+    triggerEvent(state, event, key, context) {
+      if (!_eventLookup[key]) {
+        return false;
+      }
+      return _eventLookup[key].reduce((gathered, item) => {
+        if (
+          item.state
+          && context
+          && (
+            item.state !== context.state
+            || (_.isArray(item.state) && !_.indexOf(item.state, context.state))
+          )
+        ) {
+          return gathered;
+        }
+        item.trigger(state, event);
+        return true;
+      }, false);
     }
   };
+}
+
+/**
+ * Create our eventLookup matching keys to events.
+ *
+ * @param {Array} events
+ * @private
+ */
+function _generateEventLookup(events) {
+  return events.reduce((gathered, event) => {
+    gathered[event.input] = gathered[event.input] || [];
+    gathered[event.input].push(event);
+    return gathered;
+  }, {});
 }

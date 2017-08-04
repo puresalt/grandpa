@@ -13,9 +13,17 @@
  *
  */
 
+/* jshint maxstatements:17 */
+/* globals document,window */
+
 'use strict';
 
-export default {
+import EVENT from './event';
+import PUB_SUB from './pubSub';
+
+let _canvasElement = null;
+
+const SIZER = {
   defaultHeight: 720,
   defaultWidth: 1280,
   height: 720,
@@ -24,36 +32,55 @@ export default {
   maxWidth: 1920,
   ratio: 1,
   aspect: {
-    width: 16,
-    height: 9
+    height: 9,
+    width: 16
+  },
+
+  /**
+   * Set what element to use for our sizer.
+   *
+   * @param {HTMLElement} canvasElement
+   * @returns {SIZER}
+   */
+  init(canvasElement) {
+    _canvasElement = canvasElement;
+    return this;
   },
 
   /**
    * Get the desired sizing based on size of the window.
    *
-   * @param {HTMLElement} canvasElement
+   * @returns {SIZER}
    */
-  update(canvasElement) {
-    let height = document.documentElement.clientHeight;
-    let width = document.documentElement.clientWidth;
-    if (height === this.height && width === this.width) {
-      return;
+  update() {
+    if (_canvasElement === null) {
+      return this;
     }
-    if (height > this.maxHeight) {
-      height = this.maxHeight;
+    let maxHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+    let maxWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+    if (maxHeight === this.maxHeight && maxWidth === this.maxWidth) {
+      return this;
     }
-    width = Math.round((height * 16) / 9);
-    if (width > this.maxWidth) {
+    this.maxHeight = maxHeight;
+    this.maxWidth = maxWidth;
+
+    let height = this.maxHeight;
+    let width = this.maxWidth;
+    if (height / width < this.aspect.height / this.aspect.width) {
+      width = Math.round((height * 16) / 9);
+    } else {
       height = Math.round((width * 9) / 16);
     }
-    this.ratio = height / this.defaultHeight;
     this.height = height;
     this.width = width;
-    canvasElement.height = height;
-    canvasElement.width = width;
-    canvasElement.style.height = height + 'px';
-    canvasElement.style.width = width + 'px';
-    console.log(canvasElement);
+    this.ratio = this.height / this.defaultHeight;
+
+    _canvasElement.height = this.height;
+    _canvasElement.width = this.width;
+    _canvasElement.style.height = this.height + 'px';
+    _canvasElement.style.width = this.width + 'px';
+
+    PUB_SUB.publish(EVENT.RESIZE, this);
     return this;
   },
 
@@ -64,6 +91,34 @@ export default {
    * @returns {Number}
    */
   relativeSize(pixel) {
-    return pixel * this.ratio;
+    return Math.round(pixel * this.ratio);
   }
 };
+
+export default SIZER;
+
+(() => {
+  const throttle = (type, name, obj) => {
+    obj = obj || window;
+    let running = false;
+    const func = () => {
+      if (running) {
+        return;
+      }
+      running = true;
+      requestAnimationFrame(() => {
+        obj.dispatchEvent(new CustomEvent(name));
+        running = false;
+      });
+    };
+    obj.addEventListener(type, func);
+  };
+
+  /* init - you can init any event */
+  throttle('resize', 'optimizedResize');
+})();
+
+// handle event
+window.addEventListener('optimizedResize', () => {
+  SIZER.update();
+});

@@ -42,14 +42,13 @@ const _defaultConfig = {
  * our element's event listener.
  *
  * @param {Object} config
- * @param {Array} events
+ * @param {Object} inputState
  * @param {StateMachine?} context
- * @returns {Function}
+ * @returns {{getConfig: Function}}
  */
-export default function KeyboardInput(config, events, context) {
+export default function KeyboardInput(config, inputState, context) {
   const _extendedConfig = _.defaults(_defaultConfig, config || {});
-  const _invertedLookup = _generateInvertedLookup(_extendedConfig.keys);
-  const _eventLookup = _generateEventLookup(events, _invertedLookup);
+  const _eventLookup = _generateEventLookup(_extendedConfig.keys);
 
   /**
    * Helper function to add our event listener on both up and down.
@@ -61,7 +60,7 @@ export default function KeyboardInput(config, events, context) {
   const _eventListener = (state) => {
     return (event) => {
       let found = _eventLookup[event.keyCode];
-      if (!found || !_triggerEvent(state, event, found, context)) {
+      if (!found || !inputState.triggerEvent(state, event, found, context)) {
         return;
       }
       if (event.preventDefault) {
@@ -73,8 +72,11 @@ export default function KeyboardInput(config, events, context) {
     };
   };
 
-  _extendedConfig.element.addEventListener('keyup', _eventListener('release'));
-  _extendedConfig.element.addEventListener('keydown', _eventListener('press'));
+  let _press = _eventListener('press');
+  let _release = _eventListener('release');
+
+  _extendedConfig.element.addEventListener('keydown', _press);
+  _extendedConfig.element.addEventListener('keyup', _release);
 
   return {
     /**
@@ -84,63 +86,27 @@ export default function KeyboardInput(config, events, context) {
      */
     getConfig() {
       return _extendedConfig;
+    },
+
+    /**
+     * Remove our event listeners in the case that we're going to switch input.
+     */
+    remove() {
+      _extendedConfig.element.removeEventListener('kedown', _press);
+      _extendedConfig.element.removeEventListener('keup', _release);
     }
   };
-}
-
-/**
- * Generate a pre lookup flattening out our configured keys with their appropriate actions.
- *
- * @param {Array} keys
- * @returns {Object}
- */
-function _generateInvertedLookup(keys) {
-  return keys.reduce((gathered, item) => {
-    gathered[item.input] = item.keyCode;
-    return gathered;
-  }, {});
 }
 
 /**
  * Generate an event lookup.
  *
  * @param {Array} events
- * @param {Object} invertedLookup
  * @returns {Object}
- * @throws {Error}
  */
-function _generateEventLookup(events, invertedLookup) {
+function _generateEventLookup(events) {
   return events.reduce((gathered, item) => {
-    if (!invertedLookup[item.input]) {
-      throw new Error('Missing input for: ' + item.input);
-    }
-    gathered[invertedLookup[item.input]] = gathered[invertedLookup[item.input]] || [];
-    gathered[invertedLookup[item.input]].push(item);
+    gathered[item.keyCode] = item.input;
     return gathered;
   }, {});
-}
-
-/**
- * Trigger an event, which if we do we will return true so our keyboard method can short circuit the event.
- *
- * @param {String} state
- * @param {Event} event
- * @param {Array} items
- * @param {StateMachine?} context
- */
-function _triggerEvent(state, event, items, context) {
-  return items.reduce((gathered, item) => {
-    if (
-      item.state
-      && context
-      && (
-        item.state !== context.state
-        || (_.isArray(item.state) && !_.indexOf(item.state, context.state))
-      )
-    ) {
-      return gathered;
-    }
-    item.trigger(state, event);
-    return true;
-  }, false);
 }

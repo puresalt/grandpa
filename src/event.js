@@ -15,18 +15,8 @@
 
 'use strict';
 
-const KEY = {
-  DIRECTIONAL: 'DIRECTIONAL',
-  RIGHT: 'RIGHT',
-  LEFT: 'LEFT',
-  UP: 'UP',
-  DOWN: 'DOWN',
-  PUNCH: 'PUNCH',
-  KICK: 'KICK',
-  JUMP: 'JUMP',
-  CROUCH: 'CROUCH',
-  MENU: 'MENU',
-  DEBUG: 'DEBUG'
+const EVENT = {
+  RESIZE: 'RESIZE'
 };
 
-export default KEY;
+export default EVENT;

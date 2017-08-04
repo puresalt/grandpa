@@ -8,6 +8,7 @@ html, body {
     background: #000;
     height: 100%;
     width: 100%;
+    overflow: hidden;
 }
 
 canvas {
@@ -51,4 +52,45 @@ canvas {
 
 #debug-output br {
     clear: both;
+}
+
+#button-directional {
+    background: rgba(240, 0, 0, 0.5);
+    bottom: 0;
+    left: 0;
+    display: block;
+    position: absolute;
+    z-index: 1000;
+}
+
+#button-abxy {
+    bottom: 0;
+    display: block;
+    position: absolute;
+    right: 0;
+    z-index: 1000;
+}
+
+#button-abxy div {
+    float: left;
+}
+
+#button-punch {
+    background: rgba(0, 0, 240, 0.5);
+}
+
+#button-kick {
+    background: rgba(0, 240, 0, 0.5);
+}
+
+#button-jump {
+    background: rgba(240, 240, 0, 0.5);
+}
+
+#button-crouch {
+    background: rgba(0, 240, 240, 0.5);
+}
+
+#button-menu {
+    background: rgba(240, 0, 240, 0.5);
 }
