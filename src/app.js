@@ -103,7 +103,7 @@ import SIZER from './sizer';
     }
   });
 
-  DEBUG.init(!touchscreen);
+  DEBUG.init(DEBUG_FLAG);
   if (!document.hidden) {
     gameLoop.start();
   }

@@ -58,23 +58,25 @@ export default {
     }
     _overlay.style.display = 'block';
 
-    let definedKeys = inputState.getConfig().keys;
-    let keys = [
-      '<strong>KEYS:</strong><hr>'
+    const inputConfig = inputState.getConfig();
+    const inputType = inputConfig.type;
+    const definedKeys = inputState.getConfig().keys;
+    const keys = [
+      '<strong>' + (inputState.getConfig().type === 'keyboard' ? 'KEYS' : 'BUTTONS') + ':</strong><hr>'
     ];
     for (let i = 0, count = definedKeys.length; i < count; i = i + 1) {
-      keys.push(stylizeKey(definedKeys[i].input) + '<span class="on">' + inputKeyLookup(definedKeys[i].keyCode) + '</span>');
+      keys.push(stylizeKey(definedKeys[i].input) + '<span class="on">' + (inputType === 'keyboard' ? inputKeyLookup(definedKeys[i].keyCode) : '#' + definedKeys[i].element.id) + '</span>');
     }
 
-    let stats = [
+    const stats = [
       '<strong>STATE:</strong><hr>',
-      stylizeKey('fps') + stylizeValue(gameLoop.getRenderedFps())
+      stylizeKey('fps') + stylizeValue(Math.round(gameLoop.getRenderedFps() * 100) / 100)
     ];
 
-    let _movement = player.movement;
+    const movement = player.movement;
     for (let i = 0, count = _movementKeys.length; i < count; i = i + 1) {
       let key = _movementKeys[i];
-      stats.push(stylizeKey(key) + stylizeValue(_movement[key]));
+      stats.push(stylizeKey(key) + stylizeValue(movement[key]));
     }
     stats.push(stylizeKey('location') + stylizeValue('(' + player.x + ',' + player.y + ')'));
 

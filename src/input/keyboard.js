@@ -21,8 +21,8 @@ import _ from 'lodash/fp';
 import KEY from './key';
 
 const _defaultConfig = {
-  element: document,
-
+  element: document.body,
+  type: 'keyboard',
   keys: [
     {input: KEY.LEFT, keyCode: 65},
     {input: KEY.RIGHT, keyCode: 68},

@@ -25,15 +25,15 @@ import PUB_SUB from '../pubSub';
 import SIZER from '../sizer';
 
 const _defaultConfig = {
-  element: document,
-
+  type: 'touch',
   keys: [
     {input: KEY.DIRECTIONAL, element: 'directional'},
     {input: KEY.PUNCH, element: 'punch'},
     {input: KEY.KICK, element: 'kick'},
     {input: KEY.JUMP, element: 'jump'},
     {input: KEY.CROUCH, element: 'crouch'},
-    {input: KEY.MENU, element: 'menu'}
+    {input: KEY.MENU, element: 'menu'},
+    {input: KEY.DEBUG, element: 'debug'}
   ]
 };
 
