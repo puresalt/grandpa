@@ -15,6 +15,8 @@
 
 'use strict';
 
+const TO_DEGREES = (1 / Math.PI) * 180;
+
 const MathUtility = {
 
   /**
@@ -109,6 +111,21 @@ const MathUtility = {
    */
   randomNumber: (minimum, maximum) => {
     return Math.round(MathUtility.random(minimum, maximum));
+  },
+
+  /**
+   * Get the degree of a point referencing centerX and centerY.
+   *
+   * @param {Number} pointX
+   * @param {Number} pointY
+   * @param {Number?} centerX
+   * @param {Number?} centerY
+   * @returns {Number}
+   */
+  getDegreeOfPoints(pointX, pointY, centerX, centerY) {
+    centerX = centerX || 0;
+    centerY = centerY || 0;
+    return Math.atan2(pointY - centerY, pointX - centerX) * TO_DEGREES;
   }
 };
 

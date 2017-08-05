@@ -18,6 +18,7 @@
 'use strict';
 
 import _ from 'lodash/fp';
+import EVENT from '../event';
 import KEY from './key';
 
 const _defaultConfig = {
@@ -53,14 +54,14 @@ export default function KeyboardInput(config, inputState, context) {
   /**
    * Helper function to add our event listener on both up and down.
    *
-   * @param {String} state
-   * @returns {function(*=)}
+   * @param {String} direction
+   * @returns {function(*)}
    * @private
    */
-  const _eventListener = (state) => {
+  const _eventListener = (direction) => {
     return (event) => {
       let found = _eventLookup[event.keyCode];
-      if (!found || !inputState.triggerEvent(state, event, found, context)) {
+      if (!found || !inputState.triggerEvent(direction, found, context)) {
         return;
       }
       if (event.preventDefault) {
@@ -72,8 +73,8 @@ export default function KeyboardInput(config, inputState, context) {
     };
   };
 
-  let _press = _eventListener('press');
-  let _release = _eventListener('release');
+  let _press = _eventListener(EVENT.PRESS);
+  let _release = _eventListener(EVENT.RELEASE);
 
   _extendedConfig.element.addEventListener('keydown', _press);
   _extendedConfig.element.addEventListener('keyup', _release);
@@ -92,8 +93,8 @@ export default function KeyboardInput(config, inputState, context) {
      * Remove our event listeners in the case that we're going to switch input.
      */
     remove() {
-      _extendedConfig.element.removeEventListener('kedown', _press);
-      _extendedConfig.element.removeEventListener('keup', _release);
+      _extendedConfig.element.removeEventListener('keydown', _press);
+      _extendedConfig.element.removeEventListener('keyup', _release);
     }
   };
 }

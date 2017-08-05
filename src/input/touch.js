@@ -23,6 +23,7 @@ import KEY from './key';
 import EVENT from '../event';
 import PUB_SUB from '../pubSub';
 import SIZER from '../sizer';
+import MathUtility from '../utility/math';
 
 const _defaultConfig = {
   type: 'touch',
@@ -59,14 +60,13 @@ export default function TouchInput(config, inputState, context) {
    */
   const _pressEventListener = (found) => {
     return (event) => {
-      if (found === 'DIRECTIONAL') {
+      if (found === KEY.DIRECTIONAL) {
         if (!_handleDirectionalEvent(inputState, event, context)) {
           return;
         }
-      } else if (!inputState.triggerEvent('press', event, found, context)) {
+      } else if (!inputState.triggerEvent(EVENT.PRESS, found, context)) {
         return;
       }
-      console.log('cancel time!');
       if (event.preventDefault) {
         event.preventDefault();
       }
@@ -85,9 +85,7 @@ export default function TouchInput(config, inputState, context) {
    */
   const _releaseEventListener = (found) => {
     return (event) => {
-      if (found === 'DIRECTIONAL') {
-        return _triggerDirectionalEvents([], inputState, event, context);
-      } else if (!inputState.triggerEvent('release', event, found, context)) {
+      if (!inputState.triggerEvent(EVENT.RELEASE, found, context)) {
         return;
       }
       if (event.preventDefault) {
@@ -181,7 +179,7 @@ function _generateElementList(elements) {
 function _handleDirectionalEvent(inputState, event, context) {
   const element = event.target || event.srcElement;
   const diameter = element.clientWidth;
-  const radius = diameter / 2;
+  const radius = Math.round(diameter / 2);
   const clientX = element.offsetLeft;
   const clientY = element.offsetTop;
   const touchEvent = event.touches[0];
@@ -189,41 +187,11 @@ function _handleDirectionalEvent(inputState, event, context) {
   const touchY = touchEvent.clientY - clientY;
 
   // If we are within the innerDeadzone or outside of the circle then we should release our keys and return.
-  const innerDeadzone = radius * 0.2;
-  const outerDeadzone = radius * 1.2;
-
-  if (_insideCircle(touchX, touchY, radius, radius, innerDeadzone) || !_insideCircle(touchX, touchY, radius, radius, outerDeadzone)) {
-    return _triggerDirectionalEvents([], inputState, event, context);
+  if (_insideCircle(touchX, touchY, radius, radius, radius * 0.2) || !_insideCircle(touchX, touchY, radius, radius, radius)) {
+    return inputState.triggerEvent(EVENT.RELEASE, KEY.DIRECTIONAL, context);
   }
 
-  let triggered = false;
-
-  if (touchY > radius - innerDeadzone && touchY < radius + innerDeadzone) {
-    // This should be Left or Right only.
-    if (touchX > radius) {
-      triggered = _triggerDirectionalEvents([KEY.RIGHT], inputState, event, context);
-    } else {
-      triggered = _triggerDirectionalEvents([KEY.LEFT], inputState, event, context);
-    }
-  } else if (touchX > radius - innerDeadzone && touchX < radius + innerDeadzone) {
-    // Up or Down only.
-    if (touchY > radius) {
-      triggered = _triggerDirectionalEvents([KEY.DOWN], inputState, event, context);
-    } else {
-      triggered = _triggerDirectionalEvents([KEY.UP], inputState, event, context);
-    }
-  } else {
-    // Otherwise we're triggering two directions.
-    let y = touchY > radius
-      ? KEY.DOWN
-      : KEY.UP;
-    let x = touchX > radius
-      ? KEY.RIGHT
-      : KEY.LEFT;
-    return _triggerDirectionalEvents([x, y], inputState, event, context);
-  }
-
-  return triggered;
+  return inputState.triggerEvent(EVENT.PRESS, KEY.DIRECTIONAL, context, -1 * Math.round(MathUtility.getDegreeOfPoints(touchX, touchY, radius, radius)));
 }
 
 /**
@@ -261,23 +229,4 @@ function _findElementOrCreateIt(id) {
     }
   }
   return element;
-}
-
-/**
- * Trigger our direction events.
- *
- * @param {Array} toPress
- * @param {Object} inputState
- * @param {Object} event
- * @param {Object} context
- * @returns {Boolean}
- * @private
- */
-function _triggerDirectionalEvents(toPress, inputState, event, context) {
-  return _.indexOf(true, [
-    inputState.triggerEvent(_.indexOf(KEY.RIGHT, toPress) >= 0 ? 'press' : 'release', event, KEY.RIGHT, context),
-    inputState.triggerEvent(_.indexOf(KEY.LEFT, toPress) >= 0 ? 'press' : 'release', event, KEY.LEFT, context),
-    inputState.triggerEvent(_.indexOf(KEY.UP, toPress) >= 0 ? 'press' : 'release', event, KEY.UP, context),
-    inputState.triggerEvent(_.indexOf(KEY.DOWN, toPress) >= 0 ? 'press' : 'release', event, KEY.DOWN, context)
-  ]) >= 0;
 }

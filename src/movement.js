@@ -17,8 +17,8 @@
 
 'use strict';
 
-import KEY from './input/key';
 import DIRECTION from './movement/direction';
+import ANGLE from './movement/direction/angle';
 
 /**
  * Resolve any direction issues and keep the state internal.
@@ -43,54 +43,40 @@ export default function InputMovement(loadState) {
     /**
      * Resolve a given direction and trigger movement logic.
      *
-     * @param {Object} pressed
+     * @param {Number} angle
      */
-    direction(pressed) {
-      if (pressed[KEY.UP].pressed && pressed[KEY.RIGHT].pressed) {
-        this.running = false;
-        this.moving = DIRECTION.UP_RIGHT;
-        this.facing = DIRECTION.RIGHT;
-      } else if (pressed[KEY.UP].pressed && pressed[KEY.LEFT].pressed) {
-        this.running = false;
-        this.moving = DIRECTION.UP_LEFT;
-        this.facing = DIRECTION.LEFT;
-      } else if (pressed[KEY.DOWN].pressed && pressed[KEY.RIGHT].pressed) {
-        this.running = false;
-        this.moving = DIRECTION.DOWN_RIGHT;
-        this.facing = DIRECTION.RIGHT;
-      } else if (pressed[KEY.DOWN].pressed && pressed[KEY.LEFT].pressed) {
-        this.running = false;
-        this.moving = DIRECTION.DOWN_LEFT;
-        this.facing = DIRECTION.LEFT;
-      } else if (pressed[KEY.RIGHT].pressed) {
-        if (_lastRight) {
-          this.running = Date.now() - _lastRight < 100;
-          _lastRight = 0;
-        }
-        this.moving = DIRECTION.RIGHT;
-        this.facing = DIRECTION.RIGHT;
-      } else if (pressed[KEY.LEFT].pressed) {
-        if (_lastLeft) {
-          this.running = Date.now() - _lastLeft < 100;
-          _lastLeft = 0;
-        }
-        this.moving = DIRECTION.LEFT;
-        this.facing = DIRECTION.LEFT;
-      } else if (pressed[KEY.UP].pressed) {
-        this.running = false;
-        this.moving = DIRECTION.UP;
-      } else if (pressed[KEY.DOWN].pressed) {
-        this.running = false;
-        this.moving = DIRECTION.DOWN;
-      } else {
+    direction(angle) {
+      this.moving = angle;
+      if (this.moving === null) {
         if (this.facing === DIRECTION.RIGHT) {
           _lastRight = Date.now();
           this.running = false;
-        } else if (this.facing === DIRECTION.LEFT) {
+        } else {
           _lastLeft = Date.now();
           this.running = false;
         }
-        this.moving = null;
+      } else if (this.moving <= ANGLE[DIRECTION.UP] && this.moving >= ANGLE[DIRECTION.DOWN]) {
+        if (this.facing !== DIRECTION.RIGHT) {
+          this.running = false;
+        }
+        if (this.moving < ANGLE[DIRECTION.UP_RIGHT] && this.moving > ANGLE[DIRECTION.DOWN_RIGHT]) {
+          if (_lastRight) {
+            this.running = Date.now() - _lastRight < 100;
+            _lastRight = 0;
+          }
+        }
+        this.facing = DIRECTION.RIGHT;
+      } else {
+        if (this.facing !== DIRECTION.LEFT) {
+          this.running = false;
+        }
+        if (this.moving > ANGLE[DIRECTION.UP_LEFT] || this.moving < ANGLE[DIRECTION.DOWN_RIGHT]) {
+          if (_lastLeft) {
+            this.running = Date.now() - _lastLeft < 100;
+            _lastLeft = 0;
+          }
+        }
+        this.facing = DIRECTION.LEFT;
       }
     },
 

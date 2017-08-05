@@ -17,6 +17,7 @@
 
 import _ from 'lodash/fp';
 import DIRECTION from '../movement/direction';
+import ANGLE from '../movement/direction/angle';
 import MathUtility from '../utility/math';
 import baseSpriteFactory from '../sprite';
 
@@ -45,14 +46,14 @@ export default function Npc(loadState) {
 
       if (MathUtility.randomBoolean()) {
         this.movement.moving = MathUtility.randomChoice([
-          DIRECTION.UP_RIGHT,
-          DIRECTION.UP_LEFT,
-          DIRECTION.DOWN_RIGHT,
-          DIRECTION.DOWN_LEFT,
-          DIRECTION.RIGHT,
-          DIRECTION.LEFT,
-          DIRECTION.UP,
-          DIRECTION.DOWN,
+          ANGLE[DIRECTION.UP_RIGHT],
+          ANGLE[DIRECTION.UP_LEFT],
+          ANGLE[DIRECTION.DOWN_RIGHT],
+          ANGLE[DIRECTION.DOWN_LEFT],
+          ANGLE[DIRECTION.RIGHT],
+          ANGLE[DIRECTION.LEFT],
+          ANGLE[DIRECTION.UP],
+          ANGLE[DIRECTION.DOWN],
           null
         ]);
       }

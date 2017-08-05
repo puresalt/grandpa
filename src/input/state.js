@@ -13,10 +13,15 @@
  *
  */
 
+/* jshint maxcomplexity: 9 */
+
 'use strict';
 
 import _ from 'lodash/fp';
+import DIRECTION from '../movement/direction';
+import EVENT from '../event';
 import KEY from './key';
+import ANGLE from '../movement/direction/angle';
 import debug from '../debug';
 
 /**
@@ -30,7 +35,7 @@ function setInitial() {
     if (!KEY.hasOwnProperty(key)) {
       continue;
     }
-    keys[key] = {pressed: false};
+    keys[key] = false;
   }
   return keys;
 }
@@ -45,17 +50,30 @@ function setInitial() {
 export default function InputState(movement, loadState) {
   let _keys = loadState || setInitial();
 
-  /**
-   * Send a call to movement with all keys pressed, including this key's pressed state.
-   *
-   * @param {String} key
-   * @returns {function(*)}
-   * @private
-   */
-  const _movementDirection = (key) => {
+  const _toggleDirectionalAction = (key) => {
     return (direction) => {
-      _keys[key].pressed = direction === 'press';
-      movement.direction(_keys);
+      _keys[key] = direction === EVENT.PRESS;
+
+      let angle = null;
+      if (_keys[KEY.RIGHT] && _keys[KEY.UP]) {
+        angle = ANGLE[DIRECTION.UP_RIGHT];
+      } else if (_keys[KEY.RIGHT] && _keys[KEY.DOWN]) {
+        angle = ANGLE[DIRECTION.DOWN_RIGHT];
+      } else if (_keys[KEY.LEFT] && _keys[KEY.UP]) {
+        angle = ANGLE[DIRECTION.UP_LEFT];
+      } else if (_keys[KEY.LEFT] && _keys[KEY.DOWN]) {
+        angle = ANGLE[DIRECTION.DOWN_LEFT];
+      } else if (_keys[KEY.RIGHT]) {
+        angle = ANGLE[DIRECTION.RIGHT];
+      } else if (_keys[KEY.LEFT]) {
+        angle = ANGLE[DIRECTION.LEFT];
+      } else if (_keys[KEY.UP]) {
+        angle = ANGLE[DIRECTION.UP];
+      } else if (_keys[KEY.DOWN]) {
+        angle = ANGLE[DIRECTION.DOWN];
+      }
+
+      movement.direction(angle);
     };
   };
 
@@ -69,31 +87,38 @@ export default function InputState(movement, loadState) {
    */
   const _toggleMovementAction = (key, action) => {
     return (direction) => {
-      _keys[key].pressed = direction === 'press';
-      movement[action](_keys[key].pressed);
+      _keys[key] = direction === EVENT.PRESS;
+      movement[action](_keys[key]);
     };
   };
 
   const _events = [
     {
-      input: KEY.LEFT,
+      input: KEY.DIRECTIONAL,
       state: 'playing',
-      trigger: _movementDirection(KEY.LEFT)
+      trigger: (direction, angle) => {
+        movement.direction(direction === EVENT.PRESS ? angle : null);
+      }
     },
     {
       input: KEY.RIGHT,
       state: 'playing',
-      trigger: _movementDirection(KEY.RIGHT)
+      trigger: _toggleDirectionalAction(KEY.RIGHT)
+    },
+    {
+      input: KEY.LEFT,
+      state: 'playing',
+      trigger: _toggleDirectionalAction(KEY.LEFT)
     },
     {
       input: KEY.UP,
       state: 'playing',
-      trigger: _movementDirection(KEY.UP)
+      trigger: _toggleDirectionalAction(KEY.UP)
     },
     {
       input: KEY.DOWN,
       state: 'playing',
-      trigger: _movementDirection(KEY.DOWN)
+      trigger: _toggleDirectionalAction(KEY.DOWN)
     },
     {
       input: KEY.PUNCH,
@@ -125,7 +150,7 @@ export default function InputState(movement, loadState) {
     {
       input: KEY.DEBUG,
       trigger: (direction) => {
-        debug.toggle(direction === 'press');
+        debug.toggle(direction === EVENT.PRESS);
       }
     }
   ];
@@ -145,12 +170,12 @@ export default function InputState(movement, loadState) {
     /**
      * Trigger an event, which if we do we will return true so our keyboard method can short circuit the event.
      *
-     * @param {String} state
-     * @param {Event} event
+     * @param {String} direction
      * @param {String} key
      * @param {StateMachine?} context
+     * @param {Array} args
      */
-    triggerEvent(state, event, key, context) {
+    triggerEvent(direction, key, context, ...args) {
       if (!_eventLookup[key]) {
         return false;
       }
@@ -165,7 +190,7 @@ export default function InputState(movement, loadState) {
         ) {
           return gathered;
         }
-        item.trigger(state, event);
+        item.trigger.apply(this, [direction].concat(args));
         return true;
       }, false);
     }

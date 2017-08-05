@@ -18,6 +18,7 @@
 /* @TODO This is just for testing */
 
 import DIRECTION from './movement/direction';
+import ANGLE from './movement/direction/angle';
 import SIZER from './sizer';
 import MathUtility from './utility/math';
 import movementFactory from './movement';
@@ -66,7 +67,7 @@ export default function Sprite(loadState) {
     detectMovement() {
       const movement = this.movement;
 
-      if (movement.stunned) {
+      if (movement.stunned || movement.moving === null) {
         return;
       }
 
@@ -83,37 +84,47 @@ export default function Sprite(loadState) {
         speedY = Math.round(speedY * 1.75);
       }
 
-      switch (movement.moving) {
-        case DIRECTION.UP_RIGHT:
+      if (movement.moving === ANGLE[DIRECTION.RIGHT]) {
+        x = x + SIZER.relativeSize(speedX);
+      } else if (movement.moving === ANGLE[DIRECTION.LEFT]) {
+        x = x - SIZER.relativeSize(speedX);
+      } else if (movement.moving === ANGLE[DIRECTION.UP]) {
+        y = y - SIZER.relativeSize(speedY);
+      } else if (movement.moving === ANGLE[DIRECTION.DOWN]) {
+        y = y + SIZER.relativeSize(speedY);
+      } else if (movement.moving >= ANGLE[DIRECTION.RIGHT] && movement.moving < ANGLE[DIRECTION.UP]) {
+        if (movement.moving <= ANGLE[DIRECTION.UP_RIGHT]) {
           x = x + SIZER.relativeSize(speedX);
+          y = y - SIZER.relativeSize(speedY * Math.abs(movement.moving / ANGLE[DIRECTION.UP_RIGHT]));
+        } else {
+          x = x + SIZER.relativeSize(speedY * Math.abs(movement.moving / ANGLE[DIRECTION.UP]));
           y = y - SIZER.relativeSize(speedY);
-          break;
-        case DIRECTION.UP_LEFT:
-          x = x - SIZER.relativeSize(speedX);
-          y = y - SIZER.relativeSize(speedY);
-          break;
-        case DIRECTION.DOWN_RIGHT:
+        }
+      } else if (movement.moving < ANGLE[DIRECTION.RIGHT] && movement.moving >= ANGLE[DIRECTION.DOWN]) {
+        if (movement.moving >= ANGLE[DIRECTION.DOWN_RIGHT]) {
           x = x + SIZER.relativeSize(speedX);
+          y = y + SIZER.relativeSize(speedY * Math.abs(movement.moving / ANGLE[DIRECTION.DOWN_RIGHT]));
+        } else {
+          x = x + SIZER.relativeSize(speedY * Math.abs(movement.moving / ANGLE[DIRECTION.UP]));
           y = y + SIZER.relativeSize(speedY);
-          break;
-        case DIRECTION.DOWN_LEFT:
+        }
+      } else if (movement.moving >= ANGLE[DIRECTION.UP] && movement.moving < ANGLE[DIRECTION.LEFT]) {
+        if (movement.moving < ANGLE[DIRECTION.UP_LEFT]) {
           x = x - SIZER.relativeSize(speedX);
-          y = y + SIZER.relativeSize(speedY);
-          break;
-        case DIRECTION.RIGHT:
-          x = x + SIZER.relativeSize(speedX);
-          break;
-        case DIRECTION.LEFT:
-          x = x - SIZER.relativeSize(speedX);
-          break;
-        case DIRECTION.UP:
+          y = y - SIZER.relativeSize(speedY * Math.abs(movement.moving / ANGLE[DIRECTION.UP_LEFT]));
+        } else {
+          x = x - SIZER.relativeSize(speedY * Math.abs(movement.moving / ANGLE[DIRECTION.LEFT]));
           y = y - SIZER.relativeSize(speedY);
-          break;
-        case DIRECTION.DOWN:
+        }
+      } else {
+        if (movement.moving >= ANGLE[DIRECTION.DOWN_LEFT]) {
+          x = x - SIZER.relativeSize(speedX);
+          y = y + SIZER.relativeSize(speedY * Math.abs(movement.moving / ANGLE[DIRECTION.LEFT]));
+        } else {
+          x = x - SIZER.relativeSize(speedY * Math.abs(movement.moving / ANGLE[DIRECTION.LEFT]));
           y = y + SIZER.relativeSize(speedY);
-          break;
+        }
       }
-
       this.x = MathUtility.minMax(x, 0, maxX);
       this.y = MathUtility.minMax(y, 0, maxY);
     }
