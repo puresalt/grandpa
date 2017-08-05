@@ -17,6 +17,8 @@
 
 import _ from 'lodash/fp';
 import baseSpriteFactory from '../sprite';
+import DIRECTION from '../movement/direction';
+import ANGLE from '../movement/direction/angle';
 import SIZER from '../sizer';
 import MathUtility from '../utility/math';
 
@@ -65,8 +67,11 @@ export default function Player(loadState) {
     render(canvas, tileset) {
       baseSprite.render.call(this, canvas, tileset);
       if (this.movement.jumping) {
-        _drawEllipse(canvas, Math.round(this.x + (SIZER.relativeSize(this.width) / 2)), Math.round(this.y - SIZER.relativeSize(this.movement.jumpHeight)), SIZER.relativeSize(80), SIZER.relativeSize(20), this.movement.moving);
-        _drawEllipse(canvas, Math.round(this.x + (SIZER.relativeSize(this.width) / 2)), Math.round(this.y + SIZER.relativeSize(this.height)), SIZER.relativeSize(200), SIZER.relativeSize(50), this.movement.moving);
+        let degree = this.movement.moving === null
+          ? ANGLE[DIRECTION.UP]
+          : parseInt(this.movement.moving);
+        _drawEllipse(canvas, Math.round(this.x + (SIZER.relativeSize(this.width) / 2)), Math.round(this.y - SIZER.relativeSize(this.movement.jumpHeight)), SIZER.relativeSize(80), SIZER.relativeSize(20), degree);
+        _drawEllipse(canvas, Math.round(this.x + (SIZER.relativeSize(this.width) / 2)), Math.round(this.y + SIZER.relativeSize(this.height)), SIZER.relativeSize(200), SIZER.relativeSize(50), degree);
       }
     }
   }), loadState || {});
@@ -118,4 +123,13 @@ function _drawEllipse(canvas, centerX, centerY, width, height, degree) {
   );
   canvas.closePath();
   canvas.fill();
+}
+
+function _getPointAlongEllipse(canvas, centerX, centerY, width, height, degree) {
+  if (degree < 0) {
+    degree = 360 + degree;
+  }
+  const angle = -1 * (degree * Math.PI * 2) / 360;
+  const landingX = centerX - (height * Math.sin(angle)) * Math.sin(0) + (width * Math.cos(angle)) * Math.cos(0);
+  const landingY = centerY + (width * Math.cos(angle)) * Math.sin(0) + (height * Math.sin(angle)) * Math.cos(0);
 }
