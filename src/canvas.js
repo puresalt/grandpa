@@ -72,19 +72,8 @@ export default function canvasFunction(element) {
       _element.clearRect(0, 0, SIZER.width, SIZER.height);
       _entities.sort((entity1, entity2) => {
         return entity1.x > entity2.x || (entity1.x === entity2.x && entity1.y > entity2.y);
-      }).forEach(entity => {
-        const tileset = _tilesets[entity.tileset.id];
-        _element.drawImage(
-          tileset.image,
-          entity.tileset.x,
-          entity.tileset.y,
-          entity.width,
-          entity.height,
-          entity.x,
-          entity.y,
-          SIZER.relativeSize(entity.width),
-          SIZER.relativeSize(entity.height)
-        );
+      }).forEach(function(entity) {
+        entity.render(_element, _tilesets[entity.tileset.id], fps);
       });
     },
 

@@ -59,8 +59,22 @@ export default function Sprite(loadState) {
     /**
      * Render an update.
      */
-    update() {
+    update(fps) {
 
+    },
+
+    render(canvas, tileset) {
+      canvas.drawImage(
+        tileset.image,
+        this.tileset.x,
+        this.tileset.y,
+        this.width,
+        this.height,
+        this.x,
+        this.y,
+        SIZER.relativeSize(this.width),
+        SIZER.relativeSize(this.height)
+      );
     },
 
     /**

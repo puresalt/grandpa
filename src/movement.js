@@ -92,18 +92,14 @@ export default function InputMovement(loadState) {
     /**
      * Try and jump.
      *
-     * @param {Boolean} active;
+     * @param {Boolean} active
+     * @param {Boolean} alreadyFired
      */
-    jump(active) {
-      if (!active || this.jumping > 0) {
+    jump(active, alreadyFired) {
+      if (!active || this.jump === true || this.jumping > 0 || alreadyFired) {
         return;
       }
       this.jumping = 30;
-      switch (this.moving) {
-        case DIRECTION.UP_LEFT:
-
-          break;
-      }
     },
 
     /**

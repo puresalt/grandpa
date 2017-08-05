@@ -50,7 +50,14 @@ function setInitial() {
 export default function InputState(movement, loadState) {
   let _keys = loadState || setInitial();
 
-  const _toggleDirectionalAction = (key) => {
+  /**
+   * Hold a directional action based on key presses.
+   *
+   * @param key
+   * @returns {function(*)}
+   * @private
+   */
+  const _holdDirectionalAction = (key) => {
     return (direction) => {
       _keys[key] = direction === EVENT.PRESS;
 
@@ -85,10 +92,11 @@ export default function InputState(movement, loadState) {
    * @returns {function(*)}
    * @private
    */
-  const _toggleMovementAction = (key, action) => {
+  const _triggerDirectionalAction = (key, action) => {
     return (direction) => {
+      const alreadyFired = _keys[key];
       _keys[key] = direction === EVENT.PRESS;
-      movement[action](_keys[key]);
+      movement[action](_keys[key], alreadyFired);
     };
   };
 
@@ -103,42 +111,42 @@ export default function InputState(movement, loadState) {
     {
       input: KEY.RIGHT,
       state: 'playing',
-      trigger: _toggleDirectionalAction(KEY.RIGHT)
+      trigger: _holdDirectionalAction(KEY.RIGHT)
     },
     {
       input: KEY.LEFT,
       state: 'playing',
-      trigger: _toggleDirectionalAction(KEY.LEFT)
+      trigger: _holdDirectionalAction(KEY.LEFT)
     },
     {
       input: KEY.UP,
       state: 'playing',
-      trigger: _toggleDirectionalAction(KEY.UP)
+      trigger: _holdDirectionalAction(KEY.UP)
     },
     {
       input: KEY.DOWN,
       state: 'playing',
-      trigger: _toggleDirectionalAction(KEY.DOWN)
+      trigger: _holdDirectionalAction(KEY.DOWN)
     },
     {
       input: KEY.PUNCH,
       state: 'playing',
-      trigger: _toggleMovementAction(KEY.PUNCH, 'punch')
+      trigger: _triggerDirectionalAction(KEY.PUNCH, 'punch')
     },
     {
       input: KEY.KICK,
       state: 'playing',
-      trigger: _toggleMovementAction(KEY.KICK, 'kick')
+      trigger: _triggerDirectionalAction(KEY.KICK, 'kick')
     },
     {
       input: KEY.JUMP,
       state: 'playing',
-      trigger: _toggleMovementAction(KEY.JUMP, 'jump')
+      trigger: _triggerDirectionalAction(KEY.JUMP, 'jump')
     },
     {
       input: KEY.CROUCH,
       state: 'playing',
-      trigger: _toggleMovementAction(KEY.CROUCH, 'crouch')
+      trigger: _triggerDirectionalAction(KEY.CROUCH, 'crouch')
     },
     {
       input: KEY.MENU,
