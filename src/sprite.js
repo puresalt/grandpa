@@ -100,7 +100,7 @@ export default function Sprite(loadState) {
           x = x + SIZER.relativeSize(speedX);
           y = y - SIZER.relativeSize(speedY * ((movingAbs - ANGLE[DIRECTION.RIGHT]) / DEGREES_PER_SLICE));
         } else {
-          x = x + SIZER.relativeSize(speedX / ((movingAbs - ANGLE[DIRECTION.RIGHT]) / DEGREES_PER_SLICE));
+          x = x + SIZER.relativeSize(speedX * (1 - ((movingAbs - ANGLE[DIRECTION.UP_RIGHT]) / DEGREES_PER_SLICE)));
           y = y - SIZER.relativeSize(speedY);
         }
       } else if (movement.moving <= ANGLE[DIRECTION.RIGHT] && movement.moving >= ANGLE[DIRECTION.DOWN]) {
@@ -108,23 +108,23 @@ export default function Sprite(loadState) {
           x = x + SIZER.relativeSize(speedX);
           y = y + SIZER.relativeSize(speedY * ((movingAbs - ANGLE[DIRECTION.RIGHT]) / DEGREES_PER_SLICE));
         } else {
-          x = x + SIZER.relativeSize(speedX / ((movingAbs - ANGLE[DIRECTION.RIGHT]) / DEGREES_PER_SLICE));
+          x = x + SIZER.relativeSize(speedX * (1 - ((movingAbs - ANGLE[DIRECTION.UP_RIGHT]) / DEGREES_PER_SLICE)));
           y = y + SIZER.relativeSize(speedY);
         }
       } else if (movement.moving >= ANGLE[DIRECTION.UP] && movement.moving < ANGLE[DIRECTION.LEFT]) {
         if (movement.moving >= ANGLE[DIRECTION.UP_LEFT]) {
           x = x - SIZER.relativeSize(speedX);
-          y = y - SIZER.relativeSize(speedY * ((movingAbs - ANGLE[DIRECTION.UP]) / DEGREES_PER_SLICE));
+          y = y - SIZER.relativeSize(speedY * (1 - ((movingAbs - ANGLE[DIRECTION.UP_LEFT]) / DEGREES_PER_SLICE)));
         } else {
-          x = x - SIZER.relativeSize(speedX / ((movingAbs - ANGLE[DIRECTION.UP]) / DEGREES_PER_SLICE));
+          x = x - SIZER.relativeSize(speedX * ((movingAbs - ANGLE[DIRECTION.UP]) / DEGREES_PER_SLICE));
           y = y - SIZER.relativeSize(speedY);
         }
       } else {
         if (movement.moving <= ANGLE[DIRECTION.DOWN_LEFT]) {
           x = x - SIZER.relativeSize(speedX);
-          y = y + SIZER.relativeSize(speedY * ((movingAbs - ANGLE[DIRECTION.UP]) / DEGREES_PER_SLICE));
+          y = y + SIZER.relativeSize(speedY * (1 - ((movingAbs - ANGLE[DIRECTION.UP_LEFT]) / DEGREES_PER_SLICE)));
         } else {
-          x = x - SIZER.relativeSize(speedX / ((movingAbs - ANGLE[DIRECTION.UP]) / DEGREES_PER_SLICE));
+          x = x - SIZER.relativeSize(speedX * ((movingAbs - ANGLE[DIRECTION.UP]) / DEGREES_PER_SLICE));
           y = y + SIZER.relativeSize(speedY);
         }
       }
