@@ -65,8 +65,8 @@ export default function Player(loadState) {
     render(canvas, tileset) {
       baseSprite.render.call(this, canvas, tileset);
       if (this.movement.jumping) {
-        _drawEllipse(canvas, Math.round(this.x + (SIZER.relativeSize(this.width) / 2)), Math.round(this.y - SIZER.relativeSize(this.movement.jumpHeight)), 80, 20, this.movement.moving);
-        _drawEllipse(canvas, Math.round(this.x + (SIZER.relativeSize(this.width) / 2)), Math.round(this.y + SIZER.relativeSize(this.height)), 200, 50, this.movement.moving);
+        _drawEllipse(canvas, Math.round(this.x + (SIZER.relativeSize(this.width) / 2)), Math.round(this.y - SIZER.relativeSize(this.movement.jumpHeight)), SIZER.relativeSize(80), SIZER.relativeSize(20), this.movement.moving);
+        _drawEllipse(canvas, Math.round(this.x + (SIZER.relativeSize(this.width) / 2)), Math.round(this.y + SIZER.relativeSize(this.height)), SIZER.relativeSize(200), SIZER.relativeSize(50), this.movement.moving);
       }
     }
   }), loadState || {});

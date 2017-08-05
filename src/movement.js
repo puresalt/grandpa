@@ -31,7 +31,7 @@ export default function InputMovement(loadState) {
   let _lastRight = 0;
   let _lastLeft = 0;
   return Object.assign(Object.create({
-    jumpHeight: Math.round(60 * 0.75),
+    jumpHeight: 30,
     crouching: false,
     facing: DIRECTION.RIGHT,
     kicking: false,
