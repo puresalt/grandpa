@@ -31,6 +31,7 @@ export default function InputMovement(loadState) {
   let _lastRight = 0;
   let _lastLeft = 0;
   return Object.assign(Object.create({
+    jumpHeight: Math.round(60 * 0.75),
     crouching: false,
     facing: DIRECTION.RIGHT,
     kicking: false,
@@ -96,10 +97,10 @@ export default function InputMovement(loadState) {
      * @param {Boolean} alreadyFired
      */
     jump(active, alreadyFired) {
-      if (!active || this.jump === true || this.jumping > 0 || alreadyFired) {
+      if (!active || this.jumping > 0 || alreadyFired) {
         return;
       }
-      this.jumping = 30;
+      this.jumping = this.jumpHeight;
     },
 
     /**

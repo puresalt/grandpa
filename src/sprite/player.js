@@ -65,49 +65,57 @@ export default function Player(loadState) {
     render(canvas, tileset) {
       baseSprite.render.call(this, canvas, tileset);
       if (this.movement.jumping) {
-        if (!DEBUG_FLAG) {
-          return;
-        }
-        const centerX = Math.round(this.x + (SIZER.relativeSize(this.width) / 2));
-        const centerY = Math.round(this.y + SIZER.relativeSize(this.height));
-        canvas.beginPath();
-        const height = SIZER.relativeSize(50);
-        const width = SIZER.relativeSize(200);
-        for (let i = 0; i < 2 * Math.PI; i = i + 0.01) {
-          const pointX = centerX - (height * Math.sin(i)) * Math.sin(0) + (width * Math.cos(i)) * Math.cos(0);
-          const pointY = centerY + (width * Math.cos(i)) * Math.sin(0) + (height * Math.sin(i)) * Math.cos(0);
-          if (!i) {
-            canvas.moveTo(pointX, pointY);
-          } else {
-            canvas.lineTo(pointX, pointY);
-          }
-        }
-        canvas.lineWidth = 2;
-        canvas.strokeStyle = '#080';
-        canvas.stroke();
-        canvas.closePath();
-        let degree = this.movement.moving;
-        if (degree < 0) {
-          degree = 360 + degree;
-        }
-        const angle = -1 * (degree * Math.PI * 2) / 360;
-        const landingX = centerX - (height * Math.sin(angle)) * Math.sin(0) + (width * Math.cos(angle)) * Math.cos(0);
-        const landingY = centerY + (width * Math.cos(angle)) * Math.sin(0) + (height * Math.sin(angle)) * Math.cos(0);
-        canvas.beginPath();
-        canvas.arc(
-          landingX,
-          landingY,
-          20,
-          10,
-          0,
-          Math.PI * 2,
-          true
-        );
-        canvas.closePath();
-        canvas.fill();
+        _drawEllipse(canvas, Math.round(this.x + (SIZER.relativeSize(this.width) / 2)), Math.round(this.y - SIZER.relativeSize(this.movement.jumpHeight)), 80, 20, this.movement.moving);
+        _drawEllipse(canvas, Math.round(this.x + (SIZER.relativeSize(this.width) / 2)), Math.round(this.y + SIZER.relativeSize(this.height)), 200, 50, this.movement.moving);
       }
     }
   }), loadState || {});
 
   return player;
+}
+
+/**
+ * Draw an ellipse on a canvas based off of the sizing.
+ *
+ * @param {CanvasRenderingContext2D} canvas
+ * @param {Number} centerX
+ * @param {Number} centerY
+ * @param {Number} width
+ * @param {Number} height
+ * @param {Number} degree
+ * @private
+ */
+function _drawEllipse(canvas, centerX, centerY, width, height, degree) {
+  canvas.beginPath();
+  for (let i = 0; i < 2 * Math.PI; i = i + 0.01) {
+    const pointX = centerX - (height * Math.sin(i)) * Math.sin(0) + (width * Math.cos(i)) * Math.cos(0);
+    const pointY = centerY + (width * Math.cos(i)) * Math.sin(0) + (height * Math.sin(i)) * Math.cos(0);
+    if (!i) {
+      canvas.moveTo(pointX, pointY);
+    } else {
+      canvas.lineTo(pointX, pointY);
+    }
+  }
+  canvas.lineWidth = 2;
+  canvas.strokeStyle = '#080';
+  canvas.stroke();
+  canvas.closePath();
+  if (degree < 0) {
+    degree = 360 + degree;
+  }
+  const angle = -1 * (degree * Math.PI * 2) / 360;
+  const landingX = centerX - (height * Math.sin(angle)) * Math.sin(0) + (width * Math.cos(angle)) * Math.cos(0);
+  const landingY = centerY + (width * Math.cos(angle)) * Math.sin(0) + (height * Math.sin(angle)) * Math.cos(0);
+  canvas.beginPath();
+  canvas.arc(
+    landingX,
+    landingY,
+    SIZER.relativeSize(10),
+    SIZER.relativeSize(5),
+    0,
+    Math.PI * 2,
+    true
+  );
+  canvas.closePath();
+  canvas.fill();
 }
