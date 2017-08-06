@@ -24,6 +24,7 @@ import EVENT from '../event';
 import PUB_SUB from '../pubSub';
 import SIZER from '../sizer';
 import MathUtility from '../utility/math';
+const INNER_DEADZONE = 0.1;
 
 const _defaultConfig = {
   type: 'touch',
@@ -187,7 +188,7 @@ function _handleDirectionalEvent(inputState, event, context) {
   const touchY = touchEvent.clientY - clientY;
 
   // If we are within the innerDeadzone or outside of the circle then we should release our keys and return.
-  if (_insideCircle(touchX, touchY, radius, radius, radius * 0.2) || !_insideCircle(touchX, touchY, radius, radius, radius)) {
+  if (_insideCircle(touchX, touchY, radius, radius, radius * INNER_DEADZONE) || !_insideCircle(touchX, touchY, radius, radius, radius)) {
     return inputState.triggerEvent(EVENT.RELEASE, KEY.DIRECTIONAL, context);
   }
 

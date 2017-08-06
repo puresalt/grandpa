@@ -51,34 +51,38 @@ export default function InputMovement(loadState) {
       if (this.moving === null) {
         if (this.facing === DIRECTION.RIGHT) {
           _lastRight = Date.now();
+          _lastLeft = 0;
           this.running = false;
         } else {
+          _lastRight = 0;
           _lastLeft = Date.now();
           this.running = false;
         }
-      } else if (this.moving <= ANGLE[DIRECTION.UP] && this.moving >= ANGLE[DIRECTION.DOWN]) {
+        return;
+      }
+      if (this.moving <= ANGLE[DIRECTION.UP] && this.moving >= ANGLE[DIRECTION.DOWN]) {
         if (this.facing !== DIRECTION.RIGHT) {
           this.running = false;
         }
-        if (this.moving < ANGLE[DIRECTION.UP_RIGHT] && this.moving > ANGLE[DIRECTION.DOWN_RIGHT]) {
-          if (_lastRight) {
-            this.running = Date.now() - _lastRight < 100;
-            _lastRight = 0;
-          }
+        if (this.moving < ANGLE[DIRECTION.UP_RIGHT] && this.moving > ANGLE[DIRECTION.DOWN_RIGHT] && _lastRight) {
+          this.running = Date.now() - _lastRight < 100;
+        } else if (this.moving >= ANGLE[DIRECTION.UP_RIGHT] || this.moving <= ANGLE[DIRECTION.DOWN_RIGHT]) {
+          this.running = false;
         }
         this.facing = DIRECTION.RIGHT;
       } else {
         if (this.facing !== DIRECTION.LEFT) {
           this.running = false;
         }
-        if (this.moving > ANGLE[DIRECTION.UP_LEFT] || this.moving < ANGLE[DIRECTION.DOWN_RIGHT]) {
-          if (_lastLeft) {
-            this.running = Date.now() - _lastLeft < 100;
-            _lastLeft = 0;
-          }
+        if (this.moving > ANGLE[DIRECTION.UP_LEFT] || this.moving < ANGLE[DIRECTION.DOWN_RIGHT] && _lastLeft) {
+          this.running = Date.now() - _lastLeft < 100;
+        } else if (this.moving <= ANGLE[DIRECTION.UP_LEFT] || this.moving >= ANGLE[DIRECTION.DOWN_RIGHT]) {
+          this.running = false;
         }
         this.facing = DIRECTION.LEFT;
       }
+      _lastLeft = 0;
+      _lastRight = 0;
     },
 
     /**
