@@ -97,14 +97,11 @@ export default function Sprite(loadState) {
         const peak = _ellipsePoint(jumpEllipsePoint, SIZER.relativeSize(100), SIZER.relativeSize(25), degree);
         const destination = _ellipsePoint(origin, SIZER.relativeSize(200), SIZER.relativeSize(50), degree);
         this.destinationPoint = destination;
-
         const t = 0.55;
         this.controlPoint = {
           x: Math.round((peak.x / (2 * t * (1 - t))) - (origin.x * t / (2 * (1 - t))) - (destination.x * (1 - t ) / (2 * t))),
           y: Math.round((peak.y / (2 * t * (1 - t))) - (origin.y * t / (2 * (1 - t))) - (destination.y * (1 - t ) / (2 * t)))
         };
-
-        console.log({origin: origin, peak: peak, destination: destination, controlPoint: this.controlPoint});
       }
 
       this.movement.jumping = MathUtility.coolDown(this.movement.jumping);
@@ -112,11 +109,6 @@ export default function Sprite(loadState) {
         this.controlPoint = null;
         this.destinationPoint = null;
       }
-
-      //    const t = 0.5; // given example value
-      //     const x = (1 - t) * (1 - t) * startPoint.x + 2 * (1 - t) * t * controlPoint.x + t * t * endPoint.x;
-      //   const y = (1 - t) * (1 - t) * startPoint.y + 2 * (1 - t) * t * controlPoint.y + t * t * endPoint.y;
-
     },
 
     /**

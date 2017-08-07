@@ -64,17 +64,7 @@ import SIZER from './sizer';
 
   const player = playerFactory();
   const entities = [
-    player,
-    npcFactory(),
-    npcFactory(),
-    npcFactory(),
-    npcFactory(),
-    npcFactory(),
-    npcFactory(),
-    npcFactory(),
-    npcFactory(),
-    npcFactory(),
-    npcFactory()
+    player
   ];
   const tilesets = entities.reduce((gathered, item) => {
     for (let i = 0, count = gathered.length; i < count; i = i + 1) {

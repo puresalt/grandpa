@@ -82,8 +82,8 @@ export default function Player(loadState) {
           canvas.arc(
             this.controlPoint.x,
             this.controlPoint.y,
-            SIZER.relativeSize(20),
             SIZER.relativeSize(10),
+            SIZER.relativeSize(5),
             0,
             Math.PI * 2,
             true
