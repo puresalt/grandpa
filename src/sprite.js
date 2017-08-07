@@ -54,6 +54,8 @@ export default function Sprite(loadState) {
     y: 0,
     height: 30,
     width: 30,
+    controlPoint: null,
+    destinationPoint: null,
     movement: movementFactory(),
 
     /**
@@ -75,6 +77,46 @@ export default function Sprite(loadState) {
         SIZER.relativeSize(this.width),
         SIZER.relativeSize(this.height)
       );
+    },
+
+    detectJumpLocation() {
+      if (this.controlPoint === null) {
+        const origin = {
+          x: Math.round(this.x + (SIZER.relativeSize(this.width) / 2)),
+          y: Math.round(this.y + SIZER.relativeSize(this.height))
+        };
+
+        let degree = this.movement.moving === null
+          ? ANGLE[DIRECTION.UP]
+          : parseInt(this.movement.moving);
+
+        const jumpEllipsePoint = {
+          x: Math.round(this.x + (SIZER.relativeSize(this.width) / 2)),
+          y: Math.round(this.y - SIZER.relativeSize(this.movement.jumpHeight))
+        };
+        const peak = _ellipsePoint(jumpEllipsePoint, SIZER.relativeSize(100), SIZER.relativeSize(25), degree);
+        const destination = _ellipsePoint(origin, SIZER.relativeSize(200), SIZER.relativeSize(50), degree);
+        this.destinationPoint = destination;
+
+        const t = 0.55;
+        this.controlPoint = {
+          x: Math.round((peak.x / (2 * t * (1 - t))) - (origin.x * t / (2 * (1 - t))) - (destination.x * (1 - t ) / (2 * t))),
+          y: Math.round((peak.y / (2 * t * (1 - t))) - (origin.y * t / (2 * (1 - t))) - (destination.y * (1 - t ) / (2 * t)))
+        };
+
+        console.log({origin: origin, peak: peak, destination: destination, controlPoint: this.controlPoint});
+      }
+
+      this.movement.jumping = MathUtility.coolDown(this.movement.jumping);
+      if (!this.movement.jumping) {
+        this.controlPoint = null;
+        this.destinationPoint = null;
+      }
+
+      //    const t = 0.5; // given example value
+      //     const x = (1 - t) * (1 - t) * startPoint.x + 2 * (1 - t) * t * controlPoint.x + t * t * endPoint.x;
+      //   const y = (1 - t) * (1 - t) * startPoint.y + 2 * (1 - t) * t * controlPoint.y + t * t * endPoint.y;
+
     },
 
     /**
@@ -146,4 +188,25 @@ export default function Sprite(loadState) {
       this.y = MathUtility.minMax(y, 0, maxY);
     }
   }, loadState || {}));
+}
+
+/**
+ * Get a point along an ellipse.
+ *
+ * @param {{x: Number, y: Number}} origin
+ * @param {Number} width
+ * @param {Number} height
+ * @param {Number} degree
+ * @returns {{x: Number, y: Number}}
+ * @private
+ */
+function _ellipsePoint(origin, width, height, degree) {
+  if (degree < 0) {
+    degree = 360 + degree;
+  }
+  const angle = -1 * (degree * Math.PI * 2) / 360;
+  return {
+    x: origin.x - (height * Math.sin(angle)) * Math.sin(0) + (width * Math.cos(angle)) * Math.cos(0),
+    y: origin.y + (width * Math.cos(angle)) * Math.sin(0) + (height * Math.sin(angle)) * Math.cos(0)
+  };
 }

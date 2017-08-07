@@ -20,7 +20,6 @@ import baseSpriteFactory from '../sprite';
 import DIRECTION from '../movement/direction';
 import ANGLE from '../movement/direction/angle';
 import SIZER from '../sizer';
-import MathUtility from '../utility/math';
 
 /**
  * Load our player.
@@ -58,7 +57,7 @@ export default function Player(loadState) {
      */
     update(fps) {
       if (this.movement.jumping) {
-        this.movement.jumping = MathUtility.coolDown(this.movement.jumping);
+        this.detectJumpLocation();
       } else {
         this.detectMovement();
       }
@@ -72,6 +71,27 @@ export default function Player(loadState) {
           : parseInt(this.movement.moving);
         _drawEllipse(canvas, Math.round(this.x + (SIZER.relativeSize(this.width) / 2)), Math.round(this.y - SIZER.relativeSize(this.movement.jumpHeight)), SIZER.relativeSize(80), SIZER.relativeSize(20), degree);
         _drawEllipse(canvas, Math.round(this.x + (SIZER.relativeSize(this.width) / 2)), Math.round(this.y + SIZER.relativeSize(this.height)), SIZER.relativeSize(200), SIZER.relativeSize(50), degree);
+
+        if (this.controlPoint !== null) {
+          canvas.beginPath();
+          canvas.moveTo(Math.round(this.x + (SIZER.relativeSize(this.width) / 2)), Math.round(this.y + SIZER.relativeSize(this.height)));
+          canvas.quadraticCurveTo(this.controlPoint.x, this.controlPoint.y, this.destinationPoint.x, this.destinationPoint.y);
+          canvas.stroke();
+          canvas.closePath();
+          canvas.beginPath();
+          canvas.arc(
+            this.controlPoint.x,
+            this.controlPoint.y,
+            SIZER.relativeSize(20),
+            SIZER.relativeSize(10),
+            0,
+            Math.PI * 2,
+            true
+          );
+          canvas.closePath();
+          canvas.fill();
+        }
+
       }
     }
   }), loadState || {});
@@ -123,13 +143,4 @@ function _drawEllipse(canvas, centerX, centerY, width, height, degree) {
   );
   canvas.closePath();
   canvas.fill();
-}
-
-function _getPointAlongEllipse(canvas, centerX, centerY, width, height, degree) {
-  if (degree < 0) {
-    degree = 360 + degree;
-  }
-  const angle = -1 * (degree * Math.PI * 2) / 360;
-  const landingX = centerX - (height * Math.sin(angle)) * Math.sin(0) + (width * Math.cos(angle)) * Math.cos(0);
-  const landingY = centerY + (width * Math.cos(angle)) * Math.sin(0) + (height * Math.sin(angle)) * Math.cos(0);
 }
