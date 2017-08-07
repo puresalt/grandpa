@@ -20,10 +20,11 @@
 import DIRECTION from './movement/direction';
 import ANGLE from './movement/direction/angle';
 import SIZER from './sizer';
-import MathUtility from './utility/math';
+import MathUtility from './math';
 import movementFactory from './movement';
 
 const DEGREES_PER_SLICE = 45;
+const JUMP_PEAK_REFERENCE = 0.55;
 
 /**
  * Create a sprite.
@@ -54,8 +55,7 @@ export default function Sprite(loadState) {
     y: 0,
     height: 30,
     width: 30,
-    controlPoint: null,
-    destinationPoint: null,
+    jump: null,
     movement: movementFactory(),
 
     /**
@@ -80,34 +80,50 @@ export default function Sprite(loadState) {
     },
 
     detectJumpLocation() {
-      if (this.controlPoint === null) {
-        const origin = {
-          x: Math.round(this.x + (SIZER.relativeSize(this.width) / 2)),
-          y: Math.round(this.y + SIZER.relativeSize(this.height))
-        };
-
+      if (this.jump === null) {
         let degree = this.movement.moving === null
           ? ANGLE[DIRECTION.UP]
           : parseInt(this.movement.moving);
+        const angle = -1 * (degree * Math.PI * 2) / 360;
+        this.jump = {
+          origin: {
+            x: Math.round(this.x + (SIZER.relativeSize(this.width) / 2)),
+            y: Math.round(this.y + SIZER.relativeSize(this.height))
+          },
+          air: {
+            width: SIZER.relativeSize(80),
+            height: SIZER.relativeSize(20),
+            angle: angle
+          },
+          ground: {
+            width: SIZER.relativeSize(200),
+            height: SIZER.relativeSize(50),
+            angle: angle
+          }
+        };
 
         const jumpEllipsePoint = {
           x: Math.round(this.x + (SIZER.relativeSize(this.width) / 2)),
           y: Math.round(this.y - SIZER.relativeSize(this.movement.jumpHeight))
         };
-        const peak = _ellipsePoint(jumpEllipsePoint, SIZER.relativeSize(100), SIZER.relativeSize(25), degree);
-        const destination = _ellipsePoint(origin, SIZER.relativeSize(200), SIZER.relativeSize(50), degree);
-        this.destinationPoint = destination;
-        const t = 0.55;
-        this.controlPoint = {
-          x: Math.round((peak.x / (2 * t * (1 - t))) - (origin.x * t / (2 * (1 - t))) - (destination.x * (1 - t ) / (2 * t))),
-          y: Math.round((peak.y / (2 * t * (1 - t))) - (origin.y * t / (2 * (1 - t))) - (destination.y * (1 - t ) / (2 * t)))
+        this.jump.peak = MathUtility.getPointOnEllipse(jumpEllipsePoint, this.jump.air);
+        this.jump.destination = MathUtility.getPointOnEllipse(this.jump.origin, this.jump.ground);
+        this.jump.control = {
+          x: Math.round((this.jump.peak.x / (2 * JUMP_PEAK_REFERENCE * (1 - JUMP_PEAK_REFERENCE))) - (this.jump.origin.x * JUMP_PEAK_REFERENCE / (2 * (1 - JUMP_PEAK_REFERENCE))) - (this.jump.destination.x * (1 - JUMP_PEAK_REFERENCE) / (2 * JUMP_PEAK_REFERENCE))),
+          y: Math.round((this.jump.peak.y / (2 * JUMP_PEAK_REFERENCE * (1 - JUMP_PEAK_REFERENCE))) - (this.jump.origin.y * JUMP_PEAK_REFERENCE / (2 * (1 - JUMP_PEAK_REFERENCE))) - (this.jump.destination.y * (1 - JUMP_PEAK_REFERENCE) / (2 * JUMP_PEAK_REFERENCE)))
         };
       }
 
+      const step = this.movement.jumping / this.movement.jumpHeight;
+      const {x, y} = MathUtility.getPointOnQuadraticCurve(this.jump.origin, this.jump.control, this.jump.destination, step);
+      this.x = Math.round(x - (SIZER.relativeSize(this.width) / 2));
+      this.y = Math.round(y - SIZER.relativeSize(this.height));
+
       this.movement.jumping = MathUtility.coolDown(this.movement.jumping);
       if (!this.movement.jumping) {
-        this.controlPoint = null;
-        this.destinationPoint = null;
+        this.x = Math.round(this.jump.destination.x - (SIZER.relativeSize(this.width) / 2));
+        this.y = Math.round(this.jump.destination.y - SIZER.relativeSize(this.height));
+        this.jump = null;
       }
     },
 
@@ -180,25 +196,4 @@ export default function Sprite(loadState) {
       this.y = MathUtility.minMax(y, 0, maxY);
     }
   }, loadState || {}));
-}
-
-/**
- * Get a point along an ellipse.
- *
- * @param {{x: Number, y: Number}} origin
- * @param {Number} width
- * @param {Number} height
- * @param {Number} degree
- * @returns {{x: Number, y: Number}}
- * @private
- */
-function _ellipsePoint(origin, width, height, degree) {
-  if (degree < 0) {
-    degree = 360 + degree;
-  }
-  const angle = -1 * (degree * Math.PI * 2) / 360;
-  return {
-    x: origin.x - (height * Math.sin(angle)) * Math.sin(0) + (width * Math.cos(angle)) * Math.cos(0),
-    y: origin.y + (width * Math.cos(angle)) * Math.sin(0) + (height * Math.sin(angle)) * Math.cos(0)
-  };
 }

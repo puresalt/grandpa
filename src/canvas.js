@@ -70,9 +70,7 @@ export default function canvasFunction(element) {
      */
     render(fps) {
       _element.clearRect(0, 0, SIZER.width, SIZER.height);
-      _entities.sort((entity1, entity2) => {
-        return entity1.x > entity2.x || (entity1.x === entity2.x && entity1.y > entity2.y);
-      }).forEach(function(entity) {
+      _entities.sort(_sortByY).forEach(function(entity) {
         entity.render(_element, _tilesets[entity.tileset.id], fps);
       });
     },
@@ -173,4 +171,16 @@ export default function canvasFunction(element) {
   };
 
   return Object.freeze(methods);
+}
+
+/**
+ * Sort two entities by their y and then x coordinates.
+ *
+ * @param {{x: Number, y: Number}} entity1
+ * @param {{x: Number, y: Number}} entity2
+ * @returns {Boolean}
+ * @private
+ */
+function _sortByY(entity1, entity2) {
+  return entity1.x > entity2.x || (entity1.x === entity2.x && entity1.y > entity2.y);
 }

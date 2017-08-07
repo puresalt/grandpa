@@ -23,7 +23,7 @@ import KEY from './key';
 import EVENT from '../event';
 import PUB_SUB from '../pubSub';
 import SIZER from '../sizer';
-import MathUtility from '../utility/math';
+import MathUtility from '../math';
 const INNER_DEADZONE = 0.1;
 
 const _defaultConfig = {

@@ -18,7 +18,7 @@
 import _ from 'lodash/fp';
 import DIRECTION from '../movement/direction';
 import ANGLE from '../movement/direction/angle';
-import MathUtility from '../utility/math';
+import MathUtility from '../math';
 import baseSpriteFactory from '../sprite';
 
 /**

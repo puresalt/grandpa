@@ -126,6 +126,38 @@ const MathUtility = {
     centerX = centerX || 0;
     centerY = centerY || 0;
     return Math.atan2(pointY - centerY, pointX - centerX) * TO_DEGREES;
+  },
+
+  /**
+   * Get a point along an ellipse.
+   *
+   * @param {{x: Number, y: Number}} origin
+   * @param {{angle: Number, height: Number, width: Number}} ellipse
+   * @returns {{x: Number, y: Number}}
+   * @private
+   */
+  getPointOnEllipse(origin, ellipse) {
+    return {
+      x: origin.x - (ellipse.height * Math.sin(ellipse.angle)) * Math.sin(0) + (ellipse.width * Math.cos(ellipse.angle)) * Math.cos(0),
+      y: origin.y + (ellipse.width * Math.cos(ellipse.angle)) * Math.sin(0) + (ellipse.height * Math.sin(ellipse.angle)) * Math.cos(0)
+    };
+  },
+
+  /**
+   * Get a specific point along a quadratic curve.
+   *
+   * @param {{x: Number, y: Number}}  origin
+   * @param {{x: Number, y: Number}} control
+   * @param {{x: Number, y: Number}} destination
+   * @param {Number} position
+   * @returns {{x: Number, y: Number}}
+   */
+  getPointOnQuadraticCurve(origin, control, destination, position) {
+    const T = 1 - position;
+    return {
+      x: Math.round(((origin.x - (2 * control.x) + destination.x) * (T * T)) + (((2 * control.x) - (2 * origin.x)) * T) + origin.x),
+      y: Math.round(((origin.y - (2 * control.y) + destination.y) * (T * T)) + (((2 * control.y) - (2 * origin.y)) * T) + origin.y)
+    };
   }
 };
 
