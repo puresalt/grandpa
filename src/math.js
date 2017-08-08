@@ -126,7 +126,7 @@ const MathUtility = {
   getDegreeOfPoints(pointX, pointY, centerX, centerY) {
     centerX = centerX || 0;
     centerY = centerY || 0;
-    return MathUtility.atan2(pointY - centerY, pointX - centerX) * TO_DEGREES;
+    return Math.atan2(pointY - centerY, pointX - centerX) * TO_DEGREES;
   },
 
   /**
