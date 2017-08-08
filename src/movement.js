@@ -101,10 +101,10 @@ export default function InputMovement(loadState) {
      * @param {Boolean} alreadyFired
      */
     jump(active, alreadyFired) {
-      if (!active || this.jumping > 0 || alreadyFired) {
+      if (!active || this.jumping || alreadyFired) {
         return;
       }
-      this.jumping = this.jumpHeight;
+      this.jumping = this.jumpHeight * 1.5;
     },
 
     /**

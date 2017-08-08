@@ -91,13 +91,13 @@ export default function Sprite(loadState) {
             y: Math.round(this.y + SIZER.relativeSize(this.height))
           },
           air: {
-            width: SIZER.relativeSize(80),
-            height: SIZER.relativeSize(20),
+            width: SIZER.relativeSize(160),
+            height: SIZER.relativeSize(40),
             angle: angle
           },
           ground: {
-            width: SIZER.relativeSize(200),
-            height: SIZER.relativeSize(50),
+            width: SIZER.relativeSize(300),
+            height: SIZER.relativeSize(75),
             angle: angle
           }
         };
@@ -107,14 +107,16 @@ export default function Sprite(loadState) {
           y: Math.round(this.y - SIZER.relativeSize(this.movement.jumpHeight))
         };
         this.jump.peak = MathUtility.getPointOnEllipse(jumpEllipsePoint, this.jump.air);
-        this.jump.destination = MathUtility.getPointOnEllipse(this.jump.origin, this.jump.ground);
+        this.jump.destination = (this.movement.moving === null)
+          ? {x: this.jump.origin.x, y: this.jump.origin.y}
+          : MathUtility.getPointOnEllipse(this.jump.origin, this.jump.ground);
         this.jump.control = {
           x: Math.round((this.jump.peak.x / (2 * JUMP_PEAK_REFERENCE * (1 - JUMP_PEAK_REFERENCE))) - (this.jump.origin.x * JUMP_PEAK_REFERENCE / (2 * (1 - JUMP_PEAK_REFERENCE))) - (this.jump.destination.x * (1 - JUMP_PEAK_REFERENCE) / (2 * JUMP_PEAK_REFERENCE))),
           y: Math.round((this.jump.peak.y / (2 * JUMP_PEAK_REFERENCE * (1 - JUMP_PEAK_REFERENCE))) - (this.jump.origin.y * JUMP_PEAK_REFERENCE / (2 * (1 - JUMP_PEAK_REFERENCE))) - (this.jump.destination.y * (1 - JUMP_PEAK_REFERENCE) / (2 * JUMP_PEAK_REFERENCE)))
         };
       }
 
-      const step = this.movement.jumping / this.movement.jumpHeight;
+      const step = this.movement.jumping / (this.movement.jumpHeight * 1.5);
       const {x, y} = MathUtility.getPointOnQuadraticCurve(this.jump.origin, this.jump.control, this.jump.destination, step);
       this.x = Math.round(x - (SIZER.relativeSize(this.width) / 2));
       this.y = Math.round(y - SIZER.relativeSize(this.height));

@@ -66,16 +66,13 @@ export default function Player(loadState) {
       baseSprite.render.call(this, canvas, tileset);
       if (this.jump !== null) {
         _drawEllipse(canvas, {
-          x: Math.round(this.jump.origin.x + (SIZER.relativeSize(this.width) / 2)),
-          y: Math.round(this.jump.origin.y - SIZER.relativeSize(this.movement.jumpHeight))
+          x: this.jump.origin.x,
+          y: Math.round(this.jump.origin.y - SIZER.relativeSize(this.movement.jumpHeight) - SIZER.relativeSize(this.height))
         }, this.jump.air);
-        _drawEllipse(canvas, {
-          x: Math.round(this.jump.origin.x + (SIZER.relativeSize(this.width) / 2)),
-          y: Math.round(this.jump.origin.y + SIZER.relativeSize(this.height))
-        }, this.jump.ground);
+        _drawEllipse(canvas, this.jump.origin, this.jump.ground);
 
         canvas.beginPath();
-        canvas.moveTo(Math.round(this.jump.origin.x + (SIZER.relativeSize(this.width) / 2)), Math.round(this.jump.origin.y + SIZER.relativeSize(this.height)));
+        canvas.moveTo(this.jump.origin.x, this.jump.origin.y);
         canvas.quadraticCurveTo(this.jump.control.x, this.jump.control.y, this.jump.destination.x, this.jump.destination.y);
         canvas.stroke();
         canvas.closePath();
