@@ -146,15 +146,17 @@ export default function Sprite(loadState) {
         this.jump.control.x = MathUtility.round((this.jump.peak.x / (2 * JUMP_PEAK_REFERENCE * (1 - JUMP_PEAK_REFERENCE))) - (this.jump.origin.x * JUMP_PEAK_REFERENCE / (2 * (1 - JUMP_PEAK_REFERENCE))) - (this.jump.destination.x * (1 - JUMP_PEAK_REFERENCE) / (2 * JUMP_PEAK_REFERENCE)));
         this.jump.control.y = MathUtility.round((this.jump.peak.y / (2 * JUMP_PEAK_REFERENCE * (1 - JUMP_PEAK_REFERENCE))) - (this.jump.origin.y * JUMP_PEAK_REFERENCE / (2 * (1 - JUMP_PEAK_REFERENCE))) - (this.jump.destination.y * (1 - JUMP_PEAK_REFERENCE) / (2 * JUMP_PEAK_REFERENCE)));
       }
-
       const step = this.movement.jumping / (this.movement.jumpSpeed);
-      this.x = MathUtility.round(MathUtility.getPointOnQuadraticCurve(this.jump.origin.x, this.jump.control.x, this.jump.destination.x, step) - (SIZER.relativeSize(this.width) / 2));
-      this.y = MathUtility.round(MathUtility.getPointOnQuadraticCurve(this.jump.origin.y, this.jump.control.y, this.jump.destination.y, step) - SIZER.relativeSize(this.height));
-
+      this.attemptToMoveTo(
+        MathUtility.round(MathUtility.getPointOnQuadraticCurve(this.jump.origin.x, this.jump.control.x, this.jump.destination.x, step) - (SIZER.relativeSize(this.width) / 2)),
+        MathUtility.round(MathUtility.getPointOnQuadraticCurve(this.jump.origin.y, this.jump.control.y, this.jump.destination.y, step) - SIZER.relativeSize(this.height))
+      );
       this.movement.jumping = MathUtility.coolDown(this.movement.jumping);
       if (!this.movement.jumping) {
-        this.x = MathUtility.round(this.jump.destination.x - (SIZER.relativeSize(this.width) / 2));
-        this.y = MathUtility.round(this.jump.destination.y - SIZER.relativeSize(this.height));
+        this.attemptToMoveTo(
+          MathUtility.round(this.jump.destination.x - (SIZER.relativeSize(this.width) / 2)),
+          MathUtility.round(this.jump.destination.y - SIZER.relativeSize(this.height))
+        );
         this.jump.origin.x = -1;
       }
     },
@@ -217,8 +219,18 @@ export default function Sprite(loadState) {
           y = y + SIZER.relativeSize(speedY);
         }
       }
+      this.attemptToMoveTo(MathUtility.minMax(x, 0, SIZER.width - SIZER.relativeSize(this.width)), MathUtility.minMax(y, 0, SIZER.height - SIZER.relativeSize(this.height)));
+    },
+
+    /**
+     * Attempt to move a sprite to a given location. Do collision detection or other outside influences.
+     *
+     * @param x
+     * @param y
+     */
+    attemptToMoveTo(x, y) {
       this.x = MathUtility.minMax(x, 0, SIZER.width - SIZER.relativeSize(this.width));
-      this.y = MathUtility.minMax(y, 0, SIZER.height - SIZER.relativeSize(this.height));
+      this.y = MathUtility.minMax(y, (this.movement.jumping ? this.jump.peak.y - SIZER.relativeSize(this.height) : 0), SIZER.height - SIZER.relativeSize(this.height));
     }
   }, loadState || {}));
 }
