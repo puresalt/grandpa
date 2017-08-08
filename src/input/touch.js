@@ -112,13 +112,13 @@ export default function TouchInput(config, inputState, context) {
 
   const _resizer = () => {
     const directional = _findElementOrCreateIt('button-directional');
-    directional.style.height = directional.style.width = SIZER.relativeSize(720 / 3) + 'px';
+    directional.style.height = directional.style.width = SIZER.relativeSize(SIZER.height / 3) + 'px';
     directional.style.bottom = (SIZER.maxHeight - SIZER.height) + 'px';
     const abxy = _findElementOrCreateIt('button-abxy');
     abxy.style.bottom = (SIZER.maxHeight - SIZER.height) + 'px';
     abxy.style.right = (SIZER.maxWidth - SIZER.width) + 'px';
     for (let i = 0, count = abxy.childNodes.length; i < count; i = i + 1) {
-      abxy.childNodes[i].style.height = abxy.childNodes[i].style.width = SIZER.relativeSize(720 / 3 / 2) + 'px';
+      abxy.childNodes[i].style.height = abxy.childNodes[i].style.width = SIZER.relativeSize(SIZER.height / 3 / 2) + 'px';
     }
   };
   const _subscribed = PUB_SUB.subscribe(EVENT.RESIZE, _resizer);

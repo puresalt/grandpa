@@ -88,10 +88,12 @@ const SIZER = {
    * Get the size of our pixel in relation to the ratio.
    *
    * @param {Number} pixel
+   * @param {Boolean?} useRatio
    * @returns {Number}
    */
-  relativeSize(pixel) {
-    return Math.round(pixel * this.ratio);
+  relativeSize(pixel, useRatio) {
+    useRatio = useRatio !== false;
+    return Math.round(pixel * (useRatio ? this.ratio : 1));
   }
 };
 
