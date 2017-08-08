@@ -65,7 +65,7 @@ export default function InputMovement(loadState) {
           this.running = false;
         }
         if (this.moving < ANGLE[DIRECTION.UP_RIGHT] && this.moving > ANGLE[DIRECTION.DOWN_RIGHT] && _lastRight) {
-          this.running = Date.now() - _lastRight < 100;
+          this.running = this.running || Date.now() - _lastRight < 100;
         } else if (this.moving >= ANGLE[DIRECTION.UP_RIGHT] || this.moving <= ANGLE[DIRECTION.DOWN_RIGHT]) {
           this.running = false;
         }
@@ -75,7 +75,7 @@ export default function InputMovement(loadState) {
           this.running = false;
         }
         if (this.moving > ANGLE[DIRECTION.UP_LEFT] || this.moving < ANGLE[DIRECTION.DOWN_RIGHT] && _lastLeft) {
-          this.running = Date.now() - _lastLeft < 100;
+          this.running = this.running || Date.now() - _lastLeft < 100;
         } else if (this.moving <= ANGLE[DIRECTION.UP_LEFT] || this.moving >= ANGLE[DIRECTION.DOWN_RIGHT]) {
           this.running = false;
         }

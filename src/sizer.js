@@ -18,84 +18,17 @@
 
 'use strict';
 
-import EVENT from './event';
-import PUB_SUB from './pubSub';
+import relativeSizer from './sizer/relative';
+import staticSizer from './sizer/static';
 
-let _canvasElement = null;
-
-const SIZER = {
-  defaultHeight: 720,
-  defaultWidth: 1280,
-  height: 720,
-  width: 1280,
-  maxHeight: 1080,
-  maxWidth: 1920,
-  ratio: 1,
-  aspect: {
-    height: 9,
-    width: 16
-  },
-
-  /**
-   * Set what element to use for our sizer.
-   *
-   * @param {HTMLElement} canvasElement
-   * @returns {SIZER}
-   */
-  init(canvasElement) {
-    _canvasElement = canvasElement;
-    return this;
-  },
-
-  /**
-   * Get the desired sizing based on size of the window.
-   *
-   * @returns {SIZER}
-   */
-  update() {
-    if (_canvasElement === null) {
-      return this;
-    }
-    let maxHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
-    let maxWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
-    if (maxHeight === this.maxHeight && maxWidth === this.maxWidth) {
-      return this;
-    }
-    this.maxHeight = maxHeight;
-    this.maxWidth = maxWidth;
-
-    let height = this.maxHeight;
-    let width = this.maxWidth;
-    if (height / width < this.aspect.height / this.aspect.width) {
-      width = Math.round((height * 16) / 9);
-    } else {
-      height = Math.round((width * 9) / 16);
-    }
-    this.height = height;
-    this.width = width;
-    this.ratio = this.height / this.defaultHeight;
-
-    _canvasElement.height = this.height;
-    _canvasElement.width = this.width;
-    _canvasElement.style.height = this.height + 'px';
-    _canvasElement.style.width = this.width + 'px';
-
-    PUB_SUB.publish(EVENT.RESIZE, this);
-    return this;
-  },
-
-  /**
-   * Get the size of our pixel in relation to the ratio.
-   *
-   * @param {Number} pixel
-   * @returns {Number}
-   */
-  relativeSize(pixel) {
-    return Math.round(pixel * this.ratio);
-  }
+const allowedSizers = {
+  relative: relativeSizer,
+  static: staticSizer
 };
 
-export default SIZER;
+const _SIZER = allowedSizers.static;
+
+export default _SIZER;
 
 (() => {
   const throttle = (type, name, obj) => {
@@ -120,5 +53,5 @@ export default SIZER;
 
 // handle event
 window.addEventListener('optimizedResize', () => {
-  SIZER.update();
+  _SIZER.update();
 });

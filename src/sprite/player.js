@@ -41,12 +41,6 @@ export default function Player(loadState) {
       x: 3,
       y: 2
     },
-    velocity: {
-      x: 0,
-      y: 0,
-      maxX: 40,
-      maxY: 30000
-    },
     height: 67,
     width: 36,
     standing: 0,
@@ -88,7 +82,6 @@ export default function Player(loadState) {
         );
         canvas.closePath();
         canvas.fill();
-
       }
     }
   }), loadState || {});

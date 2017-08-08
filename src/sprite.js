@@ -74,8 +74,8 @@ export default function Sprite(loadState) {
         this.height,
         this.x,
         this.y,
-        SIZER.relativeSize(this.width),
-        SIZER.relativeSize(this.height)
+        this.width,
+        this.height
       );
     },
 
@@ -91,13 +91,13 @@ export default function Sprite(loadState) {
             y: Math.round(this.y + SIZER.relativeSize(this.height))
           },
           air: {
-            width: SIZER.relativeSize(160),
-            height: SIZER.relativeSize(40),
+            width: SIZER.relativeSize(120),
+            height: SIZER.relativeSize(30),
             angle: angle
           },
           ground: {
-            width: SIZER.relativeSize(300),
-            height: SIZER.relativeSize(75),
+            width: SIZER.relativeSize(200),
+            height: SIZER.relativeSize(50),
             angle: angle
           }
         };
@@ -194,6 +194,7 @@ export default function Sprite(loadState) {
           y = y + SIZER.relativeSize(speedY);
         }
       }
+
       this.x = MathUtility.minMax(x, 0, maxX);
       this.y = MathUtility.minMax(y, 0, maxY);
     }
