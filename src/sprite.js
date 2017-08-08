@@ -26,6 +26,15 @@ import movementFactory from './movement';
 const DEGREES_PER_SLICE = 45;
 const JUMP_PEAK_REFERENCE = 0.55;
 
+const _reusedPointObject = {
+  x: -1,
+  y: -1
+};
+const _jumpEllipsePoint = {
+  x: -1,
+  y: -1
+};
+
 /**
  * Create a sprite.
  *
@@ -55,13 +64,40 @@ export default function Sprite(loadState) {
     y: 0,
     height: 30,
     width: 30,
-    jump: null,
+    jump: {
+      control: {
+        x: -1,
+        y: -1
+      },
+      destination: {
+        x: -1,
+        y: -1
+      },
+      origin: {
+        x: -1,
+        y: -1
+      },
+      peak: {
+        x: -1,
+        y: -1
+      },
+      air: {
+        width: -1,
+        height: -1,
+        angle: -1
+      },
+      ground: {
+        width: -1,
+        height: -1,
+        angle: -1
+      }
+    },
     movement: movementFactory(),
 
     /**
      * Render an update.
      */
-    update(fps) {
+    update() {
 
     },
 
@@ -80,52 +116,46 @@ export default function Sprite(loadState) {
     },
 
     detectJumpLocation() {
-      if (this.jump === null) {
+      if (this.jump.origin.x === -1) {
         let degree = this.movement.moving === null
           ? ANGLE[DIRECTION.UP]
           : parseInt(this.movement.moving);
         const angle = -1 * (degree * Math.PI * 2) / 360;
-        this.jump = {
-          origin: {
-            x: Math.round(this.x + (SIZER.relativeSize(this.width) / 2)),
-            y: Math.round(this.y + SIZER.relativeSize(this.height))
-          },
-          air: {
-            width: SIZER.relativeSize(120),
-            height: SIZER.relativeSize(30),
-            angle: angle
-          },
-          ground: {
-            width: SIZER.relativeSize(200),
-            height: SIZER.relativeSize(50),
-            angle: angle
-          }
-        };
+        this.jump.origin.x = MathUtility.round(this.x + (SIZER.relativeSize(this.width) / 2));
+        this.jump.origin.y = MathUtility.round(this.y + SIZER.relativeSize(this.height));
+        this.jump.air.width = SIZER.relativeSize(120);
+        this.jump.air.height = SIZER.relativeSize(30);
+        this.jump.air.angle = angle;
+        this.jump.ground.width = SIZER.relativeSize(200);
+        this.jump.ground.height = SIZER.relativeSize(50);
+        this.jump.ground.angle = angle;
 
-        const jumpEllipsePoint = {
-          x: Math.round(this.x + (SIZER.relativeSize(this.width) / 2)),
-          y: Math.round(this.y - SIZER.relativeSize(this.movement.jumpHeight))
-        };
-        this.jump.peak = MathUtility.getPointOnEllipse(jumpEllipsePoint, this.jump.air);
-        this.jump.destination = (this.movement.moving === null)
-          ? {x: this.jump.origin.x, y: this.jump.origin.y}
-          : MathUtility.getPointOnEllipse(this.jump.origin, this.jump.ground);
-        this.jump.control = {
-          x: Math.round((this.jump.peak.x / (2 * JUMP_PEAK_REFERENCE * (1 - JUMP_PEAK_REFERENCE))) - (this.jump.origin.x * JUMP_PEAK_REFERENCE / (2 * (1 - JUMP_PEAK_REFERENCE))) - (this.jump.destination.x * (1 - JUMP_PEAK_REFERENCE) / (2 * JUMP_PEAK_REFERENCE))),
-          y: Math.round((this.jump.peak.y / (2 * JUMP_PEAK_REFERENCE * (1 - JUMP_PEAK_REFERENCE))) - (this.jump.origin.y * JUMP_PEAK_REFERENCE / (2 * (1 - JUMP_PEAK_REFERENCE))) - (this.jump.destination.y * (1 - JUMP_PEAK_REFERENCE) / (2 * JUMP_PEAK_REFERENCE)))
-        };
+        _jumpEllipsePoint.x = MathUtility.round(this.x + (SIZER.relativeSize(this.width) / 2));
+        _jumpEllipsePoint.y = MathUtility.round(this.y - SIZER.relativeSize(this.movement.jumpHeight));
+        MathUtility.setPointOnEllipse(_jumpEllipsePoint, this.jump.air, _reusedPointObject);
+        this.jump.peak.x = MathUtility.round(_reusedPointObject.x);
+        this.jump.peak.y = MathUtility.round(_reusedPointObject.y);
+        if (this.movement.moving === null) {
+          this.jump.destination.x = this.jump.origin.x;
+          this.jump.destination.y = this.jump.origin.y;
+        } else {
+          MathUtility.setPointOnEllipse(this.jump.origin, this.jump.ground, _reusedPointObject);
+          this.jump.destination.x = MathUtility.round(_reusedPointObject.x);
+          this.jump.destination.y = MathUtility.round(_reusedPointObject.y);
+        }
+        this.jump.control.x = MathUtility.round((this.jump.peak.x / (2 * JUMP_PEAK_REFERENCE * (1 - JUMP_PEAK_REFERENCE))) - (this.jump.origin.x * JUMP_PEAK_REFERENCE / (2 * (1 - JUMP_PEAK_REFERENCE))) - (this.jump.destination.x * (1 - JUMP_PEAK_REFERENCE) / (2 * JUMP_PEAK_REFERENCE)));
+        this.jump.control.y = MathUtility.round((this.jump.peak.y / (2 * JUMP_PEAK_REFERENCE * (1 - JUMP_PEAK_REFERENCE))) - (this.jump.origin.y * JUMP_PEAK_REFERENCE / (2 * (1 - JUMP_PEAK_REFERENCE))) - (this.jump.destination.y * (1 - JUMP_PEAK_REFERENCE) / (2 * JUMP_PEAK_REFERENCE)));
       }
 
       const step = this.movement.jumping / (this.movement.jumpHeight * 1.5);
-      const {x, y} = MathUtility.getPointOnQuadraticCurve(this.jump.origin, this.jump.control, this.jump.destination, step);
-      this.x = Math.round(x - (SIZER.relativeSize(this.width) / 2));
-      this.y = Math.round(y - SIZER.relativeSize(this.height));
+      this.x = MathUtility.round(MathUtility.getPointOnQuadraticCurve(this.jump.origin.x, this.jump.control.x, this.jump.destination.x, step) - (SIZER.relativeSize(this.width) / 2));
+      this.y = MathUtility.round(MathUtility.getPointOnQuadraticCurve(this.jump.origin.y, this.jump.control.y, this.jump.destination.y, step) - SIZER.relativeSize(this.height));
 
       this.movement.jumping = MathUtility.coolDown(this.movement.jumping);
       if (!this.movement.jumping) {
-        this.x = Math.round(this.jump.destination.x - (SIZER.relativeSize(this.width) / 2));
-        this.y = Math.round(this.jump.destination.y - SIZER.relativeSize(this.height));
-        this.jump = null;
+        this.x = MathUtility.round(this.jump.destination.x - (SIZER.relativeSize(this.width) / 2));
+        this.y = MathUtility.round(this.jump.destination.y - SIZER.relativeSize(this.height));
+        this.jump.origin.x = -1;
       }
     },
 
@@ -148,42 +178,42 @@ export default function Sprite(loadState) {
       let speedX = this.speed.x;
       let speedY = this.speed.y;
       if (movement.running) {
-        speedX = Math.round(speedX * 1.75);
-        speedY = Math.round(speedY * 1.75);
+        speedX = MathUtility.round(speedX * 1.75);
+        speedY = MathUtility.round(speedY * 1.75);
       }
 
       let movingAbs = Math.abs(movement.moving);
       if (movement.moving === ANGLE[DIRECTION.RIGHT]) {
-        x = x + SIZER.relativeSize(speedX);
+        x += SIZER.relativeSize(speedX);
       } else if (movement.moving === ANGLE[DIRECTION.LEFT]) {
-        x = x - SIZER.relativeSize(speedX);
+        x -= SIZER.relativeSize(speedX);
       } else if (movement.moving === ANGLE[DIRECTION.UP]) {
-        y = y - SIZER.relativeSize(speedY);
+        y -= SIZER.relativeSize(speedY);
       } else if (movement.moving === ANGLE[DIRECTION.DOWN]) {
-        y = y + SIZER.relativeSize(speedY);
+        y += SIZER.relativeSize(speedY);
       } else if (movement.moving >= ANGLE[DIRECTION.RIGHT] && movement.moving < ANGLE[DIRECTION.UP]) {
         if (movement.moving <= ANGLE[DIRECTION.UP_RIGHT]) {
-          x = x + SIZER.relativeSize(speedX);
-          y = y - SIZER.relativeSize(speedY * ((movingAbs - ANGLE[DIRECTION.RIGHT]) / DEGREES_PER_SLICE));
+          x += SIZER.relativeSize(speedX);
+          y -= SIZER.relativeSize(speedY * ((movingAbs - ANGLE[DIRECTION.RIGHT]) / DEGREES_PER_SLICE));
         } else {
-          x = x + SIZER.relativeSize(speedX * (1 - ((movingAbs - ANGLE[DIRECTION.UP_RIGHT]) / DEGREES_PER_SLICE)));
-          y = y - SIZER.relativeSize(speedY);
+          x += SIZER.relativeSize(speedX * (1 - ((movingAbs - ANGLE[DIRECTION.UP_RIGHT]) / DEGREES_PER_SLICE)));
+          y -= SIZER.relativeSize(speedY);
         }
       } else if (movement.moving <= ANGLE[DIRECTION.RIGHT] && movement.moving >= ANGLE[DIRECTION.DOWN]) {
         if (movement.moving >= ANGLE[DIRECTION.DOWN_RIGHT]) {
-          x = x + SIZER.relativeSize(speedX);
-          y = y + SIZER.relativeSize(speedY * ((movingAbs - ANGLE[DIRECTION.RIGHT]) / DEGREES_PER_SLICE));
+          x += SIZER.relativeSize(speedX);
+          y += SIZER.relativeSize(speedY * ((movingAbs - ANGLE[DIRECTION.RIGHT]) / DEGREES_PER_SLICE));
         } else {
-          x = x + SIZER.relativeSize(speedX * (1 - ((movingAbs - ANGLE[DIRECTION.UP_RIGHT]) / DEGREES_PER_SLICE)));
-          y = y + SIZER.relativeSize(speedY);
+          x += SIZER.relativeSize(speedX * (1 - ((movingAbs - ANGLE[DIRECTION.UP_RIGHT]) / DEGREES_PER_SLICE)));
+          y += SIZER.relativeSize(speedY);
         }
       } else if (movement.moving >= ANGLE[DIRECTION.UP] && movement.moving < ANGLE[DIRECTION.LEFT]) {
         if (movement.moving >= ANGLE[DIRECTION.UP_LEFT]) {
-          x = x - SIZER.relativeSize(speedX);
-          y = y - SIZER.relativeSize(speedY * (1 - ((movingAbs - ANGLE[DIRECTION.UP_LEFT]) / DEGREES_PER_SLICE)));
+          x -= SIZER.relativeSize(speedX);
+          y -= SIZER.relativeSize(speedY * (1 - ((movingAbs - ANGLE[DIRECTION.UP_LEFT]) / DEGREES_PER_SLICE)));
         } else {
-          x = x - SIZER.relativeSize(speedX * ((movingAbs - ANGLE[DIRECTION.UP]) / DEGREES_PER_SLICE));
-          y = y - SIZER.relativeSize(speedY);
+          x -= SIZER.relativeSize(speedX * ((movingAbs - ANGLE[DIRECTION.UP]) / DEGREES_PER_SLICE));
+          y -= SIZER.relativeSize(speedY);
         }
       } else {
         if (movement.moving <= ANGLE[DIRECTION.DOWN_LEFT]) {

@@ -18,6 +18,7 @@
 'use strict';
 
 import inputKeyLookup from './input/key/lookup';
+import MathUtility from './math';
 
 const _movementKeys = [
   'crouching',
@@ -64,17 +65,17 @@ export default {
     const keys = [
       '<strong>' + (inputState.getConfig().type === 'keyboard' ? 'KEYS' : 'BUTTONS') + ':</strong><hr>'
     ];
-    for (let i = 0, count = definedKeys.length; i < count; i = i + 1) {
+    for (let i = 0, count = definedKeys.length; i < count; ++i) {
       keys.push(stylizeKey(definedKeys[i].input) + '<span class="on">' + (inputType === 'keyboard' ? inputKeyLookup(definedKeys[i].keyCode) : '#' + definedKeys[i].element.id) + '</span>');
     }
 
     const stats = [
       '<strong>STATE:</strong><hr>',
-      stylizeKey('fps') + stylizeValue(Math.round(gameLoop.getRenderedFps() * 100) / 100)
+      stylizeKey('fps') + stylizeValue(MathUtility.round(gameLoop.getRenderedFps() * 100) / 100)
     ];
 
     const movement = player.movement;
-    for (let i = 0, count = _movementKeys.length; i < count; i = i + 1) {
+    for (let i = 0, count = _movementKeys.length; i < count; ++i) {
       let key = _movementKeys[i];
       stats.push(stylizeKey(key) + stylizeValue(movement[key]));
     }
@@ -103,7 +104,7 @@ export default {
 function stylizeKey(key) {
   let length = 9;
   let padding = '';
-  for (let i = 0; i < length; i = i + 1) {
+  for (let i = 0; i < length; ++i) {
     padding = padding + ' ';
   }
 

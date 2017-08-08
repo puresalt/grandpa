@@ -20,6 +20,20 @@ import SIZER from '../sizer';
 import baseSpriteFactory from '../sprite';
 import MathUtility from '../math';
 
+const _renderingEllipse = {
+  angle: -1,
+  height: -1,
+  width: -1
+};
+const _jumpPoint = {
+  x: -1,
+  y: -1
+};
+const _reusedPointObject = {
+  x: -1,
+  y: -1
+};
+
 /**
  * Load our player.
  *
@@ -48,7 +62,7 @@ export default function Player(loadState) {
     /**
      * {@inheritDoc}
      */
-    update(fps) {
+    update() {
       if (this.movement.jumping) {
         this.detectJumpLocation();
       } else {
@@ -58,11 +72,10 @@ export default function Player(loadState) {
 
     render(canvas, tileset) {
       baseSprite.render.call(this, canvas, tileset);
-      if (this.jump !== null) {
-        _drawEllipse(canvas, {
-          x: this.jump.origin.x,
-          y: Math.round(this.jump.origin.y - SIZER.relativeSize(this.movement.jumpHeight) - SIZER.relativeSize(this.height))
-        }, this.jump.air);
+      if (this.jump.origin.x !== -1) {
+        _jumpPoint.x = this.jump.origin.x;
+        _jumpPoint.y = MathUtility.round(this.jump.origin.y - SIZER.relativeSize(this.movement.jumpHeight) - SIZER.relativeSize(this.height));
+        _drawEllipse(canvas, _jumpPoint, this.jump.air);
         _drawEllipse(canvas, this.jump.origin, this.jump.ground);
 
         canvas.beginPath();
@@ -99,14 +112,17 @@ export default function Player(loadState) {
  */
 function _drawEllipse(canvas, origin, ellipse) {
   canvas.beginPath();
-  const renderingEllipse = {angle: 0, height: ellipse.height, width: ellipse.width};
+  _renderingEllipse.height = ellipse.height;
+  _renderingEllipse.width = ellipse.width;
   for (let i = 0; i < 2 * Math.PI; i = i + 0.01) {
-    renderingEllipse.angle = i;
-    const point = MathUtility.getPointOnEllipse(origin, renderingEllipse);
+    _renderingEllipse.angle = i;
+    MathUtility.setPointOnEllipse(origin, _renderingEllipse, _reusedPointObject);
+    _reusedPointObject.x = MathUtility.round(_reusedPointObject.x);
+    _reusedPointObject.y = MathUtility.round(_reusedPointObject.y);
     if (!i) {
-      canvas.moveTo(point.x, point.y);
+      canvas.moveTo(_reusedPointObject.x, _reusedPointObject.y);
     } else {
-      canvas.lineTo(point.x, point.y);
+      canvas.lineTo(_reusedPointObject.x, _reusedPointObject.y);
     }
   }
   canvas.lineWidth = 2;
@@ -114,11 +130,13 @@ function _drawEllipse(canvas, origin, ellipse) {
   canvas.stroke();
   canvas.closePath();
 
-  const landing = MathUtility.getPointOnEllipse(origin, ellipse);
+  MathUtility.setPointOnEllipse(origin, ellipse, _reusedPointObject);
+  _reusedPointObject.x = MathUtility.round(_reusedPointObject.x);
+  _reusedPointObject.y = MathUtility.round(_reusedPointObject.y);
   canvas.beginPath();
   canvas.arc(
-    landing.x,
-    landing.y,
+    _reusedPointObject.x,
+    _reusedPointObject.y,
     SIZER.relativeSize(10),
     SIZER.relativeSize(5),
     0,

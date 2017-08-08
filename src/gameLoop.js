@@ -125,7 +125,7 @@ export default function GameLoop(options) {
     _lastRun = now;
     _logFps(now);
     if (_runUpdate()) {
-      gameLoop.render(gameLoop);
+      gameLoop.render();
     }
     requestAnimationFrame(_run);
   }

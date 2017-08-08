@@ -20,6 +20,7 @@
 
 import EVENT from '../event';
 import PUB_SUB from '../pubSub';
+import MathUtility from '../math';
 
 let _canvasElement = null;
 
@@ -67,9 +68,9 @@ const SIZER = {
     let height = this.maxHeight;
     let width = this.maxWidth;
     if (height / width < this.aspect.height / this.aspect.width) {
-      width = Math.round((height * 16) / 9);
+      width = MathUtility.round((height * 16) / 9);
     } else {
-      height = Math.round((width * 9) / 16);
+      height = MathUtility.round((width * 9) / 16);
     }
     this.height = height;
     this.width = width;
@@ -93,34 +94,8 @@ const SIZER = {
    */
   relativeSize(pixel, useRatio) {
     useRatio = useRatio !== false;
-    return Math.round(pixel * (useRatio ? this.ratio : 1));
+    return MathUtility.round(pixel * (useRatio ? this.ratio : 1));
   }
 };
 
 export default SIZER;
-
-(() => {
-  const throttle = (type, name, obj) => {
-    obj = obj || window;
-    let running = false;
-    const func = () => {
-      if (running) {
-        return;
-      }
-      running = true;
-      requestAnimationFrame(() => {
-        obj.dispatchEvent(new CustomEvent(name));
-        running = false;
-      });
-    };
-    obj.addEventListener(type, func);
-  };
-
-  /* init - you can init any event */
-  throttle('resize', 'optimizedResize');
-})();
-
-// handle event
-window.addEventListener('optimizedResize', () => {
-  SIZER.update();
-});

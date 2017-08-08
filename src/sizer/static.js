@@ -20,6 +20,7 @@
 
 import EVENT from '../event';
 import PUB_SUB from '../pubSub';
+import MathUtility from '../math';
 
 let _canvasElement = null;
 
@@ -59,9 +60,9 @@ const SIZER = {
     let width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
 
     if (height / width < this.aspect.height / this.aspect.width) {
-      width = Math.round((height * 16) / 9);
+      width = MathUtility.round((height * 16) / 9);
     } else {
-      height = Math.round((width * 9) / 16);
+      height = MathUtility.round((width * 9) / 16);
     }
     this.ratio = height / this.defaultHeight;
 
@@ -76,11 +77,10 @@ const SIZER = {
    * Get the size of our pixel in relation to the ratio.
    *
    * @param {Number} pixel
-   * @param {Boolean?} useRatio Force the use of ratio.
    * @returns {Number}
    */
-  relativeSize(pixel, useRatio) {
-    return Math.round(pixel * (useRatio ? this.ratio : 1));
+  relativeSize(pixel) {
+    return MathUtility.round(pixel);
   }
 };
 

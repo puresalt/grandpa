@@ -16,6 +16,7 @@
 'use strict';
 
 const TO_DEGREES = (1 / Math.PI) * 180;
+const TRUE_OR_FALSE = [true, false];
 
 const MathUtility = {
 
@@ -99,7 +100,7 @@ const MathUtility = {
    * @returns {Boolean}
    */
   randomBoolean: () => {
-    return MathUtility.randomChoice([true, false]);
+    return MathUtility.randomChoice(TRUE_OR_FALSE);
   },
 
   /**
@@ -110,7 +111,7 @@ const MathUtility = {
    * @returns {Number}
    */
   randomNumber: (minimum, maximum) => {
-    return Math.round(MathUtility.random(minimum, maximum));
+    return MathUtility.round(MathUtility.random(minimum, maximum));
   },
 
   /**
@@ -125,7 +126,7 @@ const MathUtility = {
   getDegreeOfPoints(pointX, pointY, centerX, centerY) {
     centerX = centerX || 0;
     centerY = centerY || 0;
-    return Math.atan2(pointY - centerY, pointX - centerX) * TO_DEGREES;
+    return MathUtility.atan2(pointY - centerY, pointX - centerX) * TO_DEGREES;
   },
 
   /**
@@ -133,31 +134,37 @@ const MathUtility = {
    *
    * @param {{x: Number, y: Number}} origin
    * @param {{angle: Number, height: Number, width: Number}} ellipse
+   * @param {{x: Number, y: Number}} reusedObject
    * @returns {{x: Number, y: Number}}
    * @private
    */
-  getPointOnEllipse(origin, ellipse) {
-    return {
-      x: origin.x - (ellipse.height * Math.sin(ellipse.angle)) * Math.sin(0) + (ellipse.width * Math.cos(ellipse.angle)) * Math.cos(0),
-      y: origin.y + (ellipse.width * Math.cos(ellipse.angle)) * Math.sin(0) + (ellipse.height * Math.sin(ellipse.angle)) * Math.cos(0)
-    };
+  setPointOnEllipse(origin, ellipse, reusedObject) {
+    reusedObject.x = origin.x - (ellipse.height * Math.sin(ellipse.angle)) * Math.sin(0) + (ellipse.width * Math.cos(ellipse.angle)) * Math.cos(0);
+    reusedObject.y = origin.y + (ellipse.width * Math.cos(ellipse.angle)) * Math.sin(0) + (ellipse.height * Math.sin(ellipse.angle)) * Math.cos(0);
   },
 
   /**
    * Get a specific point along a quadratic curve.
    *
-   * @param {{x: Number, y: Number}}  origin
-   * @param {{x: Number, y: Number}} control
-   * @param {{x: Number, y: Number}} destination
+   * @param {Number}  origin
+   * @param {Number} control
+   * @param {Number} destination
    * @param {Number} position
-   * @returns {{x: Number, y: Number}}
+   * @returns {Number}
    */
   getPointOnQuadraticCurve(origin, control, destination, position) {
     const T = 1 - position;
-    return {
-      x: Math.round(((origin.x - (2 * control.x) + destination.x) * (T * T)) + (((2 * control.x) - (2 * origin.x)) * T) + origin.x),
-      y: Math.round(((origin.y - (2 * control.y) + destination.y) * (T * T)) + (((2 * control.y) - (2 * origin.y)) * T) + origin.y)
-    };
+    return MathUtility.round(((origin - (2 * control) + destination) * (T * T)) + (((2 * control) - (2 * origin)) * T) + origin);
+  },
+
+  /**
+   * Return a rounded number.
+   *
+   * @param {Number} number
+   * @returns {Number}
+   */
+  round(number) {
+    return (number + 0.5) | 0;
   }
 };
 

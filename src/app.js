@@ -23,7 +23,6 @@ import inputFactory from './input';
 import inputStateFactory from './input/state';
 import playerFactory from './sprite/player';
 import canvasFactory from './canvas';
-import npcFactory from './sprite/npc';
 import DEBUG from './debug';
 import SIZER from './sizer';
 
@@ -67,7 +66,7 @@ import SIZER from './sizer';
     player
   ];
   const tilesets = entities.reduce((gathered, item) => {
-    for (let i = 0, count = gathered.length; i < count; i = i + 1) {
+    for (let i = 0, count = gathered.length; i < count; ++i) {
       if (gathered[i].id === item.tileset.id) {
         return gathered;
       }
@@ -85,19 +84,19 @@ import SIZER from './sizer';
   const debugInput = inputFactory(config.input, inputState, stateMachine);
 
   const gameLoop = gameLoopFactory({
-    render(fps) {
+    render() {
       if (stateMachine.state === 'loading') {
         return;
       }
-      canvas.render(fps);
+      canvas.render();
     },
-    update(fps) {
+    update() {
       if (stateMachine.state === 'loading') {
         return;
       }
-      entities.map(item => {
-        item.update(fps, this);
-      });
+      for (var i = 0, count = entities.length; i < count; ++i) {
+        entities[i].update();
+      }
       DEBUG.update(player, debugInput, this);
     }
   });

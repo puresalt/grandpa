@@ -24,6 +24,7 @@ import EVENT from '../event';
 import PUB_SUB from '../pubSub';
 import SIZER from '../sizer';
 import MathUtility from '../math';
+
 const INNER_DEADZONE = 0.1;
 
 const _defaultConfig = {
@@ -117,7 +118,7 @@ export default function TouchInput(config, inputState, context) {
     const abxy = _findElementOrCreateIt('button-abxy');
     abxy.style.bottom = (SIZER.maxHeight - SIZER.height) + 'px';
     abxy.style.right = (SIZER.maxWidth - SIZER.width) + 'px';
-    for (let i = 0, count = abxy.childNodes.length; i < count; i = i + 1) {
+    for (let i = 0, count = abxy.childNodes.length; i < count; ++i) {
       abxy.childNodes[i].style.height = abxy.childNodes[i].style.width = SIZER.relativeSize(SIZER.height / 3 / 2) + 'px';
     }
   };
@@ -139,7 +140,7 @@ export default function TouchInput(config, inputState, context) {
      */
 
     remove() {
-      for (let i = 0, count = _elements.length; i < count; i = i + 1) {
+      for (let i = 0, count = _elements.length; i < count; ++i) {
         let item = _elements[i];
         item.element.style.display = 'none';
         item.element.removeEventListener('touchstart', item.press);

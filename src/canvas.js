@@ -68,10 +68,10 @@ export default function canvasFunction(element) {
      *
      * @param {Number} fps
      */
-    render(fps) {
+    render() {
       _element.clearRect(0, 0, SIZER.width, SIZER.height);
-      _entities.sort(_sortByY).forEach(function(entity) {
-        entity.render(_element, _tilesets[entity.tileset.id], fps);
+      _entities.sort(_sortByY).forEach(entity => {
+        entity.render(_element, _tilesets[entity.tileset.id]);
       });
     },
 
@@ -94,7 +94,7 @@ export default function canvasFunction(element) {
      */
     setEntities(entities) {
       methods.clearEntities();
-      for (let i = 0, count = entities.length; i < count; i = i + 1) {
+      for (let i = 0, count = entities.length; i < count; ++i) {
         _entities.push(entities[i]);
       }
       return methods;
@@ -119,7 +119,7 @@ export default function canvasFunction(element) {
      * @returns {Object}
      */
     clearEntities() {
-      for (let i = 0, count = _entities.length; i < count; i = i + 1) {
+      for (let i = 0, count = _entities.length; i < count; ++i) {
         _entities[i] = null;
       }
       _entities.length = 0;
