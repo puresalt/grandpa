@@ -117,7 +117,7 @@ export default function Sprite(loadState) {
 
     detectJumpLocation() {
       if (this.jump.origin.x === -1) {
-        let degree = this.movement.moving === null
+        const degree = this.movement.moving === null
           ? ANGLE[DIRECTION.UP]
           : parseInt(this.movement.moving);
         const angle = -1 * (degree * Math.PI * 2) / 360;
@@ -147,7 +147,7 @@ export default function Sprite(loadState) {
         this.jump.control.y = MathUtility.round((this.jump.peak.y / (2 * JUMP_PEAK_REFERENCE * (1 - JUMP_PEAK_REFERENCE))) - (this.jump.origin.y * JUMP_PEAK_REFERENCE / (2 * (1 - JUMP_PEAK_REFERENCE))) - (this.jump.destination.y * (1 - JUMP_PEAK_REFERENCE) / (2 * JUMP_PEAK_REFERENCE)));
       }
 
-      const step = this.movement.jumping / (this.movement.jumpHeight * 1.5);
+      const step = this.movement.jumping / (this.movement.jumpSpeed);
       this.x = MathUtility.round(MathUtility.getPointOnQuadraticCurve(this.jump.origin.x, this.jump.control.x, this.jump.destination.x, step) - (SIZER.relativeSize(this.width) / 2));
       this.y = MathUtility.round(MathUtility.getPointOnQuadraticCurve(this.jump.origin.y, this.jump.control.y, this.jump.destination.y, step) - SIZER.relativeSize(this.height));
 
@@ -163,52 +163,45 @@ export default function Sprite(loadState) {
      * Detect if we have any movement and change state accordingly.
      */
     detectMovement() {
-      const movement = this.movement;
-
-      if (movement.stunned || movement.moving === null) {
+      if (this.movement.stunned || this.movement.moving === null) {
         return;
       }
 
-      const maxX = SIZER.width - SIZER.relativeSize(this.width);
-      const maxY = SIZER.height - SIZER.relativeSize(this.height);
+      const runSpeed = this.movement.running
+        ? 2
+        : 1;
+      const speedX = MathUtility.round(this.speed.x * runSpeed);
+      const speedY = MathUtility.round(this.speed.y * runSpeed);
+      const movingAbs = Math.abs(this.movement.moving);
 
       let x = this.x;
       let y = this.y;
-
-      let speedX = this.speed.x;
-      let speedY = this.speed.y;
-      if (movement.running) {
-        speedX = MathUtility.round(speedX * 1.75);
-        speedY = MathUtility.round(speedY * 1.75);
-      }
-
-      let movingAbs = Math.abs(movement.moving);
-      if (movement.moving === ANGLE[DIRECTION.RIGHT]) {
+      if (this.movement.moving === ANGLE[DIRECTION.RIGHT]) {
         x += SIZER.relativeSize(speedX);
-      } else if (movement.moving === ANGLE[DIRECTION.LEFT]) {
+      } else if (this.movement.moving === ANGLE[DIRECTION.LEFT]) {
         x -= SIZER.relativeSize(speedX);
-      } else if (movement.moving === ANGLE[DIRECTION.UP]) {
+      } else if (this.movement.moving === ANGLE[DIRECTION.UP]) {
         y -= SIZER.relativeSize(speedY);
-      } else if (movement.moving === ANGLE[DIRECTION.DOWN]) {
+      } else if (this.movement.moving === ANGLE[DIRECTION.DOWN]) {
         y += SIZER.relativeSize(speedY);
-      } else if (movement.moving >= ANGLE[DIRECTION.RIGHT] && movement.moving < ANGLE[DIRECTION.UP]) {
-        if (movement.moving <= ANGLE[DIRECTION.UP_RIGHT]) {
+      } else if (this.movement.moving >= ANGLE[DIRECTION.RIGHT] && this.movement.moving < ANGLE[DIRECTION.UP]) {
+        if (this.movement.moving <= ANGLE[DIRECTION.UP_RIGHT]) {
           x += SIZER.relativeSize(speedX);
           y -= SIZER.relativeSize(speedY * ((movingAbs - ANGLE[DIRECTION.RIGHT]) / DEGREES_PER_SLICE));
         } else {
           x += SIZER.relativeSize(speedX * (1 - ((movingAbs - ANGLE[DIRECTION.UP_RIGHT]) / DEGREES_PER_SLICE)));
           y -= SIZER.relativeSize(speedY);
         }
-      } else if (movement.moving <= ANGLE[DIRECTION.RIGHT] && movement.moving >= ANGLE[DIRECTION.DOWN]) {
-        if (movement.moving >= ANGLE[DIRECTION.DOWN_RIGHT]) {
+      } else if (this.movement.moving <= ANGLE[DIRECTION.RIGHT] && this.movement.moving >= ANGLE[DIRECTION.DOWN]) {
+        if (this.movement.moving >= ANGLE[DIRECTION.DOWN_RIGHT]) {
           x += SIZER.relativeSize(speedX);
           y += SIZER.relativeSize(speedY * ((movingAbs - ANGLE[DIRECTION.RIGHT]) / DEGREES_PER_SLICE));
         } else {
           x += SIZER.relativeSize(speedX * (1 - ((movingAbs - ANGLE[DIRECTION.UP_RIGHT]) / DEGREES_PER_SLICE)));
           y += SIZER.relativeSize(speedY);
         }
-      } else if (movement.moving >= ANGLE[DIRECTION.UP] && movement.moving < ANGLE[DIRECTION.LEFT]) {
-        if (movement.moving >= ANGLE[DIRECTION.UP_LEFT]) {
+      } else if (this.movement.moving >= ANGLE[DIRECTION.UP] && this.movement.moving < ANGLE[DIRECTION.LEFT]) {
+        if (this.movement.moving >= ANGLE[DIRECTION.UP_LEFT]) {
           x -= SIZER.relativeSize(speedX);
           y -= SIZER.relativeSize(speedY * (1 - ((movingAbs - ANGLE[DIRECTION.UP_LEFT]) / DEGREES_PER_SLICE)));
         } else {
@@ -216,7 +209,7 @@ export default function Sprite(loadState) {
           y -= SIZER.relativeSize(speedY);
         }
       } else {
-        if (movement.moving <= ANGLE[DIRECTION.DOWN_LEFT]) {
+        if (this.movement.moving <= ANGLE[DIRECTION.DOWN_LEFT]) {
           x = x - SIZER.relativeSize(speedX);
           y = y + SIZER.relativeSize(speedY * (1 - ((movingAbs - ANGLE[DIRECTION.UP_LEFT]) / DEGREES_PER_SLICE)));
         } else {
@@ -224,9 +217,8 @@ export default function Sprite(loadState) {
           y = y + SIZER.relativeSize(speedY);
         }
       }
-
-      this.x = MathUtility.minMax(x, 0, maxX);
-      this.y = MathUtility.minMax(y, 0, maxY);
+      this.x = MathUtility.minMax(x, 0, SIZER.width - SIZER.relativeSize(this.width));
+      this.y = MathUtility.minMax(y, 0, SIZER.height - SIZER.relativeSize(this.height));
     }
   }, loadState || {}));
 }

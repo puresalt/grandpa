@@ -141,7 +141,7 @@ export default function TouchInput(config, inputState, context) {
 
     remove() {
       for (let i = 0, count = _elements.length; i < count; ++i) {
-        let item = _elements[i];
+        const item = _elements[i];
         item.element.style.display = 'none';
         item.element.removeEventListener('touchstart', item.press);
         item.element.removeEventListener('touchmove', item.press);
@@ -226,7 +226,7 @@ function _findElementOrCreateIt(id) {
     if (id === 'button-directional' || id === 'button-abxy') {
       document.body.appendChild(element);
     } else {
-      let abxy = _findElementOrCreateIt('button-abxy');
+      const abxy = _findElementOrCreateIt('button-abxy');
       abxy.appendChild(element);
     }
   }

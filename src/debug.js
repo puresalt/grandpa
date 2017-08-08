@@ -74,10 +74,9 @@ export default {
       stylizeKey('fps') + stylizeValue(MathUtility.round(gameLoop.getRenderedFps() * 100) / 100)
     ];
 
-    const movement = player.movement;
     for (let i = 0, count = _movementKeys.length; i < count; ++i) {
       let key = _movementKeys[i];
-      stats.push(stylizeKey(key) + stylizeValue(movement[key]));
+      stats.push(stylizeKey(key) + stylizeValue( player.movement[key]));
     }
     stats.push(stylizeKey('location') + stylizeValue('(' + player.x + ',' + player.y + ')'));
 

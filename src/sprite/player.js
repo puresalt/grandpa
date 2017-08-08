@@ -46,8 +46,8 @@ export default function Player(loadState) {
     hp: 100,
     name: 'Gramps',
     speed: {
-      x: 5,
-      y: 5
+      x: 2,
+      y: 3
     },
     tileset: {
       id: 'blank',

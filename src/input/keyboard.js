@@ -60,7 +60,7 @@ export default function KeyboardInput(config, inputState, context) {
    */
   const _eventListener = (direction) => {
     return (event) => {
-      let found = _eventLookup[event.keyCode];
+      const found = _eventLookup[event.keyCode];
       if (!found || !inputState.triggerEvent(direction, found, context)) {
         return;
       }
@@ -73,8 +73,8 @@ export default function KeyboardInput(config, inputState, context) {
     };
   };
 
-  let _press = _eventListener(EVENT.PRESS);
-  let _release = _eventListener(EVENT.RELEASE);
+  const _press = _eventListener(EVENT.PRESS);
+  const _release = _eventListener(EVENT.RELEASE);
 
   _extendedConfig.element.addEventListener('keydown', _press);
   _extendedConfig.element.addEventListener('keyup', _release);

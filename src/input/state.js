@@ -30,7 +30,7 @@ import debug from '../debug';
  * @returns {Object}
  */
 function setInitial() {
-  let keys = {};
+  const keys = {};
   for (let key in KEY) {
     if (!KEY.hasOwnProperty(key)) {
       continue;
@@ -48,7 +48,7 @@ function setInitial() {
  * @returns {{getKeys: (function()), triggerEvent: (function())}}
  */
 export default function InputState(movement, loadState) {
-  let _keys = loadState || setInitial();
+  const _keys = loadState || setInitial();
 
   /**
    * Hold a directional action based on key presses.
