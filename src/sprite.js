@@ -117,17 +117,20 @@ export default function Sprite(loadState) {
 
     detectJumpLocation() {
       if (this.jump.origin.x === -1) {
+        const distanceModifier = this.movement.running
+          ? 1.25
+          : 1;
         const degree = this.movement.moving === null
           ? ANGLE[DIRECTION.UP]
           : parseInt(this.movement.moving);
         const angle = -1 * (degree * Math.PI * 2) / 360;
         this.jump.origin.x = MathUtility.round(this.x + (SIZER.relativeSize(this.width) / 2));
         this.jump.origin.y = MathUtility.round(this.y + SIZER.relativeSize(this.height));
-        this.jump.air.width = SIZER.relativeSize(120);
-        this.jump.air.height = SIZER.relativeSize(30);
+        this.jump.air.width = SIZER.relativeSize(120 * distanceModifier);
+        this.jump.air.height = SIZER.relativeSize(30 * distanceModifier);
         this.jump.air.angle = angle;
-        this.jump.ground.width = SIZER.relativeSize(200);
-        this.jump.ground.height = SIZER.relativeSize(50);
+        this.jump.ground.width = SIZER.relativeSize(200 * distanceModifier);
+        this.jump.ground.height = SIZER.relativeSize(50 * distanceModifier);
         this.jump.ground.angle = angle;
 
         _jumpEllipsePoint.x = MathUtility.round(this.x + (SIZER.relativeSize(this.width) / 2));
