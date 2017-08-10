@@ -15,8 +15,8 @@
 
 'use strict';
 
-import keyboardInput from './input/keyboard';
-import touchInput from './input/touch';
+import keyboardInput from './keyboard';
+import touchInput from './touch';
 
 const allowedInputs = {
   keyboard: keyboardInput,

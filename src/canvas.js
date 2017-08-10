@@ -46,7 +46,6 @@ function elementLoader(element, callback) {
 function createImageElementForTileset(tileset, callback) {
   let element = document.createElement('img');
   element.src = tileset.src;
-  element.id = 'tileset-' + tileset.id;
   elementLoader(element, callback);
   return element;
 }
@@ -60,18 +59,16 @@ function createImageElementForTileset(tileset, callback) {
 export default function canvasFunction(element) {
   const _element = element.getContext('2d');
   const _tilesets = {};
-  let _entities = [];
+  const _alive = [];
 
   const methods = {
     /**
      * Render our canvas.
-     *
-     * @param {Number} fps
      */
     render() {
       _element.clearRect(0, 0, SIZER.width, SIZER.height);
-      _entities.sort(_sortByY).forEach(entity => {
-        entity.render(_element, _tilesets[entity.tileset.id]);
+      _alive.sort(_sortByY).forEach(entity => {
+        entity.render(_element, _tilesets[entity.tileset.src]);
       });
     },
 
@@ -82,21 +79,7 @@ export default function canvasFunction(element) {
      * @returns {Object}
      */
     addEntity(entity) {
-      _entities.push(entity);
-      return methods;
-    },
-
-    /**
-     * Set all of the entities for our canvas.
-     *
-     * @param {Array} entities
-     * @returns {Object}
-     */
-    setEntities(entities) {
-      methods.clearEntities();
-      for (let i = 0, count = entities.length; i < count; ++i) {
-        _entities.push(entities[i]);
-      }
+      _alive.push(entity);
       return methods;
     },
 
@@ -107,22 +90,12 @@ export default function canvasFunction(element) {
      * @returns {Object}
      */
     removeEntity(entity) {
-      _entities = _entities.filter(item => {
-        return item.id !== entity.id;
-      });
-      return methods;
-    },
-
-    /**
-     * Clear all of the defined entities.
-     *
-     * @returns {Object}
-     */
-    clearEntities() {
-      for (let i = 0, count = _entities.length; i < count; ++i) {
-        _entities[i] = null;
+      for (let i = 0, count = _alive.length; i < count; ++i) {
+        if (_alive[i] !== entity) {
+          continue;
+        }
+        _alive[i].splice(i, 1);
       }
-      _entities.length = 0;
       return methods;
     },
 
@@ -133,39 +106,21 @@ export default function canvasFunction(element) {
      * @param {Function} callback
      * @returns {Object}
      */
-    setTilesets(tilesets, callback) {
-      methods.clearTilesets();
+    loadTilesets(tilesets, callback) {
       const waitingFor = tilesets.length;
-      let replied = false;
+      let loaded = 0;
       tilesets.forEach(tileset => {
         createImageElementForTileset(tileset, element => {
-          _tilesets[tileset.id] = {
+          _tilesets[tileset.src] = {
             image: element,
             height: element.height,
             width: element.width
           };
-          if (!replied && Object.keys(_tilesets).length >= waitingFor) {
-            replied = true;
+          if (++loaded === waitingFor) {
             callback();
           }
         });
       });
-      return methods;
-    },
-
-    /**
-     * Clear all of the current tiles.
-     *
-     * @returns {Object}
-     */
-    clearTilesets() {
-      for (let key in _tilesets) {
-        if (!_tilesets.hasOwnProperty(key)) {
-          continue;
-        }
-        _tilesets[key] = null;
-        delete _tilesets[key];
-      }
       return methods;
     }
   };

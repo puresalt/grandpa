@@ -16,10 +16,10 @@
 'use strict';
 
 import _ from 'lodash/fp';
-import DIRECTION from '../movement/direction';
-import ANGLE from '../movement/direction/angle';
 import MathUtility from '../math';
-import baseSpriteFactory from '../sprite';
+import BaseSprite from '../sprite';
+
+const _objectType = 'npc';
 
 /**
  * Load our player.
@@ -27,11 +27,12 @@ import baseSpriteFactory from '../sprite';
  * @param {Object?} loadState
  */
 export default function Npc(loadState) {
-  return Object.assign(_.extend(baseSpriteFactory(), {
+  const baseSprite = BaseSprite();
+  const npc = Object.assign(_.extend(baseSprite, {
+    type: _objectType,
     hp: 20,
     name: 'NPC',
     tileset: {
-      id: 'blank',
       src: '/assets/sprite/ryan.gif',
       x: 47,
       y: 3
@@ -43,22 +44,31 @@ export default function Npc(loadState) {
      * {@inheritDoc}
      */
     update() {
-
       if (MathUtility.randomBoolean()) {
-        this.movement.moving = MathUtility.randomChoice([
-          ANGLE[DIRECTION.UP_RIGHT],
-          ANGLE[DIRECTION.UP_LEFT],
-          ANGLE[DIRECTION.DOWN_RIGHT],
-          ANGLE[DIRECTION.DOWN_LEFT],
-          ANGLE[DIRECTION.RIGHT],
-          ANGLE[DIRECTION.LEFT],
-          ANGLE[DIRECTION.UP],
-          ANGLE[DIRECTION.DOWN],
-          null
-        ]);
+        if (MathUtility.randomNumber(0, 10) <= 2) {
+          this.movement.move(MathUtility.randomNumber(-180, 180));
+        }
+        if (MathUtility.randomNumber(0, 10) === 1) {
+          this.movement.jump(true);
+        }
       }
+      baseSprite.update.call(this, null);
+    },
 
-      this.detectMovement();
+    /**
+     * {@inheritDoc}
+     */
+    reset() {
+      baseSprite.reset.call(this);
+      this.hp = 20;
+      this.name = 'NPC';
+      this.tileset.src = '/assets/sprite/ryan.gif';
+      this.tileset.x = 47;
+      this.tileset.y = 3;
+      this.height = 66;
+      this.width = 36;
+      return this;
     }
   }), loadState || {});
+  return npc;
 }

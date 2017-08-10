@@ -18,13 +18,13 @@
 'use strict';
 
 import StateMachine from './vendor/stateMachine';
-import gameLoopFactory from './gameLoop';
-import inputFactory from './input';
-import inputStateFactory from './input/state';
-import playerFactory from './sprite/player';
-import canvasFactory from './canvas';
-import DEBUG from './debug';
-import SIZER from './sizer';
+import GameLoop from './gameLoop';
+import InputFactory from './input/factory';
+import InputState from './input/state';
+import Canvas from './canvas';
+import SpriteFactory from './sprite/factory';
+import Debug from './debug';
+import Sizer from './sizer';
 
 (function app() {
   const touchscreen = 'ontouchstart' in document.documentElement;
@@ -41,9 +41,8 @@ import SIZER from './sizer';
   };
 
   const canvasElement = document.getElementById(config.element.id);
-  SIZER.init(canvasElement).update();
-
-  const canvas = canvasFactory(canvasElement);
+  Sizer.init(canvasElement).update();
+  const canvas = Canvas(canvasElement);
 
   const stateMachine = new StateMachine({
     init: 'loading',
@@ -61,13 +60,15 @@ import SIZER from './sizer';
     ]
   });
 
-  const player = playerFactory();
+  const spriteFactory = SpriteFactory();
+  const player = spriteFactory.create('player');
   const entities = [
-    player
+    player,
+    spriteFactory.create('npc')
   ];
   const tilesets = entities.reduce((gathered, item) => {
     for (let i = 0, count = gathered.length; i < count; ++i) {
-      if (gathered[i].id === item.tileset.id) {
+      if (gathered[i].src === item.tileset.src) {
         return gathered;
       }
     }
@@ -75,15 +76,18 @@ import SIZER from './sizer';
     return gathered;
   }, []);
 
-  canvas.setEntities(entities);
-  canvas.setTilesets(tilesets, () => {
+  entities.forEach(item => {
+    canvas.addEntity(item);
+  });
+
+  canvas.loadTilesets(tilesets, () => {
     stateMachine.play();
   });
 
-  const inputState = inputStateFactory(player.movement/* , loadState */);
-  const debugInput = inputFactory(config.input, inputState, stateMachine);
+  const inputState = InputState(player.movement/* , loadState */);
+  const debugInput = InputFactory(config.input, inputState, stateMachine);
 
-  const gameLoop = gameLoopFactory({
+  const gameLoop = GameLoop({
     render() {
       if (stateMachine.state === 'loading') {
         return;
@@ -94,14 +98,14 @@ import SIZER from './sizer';
       if (stateMachine.state === 'loading') {
         return;
       }
-      for (var i = 0, count = entities.length; i < count; ++i) {
+      for (let i = 0, count = entities.length; i < count; ++i) {
         entities[i].update();
       }
-      DEBUG.update(player, debugInput, this);
+      Debug.update(player, debugInput, this);
     }
   });
 
-  DEBUG.init(DEBUG_FLAG);
+  Debug.init(DEBUG_FLAG);
   if (!document.hidden) {
     gameLoop.start();
   }

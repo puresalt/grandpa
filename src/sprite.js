@@ -19,21 +19,14 @@
 
 import DIRECTION from './movement/direction';
 import ANGLE from './movement/direction/angle';
+import GUIDED from './movement/guided';
 import SIZER from './sizer';
 import MathUtility from './math';
 import movementFactory from './movement';
 
+const _objectType = 'sprite';
 const DEGREES_PER_SLICE = 45;
 const JUMP_PEAK_REFERENCE = 0.55;
-
-const _reusedPointObject = {
-  x: -1,
-  y: -1
-};
-const _jumpEllipsePoint = {
-  x: -1,
-  y: -1
-};
 
 /**
  * Create a sprite.
@@ -43,6 +36,7 @@ const _jumpEllipsePoint = {
  */
 export default function Sprite(loadState) {
   return Object.assign(Object.create({
+    type: _objectType,
     equipment: {
       leftHand: null,
       rightHand: null,
@@ -51,7 +45,6 @@ export default function Sprite(loadState) {
       accessories: []
     },
     tileset: {
-      id: 'blank',
       src: '/assets/sprite/ryan.gif',
       x: 0,
       y: 0
@@ -92,13 +85,37 @@ export default function Sprite(loadState) {
         angle: -1
       }
     },
+    _debug: {
+      strokeColor: '#800'
+    },
+    _gcAvoidance: {
+      jumpPoint: {
+        x: -1,
+        y: -1
+      },
+      ellipsePoint: {
+        x: -1,
+        y: -1
+      },
+      renderingEllipse: {
+        angle: -1,
+        height: -1,
+        width: -1
+      },
+      point: {
+        x: -1,
+        y: -1
+      }
+    },
+
     movement: movementFactory(),
 
     /**
      * Render an update.
      */
     update() {
-
+      this.detectJumpLocation();
+      this.detectMovement();
     },
 
     render(canvas, tileset) {
@@ -113,16 +130,45 @@ export default function Sprite(loadState) {
         this.width,
         this.height
       );
+
+      // @TODO Remove this, it is for just drawing the math involved for jumping.
+      if (this.jump.origin.x !== -1) {
+        this._gcAvoidance.jumpPoint.x = this.jump.origin.x;
+        this._gcAvoidance.jumpPoint.y = MathUtility.round(this.jump.origin.y - SIZER.relativeSize(this.movement.jumpHeight) - SIZER.relativeSize(this.height));
+        _drawEllipse(this, canvas, this._gcAvoidance.jumpPoint, this.jump.air);
+        _drawEllipse(this, canvas, this.jump.origin, this.jump.ground);
+
+        canvas.beginPath();
+        canvas.moveTo(this.jump.origin.x, this.jump.origin.y);
+        canvas.quadraticCurveTo(this.jump.control.x, this.jump.control.y, this.jump.destination.x, this.jump.destination.y);
+        canvas.stroke();
+        canvas.closePath();
+        canvas.beginPath();
+        canvas.arc(
+          this.jump.control.x,
+          this.jump.control.y,
+          SIZER.relativeSize(10),
+          SIZER.relativeSize(5),
+          0,
+          Math.PI * 2,
+          true
+        );
+        canvas.closePath();
+        canvas.fill();
+      }
     },
 
     detectJumpLocation() {
+      if (this.movement.guided !== GUIDED.JUMP) {
+        return;
+      }
       if (this.jump.origin.x === -1) {
         const distanceModifier = this.movement.running
           ? 1.25
           : 1;
-        const degree = this.movement.moving === null
+        const degree = this.movement.direction === null
           ? ANGLE[DIRECTION.UP]
-          : parseInt(this.movement.moving);
+          : parseInt(this.movement.direction);
         const angle = -1 * (degree * Math.PI * 2) / 360;
         this.jump.origin.x = MathUtility.round(this.x + (SIZER.relativeSize(this.width) / 2));
         this.jump.origin.y = MathUtility.round(this.y + SIZER.relativeSize(this.height));
@@ -133,18 +179,18 @@ export default function Sprite(loadState) {
         this.jump.ground.height = SIZER.relativeSize(50 * distanceModifier);
         this.jump.ground.angle = angle;
 
-        _jumpEllipsePoint.x = MathUtility.round(this.x + (SIZER.relativeSize(this.width) / 2));
-        _jumpEllipsePoint.y = MathUtility.round(this.y - SIZER.relativeSize(this.movement.jumpHeight));
-        MathUtility.setPointOnEllipse(_jumpEllipsePoint, this.jump.air, _reusedPointObject);
-        this.jump.peak.x = MathUtility.round(_reusedPointObject.x);
-        this.jump.peak.y = MathUtility.round(_reusedPointObject.y);
-        if (this.movement.moving === null) {
+        this._gcAvoidance.ellipsePoint.x = MathUtility.round(this.x + (SIZER.relativeSize(this.width) / 2));
+        this._gcAvoidance.ellipsePoint.y = MathUtility.round(this.y - SIZER.relativeSize(this.movement.jumpHeight));
+        MathUtility.setPointOnEllipse(this._gcAvoidance.ellipsePoint, this.jump.air, this._gcAvoidance.point);
+        this.jump.peak.x = MathUtility.round(this._gcAvoidance.point.x);
+        this.jump.peak.y = MathUtility.round(this._gcAvoidance.point.y);
+        if (this.movement.direction === null) {
           this.jump.destination.x = this.jump.origin.x;
           this.jump.destination.y = this.jump.origin.y;
         } else {
-          MathUtility.setPointOnEllipse(this.jump.origin, this.jump.ground, _reusedPointObject);
-          this.jump.destination.x = MathUtility.round(_reusedPointObject.x);
-          this.jump.destination.y = MathUtility.round(_reusedPointObject.y);
+          MathUtility.setPointOnEllipse(this.jump.origin, this.jump.ground, this._gcAvoidance.point);
+          this.jump.destination.x = MathUtility.round(this._gcAvoidance.point.x);
+          this.jump.destination.y = MathUtility.round(this._gcAvoidance.point.y);
         }
         this.jump.control.x = MathUtility.round((this.jump.peak.x / (2 * JUMP_PEAK_REFERENCE * (1 - JUMP_PEAK_REFERENCE))) - (this.jump.origin.x * JUMP_PEAK_REFERENCE / (2 * (1 - JUMP_PEAK_REFERENCE))) - (this.jump.destination.x * (1 - JUMP_PEAK_REFERENCE) / (2 * JUMP_PEAK_REFERENCE)));
         this.jump.control.y = MathUtility.round((this.jump.peak.y / (2 * JUMP_PEAK_REFERENCE * (1 - JUMP_PEAK_REFERENCE))) - (this.jump.origin.y * JUMP_PEAK_REFERENCE / (2 * (1 - JUMP_PEAK_REFERENCE))) - (this.jump.destination.y * (1 - JUMP_PEAK_REFERENCE) / (2 * JUMP_PEAK_REFERENCE)));
@@ -160,6 +206,7 @@ export default function Sprite(loadState) {
           MathUtility.round(this.jump.destination.x - (SIZER.relativeSize(this.width) / 2)),
           MathUtility.round(this.jump.destination.y - SIZER.relativeSize(this.height))
         );
+        this.movement.guided = false;
         this.jump.origin.x = -1;
       }
     },
@@ -168,7 +215,7 @@ export default function Sprite(loadState) {
      * Detect if we have any movement and change state accordingly.
      */
     detectMovement() {
-      if (this.movement.stunned || this.movement.moving === null) {
+      if (!this.movement.moving || this.movement.guided) {
         return;
       }
 
@@ -177,36 +224,36 @@ export default function Sprite(loadState) {
         : 1;
       const speedX = MathUtility.round(this.speed.x * runSpeed);
       const speedY = MathUtility.round(this.speed.y * runSpeed);
-      const movingAbs = Math.abs(this.movement.moving);
+      const movingAbs = Math.abs(this.movement.direction);
 
       let x = this.x;
       let y = this.y;
-      if (this.movement.moving === ANGLE[DIRECTION.RIGHT]) {
+      if (this.movement.direction === ANGLE[DIRECTION.RIGHT]) {
         x += SIZER.relativeSize(speedX);
-      } else if (this.movement.moving === ANGLE[DIRECTION.LEFT]) {
+      } else if (this.movement.direction === ANGLE[DIRECTION.LEFT]) {
         x -= SIZER.relativeSize(speedX);
-      } else if (this.movement.moving === ANGLE[DIRECTION.UP]) {
+      } else if (this.movement.direction === ANGLE[DIRECTION.UP]) {
         y -= SIZER.relativeSize(speedY);
-      } else if (this.movement.moving === ANGLE[DIRECTION.DOWN]) {
+      } else if (this.movement.direction === ANGLE[DIRECTION.DOWN]) {
         y += SIZER.relativeSize(speedY);
-      } else if (this.movement.moving >= ANGLE[DIRECTION.RIGHT] && this.movement.moving < ANGLE[DIRECTION.UP]) {
-        if (this.movement.moving <= ANGLE[DIRECTION.UP_RIGHT]) {
+      } else if (this.movement.direction >= ANGLE[DIRECTION.RIGHT] && this.movement.direction < ANGLE[DIRECTION.UP]) {
+        if (this.movement.direction <= ANGLE[DIRECTION.UP_RIGHT]) {
           x += SIZER.relativeSize(speedX);
           y -= SIZER.relativeSize(speedY * ((movingAbs - ANGLE[DIRECTION.RIGHT]) / DEGREES_PER_SLICE));
         } else {
           x += SIZER.relativeSize(speedX * (1 - ((movingAbs - ANGLE[DIRECTION.UP_RIGHT]) / DEGREES_PER_SLICE)));
           y -= SIZER.relativeSize(speedY);
         }
-      } else if (this.movement.moving <= ANGLE[DIRECTION.RIGHT] && this.movement.moving >= ANGLE[DIRECTION.DOWN]) {
-        if (this.movement.moving >= ANGLE[DIRECTION.DOWN_RIGHT]) {
+      } else if (this.movement.direction <= ANGLE[DIRECTION.RIGHT] && this.movement.direction >= ANGLE[DIRECTION.DOWN]) {
+        if (this.movement.direction >= ANGLE[DIRECTION.DOWN_RIGHT]) {
           x += SIZER.relativeSize(speedX);
           y += SIZER.relativeSize(speedY * ((movingAbs - ANGLE[DIRECTION.RIGHT]) / DEGREES_PER_SLICE));
         } else {
           x += SIZER.relativeSize(speedX * (1 - ((movingAbs - ANGLE[DIRECTION.UP_RIGHT]) / DEGREES_PER_SLICE)));
           y += SIZER.relativeSize(speedY);
         }
-      } else if (this.movement.moving >= ANGLE[DIRECTION.UP] && this.movement.moving < ANGLE[DIRECTION.LEFT]) {
-        if (this.movement.moving >= ANGLE[DIRECTION.UP_LEFT]) {
+      } else if (this.movement.direction >= ANGLE[DIRECTION.UP] && this.movement.direction < ANGLE[DIRECTION.LEFT]) {
+        if (this.movement.direction >= ANGLE[DIRECTION.UP_LEFT]) {
           x -= SIZER.relativeSize(speedX);
           y -= SIZER.relativeSize(speedY * (1 - ((movingAbs - ANGLE[DIRECTION.UP_LEFT]) / DEGREES_PER_SLICE)));
         } else {
@@ -214,7 +261,7 @@ export default function Sprite(loadState) {
           y -= SIZER.relativeSize(speedY);
         }
       } else {
-        if (this.movement.moving <= ANGLE[DIRECTION.DOWN_LEFT]) {
+        if (this.movement.direction <= ANGLE[DIRECTION.DOWN_LEFT]) {
           x = x - SIZER.relativeSize(speedX);
           y = y + SIZER.relativeSize(speedY * (1 - ((movingAbs - ANGLE[DIRECTION.UP_LEFT]) / DEGREES_PER_SLICE)));
         } else {
@@ -234,6 +281,88 @@ export default function Sprite(loadState) {
     attemptToMoveTo(x, y) {
       this.x = MathUtility.minMax(x, 0, SIZER.width - SIZER.relativeSize(this.width));
       this.y = MathUtility.minMax(y, (this.movement.jumping ? this.jump.peak.y - SIZER.relativeSize(this.height) : 0), SIZER.height - SIZER.relativeSize(this.height));
+    },
+
+    /**
+     * Reset the state of a sprite.
+     */
+    reset() {
+      this.movement.reset();
+      this.equipment.leftHand = null;
+      this.equipment.rightHand = null;
+      this.equipment.head = null;
+      this.equipment.boots = null;
+      this.equipment.accessories.length = 0;
+      this.equipment.tileset.src = '/assets/sprite/ryan.gif';
+      this.equipment.tileset.x = 0;
+      this.equipment.tileset.y = 0;
+      this.equipment.speed.x = 5;
+      this.equipment.speed.y = 5;
+      this.x = 0;
+      this.y = 0;
+      this.height = 30;
+      this.width = 30;
+      this.jump.control.x = -1;
+      this.jump.control.y = -1;
+      this.jump.destination.x = -1;
+      this.jump.destination.y = -1;
+      this.jump.origin.x = -1;
+      this.jump.origin.y = -1;
+      this.jump.peak.x = -1;
+      this.jump.peak.y = -1;
+      this.jump.air.width = -1;
+      this.jump.air.height = -1;
+      this.jump.air.angle = -1;
+      this.jump.ground.width = -1;
+      this.jump.ground.height = -1;
+      this.jump.ground.angle = -1;
+      return this;
     }
   }, loadState || {}));
+}
+
+/**
+ * Draw an ellipse on a canvas based off of the sizing.
+ *
+ * @param {Object} sprite
+ * @param {CanvasRenderingContext2D} canvas
+ * @param {{x: Number, y: Number}} origin
+ * @param {{angle: Number, height: Number, width: Number}} ellipse
+ * @private
+ */
+function _drawEllipse(sprite, canvas, origin, ellipse) {
+  canvas.beginPath();
+  sprite._gcAvoidance.renderingEllipse.height = ellipse.height;
+  sprite._gcAvoidance.renderingEllipse.width = ellipse.width;
+  for (let i = 0; i < 2 * Math.PI; i = i + 0.01) {
+    sprite._gcAvoidance.renderingEllipse.angle = i;
+    MathUtility.setPointOnEllipse(origin, sprite._gcAvoidance.renderingEllipse, sprite._gcAvoidance.point);
+    sprite._gcAvoidance.point.x = MathUtility.round(sprite._gcAvoidance.point.x);
+    sprite._gcAvoidance.point.y = MathUtility.round(sprite._gcAvoidance.point.y);
+    if (!i) {
+      canvas.moveTo(sprite._gcAvoidance.point.x, sprite._gcAvoidance.point.y);
+    } else {
+      canvas.lineTo(sprite._gcAvoidance.point.x, sprite._gcAvoidance.point.y);
+    }
+  }
+  canvas.lineWidth = 2;
+  canvas.strokeStyle = sprite._debug.strokeColor;
+  canvas.stroke();
+  canvas.closePath();
+
+  MathUtility.setPointOnEllipse(origin, ellipse, sprite._gcAvoidance.point);
+  sprite._gcAvoidance.point.x = MathUtility.round(sprite._gcAvoidance.point.x);
+  sprite._gcAvoidance.point.y = MathUtility.round(sprite._gcAvoidance.point.y);
+  canvas.beginPath();
+  canvas.arc(
+    sprite._gcAvoidance.point.x,
+    sprite._gcAvoidance.point.y,
+    SIZER.relativeSize(10),
+    SIZER.relativeSize(5),
+    0,
+    Math.PI * 2,
+    true
+  );
+  canvas.closePath();
+  canvas.fill();
 }

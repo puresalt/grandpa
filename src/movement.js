@@ -19,6 +19,7 @@
 
 import DIRECTION from './movement/direction';
 import ANGLE from './movement/direction/angle';
+import GUIDED from './movement/guided';
 
 /**
  * Resolve any direction issues and keep the state internal.
@@ -31,6 +32,8 @@ export default function InputMovement(loadState) {
   let _lastRight = 0;
   let _lastLeft = 0;
   return Object.assign(Object.create({
+    direction: 0,
+    guided: false,
     jumpHeight: 20,
     jumpSpeed: 50,
     crouching: false,
@@ -38,7 +41,7 @@ export default function InputMovement(loadState) {
     kicking: false,
     punching: false,
     jumping: 0,
-    moving: null,
+    moving: false,
     running: false,
     stunned: false,
 
@@ -47,9 +50,10 @@ export default function InputMovement(loadState) {
      *
      * @param {Number} angle
      */
-    direction(angle) {
-      this.moving = angle;
-      if (this.moving === null) {
+    move(angle) {
+      this.moving = angle !== null;
+
+      if (!this.moving) {
         if (this.facing === DIRECTION.RIGHT) {
           _lastRight = Date.now();
           _lastLeft = 0;
@@ -61,13 +65,15 @@ export default function InputMovement(loadState) {
         }
         return;
       }
-      if (this.moving <= ANGLE[DIRECTION.UP] && this.moving >= ANGLE[DIRECTION.DOWN]) {
+
+      this.direction = angle;
+      if (this.direction <= ANGLE[DIRECTION.UP] && this.direction >= ANGLE[DIRECTION.DOWN]) {
         if (this.facing !== DIRECTION.RIGHT) {
           this.running = false;
         }
-        if (this.moving < ANGLE[DIRECTION.UP_RIGHT] && this.moving > ANGLE[DIRECTION.DOWN_RIGHT] && _lastRight) {
+        if (this.direction < ANGLE[DIRECTION.UP_RIGHT] && this.direction > ANGLE[DIRECTION.DOWN_RIGHT] && _lastRight) {
           this.running = this.running || Date.now() - _lastRight < 100;
-        } else if (this.moving >= ANGLE[DIRECTION.UP_RIGHT] || this.moving <= ANGLE[DIRECTION.DOWN_RIGHT]) {
+        } else if (this.direction >= ANGLE[DIRECTION.UP_RIGHT] || this.direction <= ANGLE[DIRECTION.DOWN_RIGHT]) {
           this.running = false;
         }
         this.facing = DIRECTION.RIGHT;
@@ -75,9 +81,9 @@ export default function InputMovement(loadState) {
         if (this.facing !== DIRECTION.LEFT) {
           this.running = false;
         }
-        if (this.moving > ANGLE[DIRECTION.UP_LEFT] || this.moving < ANGLE[DIRECTION.DOWN_RIGHT] && _lastLeft) {
+        if (this.direction > ANGLE[DIRECTION.UP_LEFT] || this.direction < ANGLE[DIRECTION.DOWN_RIGHT] && _lastLeft) {
           this.running = this.running || Date.now() - _lastLeft < 100;
-        } else if (this.moving <= ANGLE[DIRECTION.UP_LEFT] || this.moving >= ANGLE[DIRECTION.DOWN_RIGHT]) {
+        } else if (this.direction <= ANGLE[DIRECTION.UP_LEFT] || this.direction >= ANGLE[DIRECTION.DOWN_RIGHT]) {
           this.running = false;
         }
         this.facing = DIRECTION.LEFT;
@@ -102,10 +108,11 @@ export default function InputMovement(loadState) {
      * @param {Boolean} alreadyFired
      */
     jump(active, alreadyFired) {
-      if (!active || this.jumping || alreadyFired) {
+      if (!active || this.guided || alreadyFired) {
         return;
       }
       this.jumping = this.jumpSpeed;
+      this.guided = GUIDED.JUMP;
     },
 
     /**
@@ -132,6 +139,26 @@ export default function InputMovement(loadState) {
       } else if (!this.punching && !this.kicking) {
         this.punching = Date.now();
       }
+    },
+
+    /**
+     * Reset our movement state.
+     */
+    reset() {
+      _lastRight = 0;
+      _lastLeft = 0;
+      this.direction = 0;
+      this.jumpHeight = 20;
+      this.jumpSpeed = 50;
+      this.crouching = false;
+      this.facing = DIRECTION.RIGHT;
+      this.kicking = false;
+      this.punching = false;
+      this.jumping = 0;
+      this.moving = false;
+      this.running = false;
+      this.stunned = false;
+      this.guided = false;
     }
   }), loadState || {});
 }

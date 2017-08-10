@@ -25,7 +25,7 @@
   "maxlen": 120,
   "maxparams": 4,
   "maxstatements": 12,
-  "newcap": true,
+  "newcap": false,
   "noarg": true,
   "node": true,
   "noempty": true,

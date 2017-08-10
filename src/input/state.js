@@ -80,7 +80,7 @@ export default function InputState(movement, loadState) {
         angle = ANGLE[DIRECTION.DOWN];
       }
 
-      movement.direction(angle);
+      movement.move(angle);
     };
   };
 
@@ -105,7 +105,7 @@ export default function InputState(movement, loadState) {
       input: KEY.DIRECTIONAL,
       state: 'playing',
       trigger: (direction, angle) => {
-        movement.direction(direction === EVENT.PRESS ? angle : null);
+        movement.move(direction === EVENT.PRESS ? angle : null);
       }
     },
     {

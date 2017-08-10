@@ -16,23 +16,9 @@
 'use strict';
 
 import _ from 'lodash/fp';
-import SIZER from '../sizer';
-import baseSpriteFactory from '../sprite';
-import MathUtility from '../math';
+import BaseSprite from '../sprite';
 
-const _renderingEllipse = {
-  angle: -1,
-  height: -1,
-  width: -1
-};
-const _jumpPoint = {
-  x: -1,
-  y: -1
-};
-const _reusedPointObject = {
-  x: -1,
-  y: -1
-};
+const _objectType = 'player';
 
 /**
  * Load our player.
@@ -40,9 +26,9 @@ const _reusedPointObject = {
  * @param {Object?} loadState
  */
 export default function Player(loadState) {
-  const baseSprite = baseSpriteFactory();
-
+  const baseSprite = BaseSprite();
   const player = Object.assign(_.extend(baseSprite, {
+    type: _objectType,
     hp: 100,
     name: 'Gramps',
     speed: {
@@ -50,7 +36,6 @@ export default function Player(loadState) {
       y: 3
     },
     tileset: {
-      id: 'blank',
       src: '/assets/sprite/ryan.gif',
       x: 3,
       y: 2
@@ -58,91 +43,27 @@ export default function Player(loadState) {
     height: 67,
     width: 36,
     standing: 0,
+    _debug: {
+      strokeColor: '#080'
+    },
 
     /**
      * {@inheritDoc}
      */
-    update() {
-      if (this.movement.jumping) {
-        this.detectJumpLocation();
-      } else {
-        this.detectMovement();
-      }
-    },
-
-    render(canvas, tileset) {
-      baseSprite.render.call(this, canvas, tileset);
-      if (this.jump.origin.x !== -1) {
-        _jumpPoint.x = this.jump.origin.x;
-        _jumpPoint.y = MathUtility.round(this.jump.origin.y - SIZER.relativeSize(this.movement.jumpHeight) - SIZER.relativeSize(this.height));
-        _drawEllipse(canvas, _jumpPoint, this.jump.air);
-        _drawEllipse(canvas, this.jump.origin, this.jump.ground);
-
-        canvas.beginPath();
-        canvas.moveTo(this.jump.origin.x, this.jump.origin.y);
-        canvas.quadraticCurveTo(this.jump.control.x, this.jump.control.y, this.jump.destination.x, this.jump.destination.y);
-        canvas.stroke();
-        canvas.closePath();
-        canvas.beginPath();
-        canvas.arc(
-          this.jump.control.x,
-          this.jump.control.y,
-          SIZER.relativeSize(10),
-          SIZER.relativeSize(5),
-          0,
-          Math.PI * 2,
-          true
-        );
-        canvas.closePath();
-        canvas.fill();
-      }
+    reset() {
+      baseSprite.reset.call(this);
+      this.hp = 100;
+      this.name = 'Gramps';
+      this.speed.x = 2;
+      this.speed.y = 3;
+      this.tileset.src = '/assets/sprite/ryan.gif';
+      this.tileset.x = 3;
+      this.tileset.y = 2;
+      this.height = 67;
+      this.width = 36;
+      this.standing = 0;
+      return this;
     }
   }), loadState || {});
-
   return player;
-}
-
-/**
- * Draw an ellipse on a canvas based off of the sizing.
- *
- * @param {CanvasRenderingContext2D} canvas
- * @param {{x: Number, y: Number}} origin
- * @param {{angle: Number, height: Number, width: Number}} ellipse
- * @private
- */
-function _drawEllipse(canvas, origin, ellipse) {
-  canvas.beginPath();
-  _renderingEllipse.height = ellipse.height;
-  _renderingEllipse.width = ellipse.width;
-  for (let i = 0; i < 2 * Math.PI; i = i + 0.01) {
-    _renderingEllipse.angle = i;
-    MathUtility.setPointOnEllipse(origin, _renderingEllipse, _reusedPointObject);
-    _reusedPointObject.x = MathUtility.round(_reusedPointObject.x);
-    _reusedPointObject.y = MathUtility.round(_reusedPointObject.y);
-    if (!i) {
-      canvas.moveTo(_reusedPointObject.x, _reusedPointObject.y);
-    } else {
-      canvas.lineTo(_reusedPointObject.x, _reusedPointObject.y);
-    }
-  }
-  canvas.lineWidth = 2;
-  canvas.strokeStyle = '#080';
-  canvas.stroke();
-  canvas.closePath();
-
-  MathUtility.setPointOnEllipse(origin, ellipse, _reusedPointObject);
-  _reusedPointObject.x = MathUtility.round(_reusedPointObject.x);
-  _reusedPointObject.y = MathUtility.round(_reusedPointObject.y);
-  canvas.beginPath();
-  canvas.arc(
-    _reusedPointObject.x,
-    _reusedPointObject.y,
-    SIZER.relativeSize(10),
-    SIZER.relativeSize(5),
-    0,
-    Math.PI * 2,
-    true
-  );
-  canvas.closePath();
-  canvas.fill();
 }
