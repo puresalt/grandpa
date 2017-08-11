@@ -154,7 +154,7 @@ const MathUtility = {
    */
   getPointOnQuadraticCurve(origin, control, destination, position) {
     const T = 1 - position;
-    return MathUtility.round(((origin - (2 * control) + destination) * (T * T)) + (((2 * control) - (2 * origin)) * T) + origin);
+    return ((origin - (2 * control) + destination) * (T * T)) + (((2 * control) - (2 * origin)) * T) + origin;
   },
 
   /**

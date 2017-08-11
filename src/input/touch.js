@@ -181,7 +181,7 @@ function _generateElementList(elements) {
 function _handleDirectionalEvent(inputState, event, context) {
   const element = event.target || event.srcElement;
   const diameter = element.clientWidth;
-  const radius = Math.round(diameter / 2);
+  const radius = diameter / 2;
   const clientX = element.offsetLeft;
   const clientY = element.offsetTop;
   const touchEvent = event.touches[0];
@@ -193,7 +193,7 @@ function _handleDirectionalEvent(inputState, event, context) {
     return inputState.triggerEvent(EVENT.RELEASE, KEY.DIRECTIONAL, context);
   }
 
-  return inputState.triggerEvent(EVENT.PRESS, KEY.DIRECTIONAL, context, -1 * Math.round(MathUtility.getDegreeOfPoints(touchX, touchY, radius, radius)));
+  return inputState.triggerEvent(EVENT.PRESS, KEY.DIRECTIONAL, context, -1 * MathUtility.getDegreeOfPoints(touchX, touchY, radius, radius));
 }
 
 /**
