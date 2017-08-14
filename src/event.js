@@ -21,4 +21,6 @@ const EVENT = {
   RESIZE: 'RESIZE'
 };
 
+Object.freeze(EVENT);
+
 export default EVENT;

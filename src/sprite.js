@@ -168,7 +168,7 @@ export default function Sprite(loadState) {
           : 1;
         const degree = !this.movement.moving
           ? ANGLE[DIRECTION.UP]
-          : parseInt(this.movement.direction);
+          : this.movement.direction;
         const angle = -1 * (degree * Math.PI * 2) / 360;
         this.jump.origin.x = this.x + (SIZER.relativeSize(this.width) / 2);
         this.jump.origin.y = this.y + SIZER.relativeSize(this.height);

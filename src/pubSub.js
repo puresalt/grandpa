@@ -92,6 +92,8 @@ const PubSub = {
   }
 };
 
+Object.freeze(PubSub);
+
 /**
  * Our PubSub object.
  */

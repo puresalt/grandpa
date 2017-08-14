@@ -79,6 +79,8 @@ const LOOKUP = {
   192: 'TILDA'
 };
 
+Object.freeze(LOOKUP);
+
 /**
  * Lookup a given key for debugging purposes.
  *

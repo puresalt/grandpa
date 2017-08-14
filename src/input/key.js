@@ -29,4 +29,6 @@ const KEY = {
   DEBUG: 'DEBUG'
 };
 
+Object.freeze(KEY);
+
 export default KEY;

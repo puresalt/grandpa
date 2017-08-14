@@ -165,7 +165,7 @@ export default function InputState(movement, loadState) {
 
   const _eventLookup = _generateEventLookup(_events);
 
-  return {
+  return Object.freeze({
     /**
      * Get defined keys.
      *
@@ -202,7 +202,7 @@ export default function InputState(movement, loadState) {
         return true;
       }, false);
     }
-  };
+  });
 }
 
 /**

@@ -20,4 +20,6 @@ const GUIDED = {
   NARRATIVE: 'NARRATIVE'
 };
 
+Object.freeze(GUIDED);
+
 export default GUIDED;

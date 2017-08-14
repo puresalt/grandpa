@@ -125,7 +125,7 @@ export default function TouchInput(config, inputState, context) {
   const _subscribed = PUB_SUB.subscribe(EVENT.RESIZE, _resizer);
   _resizer();
 
-  return {
+  return Object.freeze({
     /**
      * Get the current config.
      *
@@ -152,7 +152,7 @@ export default function TouchInput(config, inputState, context) {
       _elements.length = 0;
       _subscribed.unsubscribe();
     }
-  };
+  });
 }
 
 /**

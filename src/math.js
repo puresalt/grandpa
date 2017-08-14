@@ -168,4 +168,6 @@ const MathUtility = {
   }
 };
 
+Object.freeze(MathUtility);
+
 export default MathUtility;

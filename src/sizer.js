@@ -26,9 +26,9 @@ const allowedSizers = {
   static: staticSizer
 };
 
-const _SIZER = allowedSizers.static;
+const _Sizer = allowedSizers.static;
 
-export default _SIZER;
+export default _Sizer;
 
 (() => {
   const throttle = (type, name, obj) => {
@@ -53,5 +53,5 @@ export default _SIZER;
 
 // handle event
 window.addEventListener('optimizedResize', () => {
-  _SIZER.update();
+  _Sizer.update();
 });

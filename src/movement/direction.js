@@ -26,4 +26,6 @@ const DIRECTION = {
   DOWN: 'DOWN'
 };
 
+Object.freeze(DIRECTION);
+
 export default DIRECTION;

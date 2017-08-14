@@ -79,7 +79,7 @@ export default function KeyboardInput(config, inputState, context) {
   _extendedConfig.element.addEventListener('keydown', _press);
   _extendedConfig.element.addEventListener('keyup', _release);
 
-  return {
+  return Object.freeze({
     /**
      * Get the current config.
      *
@@ -96,7 +96,7 @@ export default function KeyboardInput(config, inputState, context) {
       _extendedConfig.element.removeEventListener('keydown', _press);
       _extendedConfig.element.removeEventListener('keyup', _release);
     }
-  };
+  });
 }
 
 /**

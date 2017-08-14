@@ -24,7 +24,7 @@ import MathUtility from '../math';
 
 let _canvasElement = null;
 
-const SIZER = {
+const Sizer = {
   defaultHeight: 360,
   defaultWidth: 640,
   height: 360,
@@ -39,7 +39,7 @@ const SIZER = {
    * Set what element to use for our sizer.
    *
    * @param {HTMLElement} canvasElement
-   * @returns {SIZER}
+   * @returns {Sizer}
    */
   init(canvasElement) {
     _canvasElement = canvasElement;
@@ -49,7 +49,7 @@ const SIZER = {
   /**
    * Get the desired sizing based on size of the window.
    *
-   * @returns {SIZER}
+   * @returns {Sizer}
    */
   update() {
     if (_canvasElement === null) {
@@ -84,4 +84,4 @@ const SIZER = {
   }
 };
 
-export default SIZER;
+export default Sizer;
