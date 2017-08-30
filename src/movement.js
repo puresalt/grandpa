@@ -21,6 +21,8 @@ import DIRECTION from './movement/direction';
 import ANGLE from './movement/direction/angle';
 import GUIDED from './movement/guided';
 
+const TAP_RESPONSE_TIME = 100;
+
 /**
  * Resolve any direction issues and keep the state internal.
  *
@@ -29,8 +31,27 @@ import GUIDED from './movement/guided';
  * @constructor
  */
 export default function InputMovement(loadState) {
-  let _lastRight = 0;
-  let _lastLeft = 0;
+  const _lastDirection = {
+    direction: DIRECTION.RIGHT
+  };
+  _setLastDirection();
+
+  /**
+   * Set the last direction if defined.
+   *
+   * @param {String?} direction
+   * @private
+   */
+  function _setLastDirection(direction) {
+    _lastDirection[DIRECTION.RIGHT] = 0;
+    _lastDirection[DIRECTION.LEFT] = 0;
+    _lastDirection[DIRECTION.UP] = 0;
+    _lastDirection[DIRECTION.DOWN] = 0;
+    if (direction) {
+      _lastDirection[direction] = Date.now();
+    }
+  }
+
   return Object.assign(Object.create({
     direction: 0,
     guided: false,
@@ -54,42 +75,34 @@ export default function InputMovement(loadState) {
       this.moving = angle !== null;
 
       if (!this.moving) {
-        if (this.facing === DIRECTION.RIGHT) {
-          _lastRight = Date.now();
-          _lastLeft = 0;
-          this.running = false;
-        } else {
-          _lastRight = 0;
-          _lastLeft = Date.now();
-          this.running = false;
-        }
-        return;
+        this.running = false;
+        return _setLastDirection(_lastDirection.direction);
       }
 
       this.direction = angle;
       if (this.direction <= ANGLE[DIRECTION.UP] && this.direction >= ANGLE[DIRECTION.DOWN]) {
         if (this.facing !== DIRECTION.RIGHT) {
           this.running = false;
-        }
-        if (this.direction < ANGLE[DIRECTION.UP_RIGHT] && this.direction > ANGLE[DIRECTION.DOWN_RIGHT] && _lastRight) {
-          this.running = this.running || Date.now() - _lastRight < 100;
+        } else if (this.direction < ANGLE[DIRECTION.UP_RIGHT] && this.direction > ANGLE[DIRECTION.DOWN_RIGHT] && _lastDirection[DIRECTION.RIGHT]) {
+          this.running = this.running || Date.now() - _lastDirection[DIRECTION.RIGHT] < TAP_RESPONSE_TIME;
         } else if (this.direction >= ANGLE[DIRECTION.UP_RIGHT] || this.direction <= ANGLE[DIRECTION.DOWN_RIGHT]) {
           this.running = false;
         }
         this.facing = DIRECTION.RIGHT;
+        _lastDirection.direction = DIRECTION.RIGHT;
       } else {
         if (this.facing !== DIRECTION.LEFT) {
           this.running = false;
-        }
-        if (this.direction > ANGLE[DIRECTION.UP_LEFT] || this.direction < ANGLE[DIRECTION.DOWN_RIGHT] && _lastLeft) {
-          this.running = this.running || Date.now() - _lastLeft < 100;
+        } else if (this.direction > ANGLE[DIRECTION.UP_LEFT] || this.direction < ANGLE[DIRECTION.DOWN_RIGHT] && _lastDirection[DIRECTION.LEFT]) {
+          this.running = this.running || Date.now() - _lastDirection[DIRECTION.LEFT] < TAP_RESPONSE_TIME;
         } else if (this.direction <= ANGLE[DIRECTION.UP_LEFT] || this.direction >= ANGLE[DIRECTION.DOWN_RIGHT]) {
           this.running = false;
         }
         this.facing = DIRECTION.LEFT;
+        _lastDirection.direction = DIRECTION.LEFT;
       }
-      _lastLeft = 0;
-      _lastRight = 0;
+
+      _setLastDirection();
     },
 
     /**
@@ -145,8 +158,8 @@ export default function InputMovement(loadState) {
      * Reset our movement state.
      */
     reset() {
-      _lastRight = 0;
-      _lastLeft = 0;
+      _lastDirection.direction = DIRECTION.RIGHT;
+      _setLastDirection();
       this.direction = 0;
       this.jumpHeight = 20;
       this.jumpSpeed = 50;

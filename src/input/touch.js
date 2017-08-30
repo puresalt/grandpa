@@ -197,7 +197,7 @@ function _handleDirectionalEvent(inputState, event, context) {
 }
 
 /**
- * Check to see if we're within the inner deadzone.
+ * Check to see if we're within a given circle.
  *
  * @param {Number} x
  * @param {Number} y

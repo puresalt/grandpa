@@ -44,7 +44,7 @@ function elementLoader(element, callback) {
  * @returns {HTMLImageElement}
  */
 function createImageElementForTileset(tileset, callback) {
-  let element = document.createElement('img');
+  const element = document.createElement('img');
   element.src = tileset.src;
   elementLoader(element, callback);
   return element;

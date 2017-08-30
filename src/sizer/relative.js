@@ -57,8 +57,9 @@ const Sizer = {
     if (_canvasElement === null) {
       return this;
     }
-    let maxHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
-    let maxWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+
+    const maxHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+    const maxWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
     if (maxHeight === this.maxHeight && maxWidth === this.maxWidth) {
       return this;
     }

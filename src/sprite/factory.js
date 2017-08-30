@@ -15,6 +15,7 @@
 
 'use strict';
 
+import _ from 'lodash';
 import playerFactory from './player';
 import npcFactory from './npc';
 
@@ -58,9 +59,9 @@ export default function spriteFactory() {
      * @returns {Object}
      */
     create(type, data) {
-      const sprite = _graveYard[type].length
-        ? (_graveYard[type].shift()).reset(data)
-        : _spriteTypes[type](data);
+      const sprite = _.merge(_graveYard[type].length
+        ? (_graveYard[type].shift())
+        : _spriteTypes[type](), data || {});
       _alive.push(sprite);
       return sprite;
     },
