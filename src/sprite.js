@@ -118,11 +118,13 @@ export default function Sprite(loadState) {
       this.detectMovement();
     },
 
-    render(canvas, tileset) {
+    render(canvas, tileset, runtime) {
+      const tileOffset = this._getOffsetPosition(runtime);
+
       canvas.drawImage(
         tileset.image,
-        this.tileset.x,
-        this.tileset.y,
+        tileOffset.x,
+        tileOffset.y,
         this.width,
         this.height,
         this.x,
@@ -283,6 +285,76 @@ export default function Sprite(loadState) {
       this.y = MathUtility.round(MathUtility.minMax(y, (this.movement.jumping ? this.jump.peak.y - SIZER.relativeSize(this.height) : 0), SIZER.height - SIZER.relativeSize(this.height)));
     },
 
+    _getOffsetPosition(runtime) {
+      return this.tileset;
+
+      const facingRightOffset = this.movement.facing === DIRECTION.RIGHT
+        ? 20
+        : 0;
+
+      if (!this.movement.moving || this.movement.guided === GUIDED.NARRATIVE) {
+        return {
+          x: this.tileset.x,
+          y: this.tileset.y + facingRightOffset
+        };
+      }
+
+      if (this.movement.guided === GUIDED.JUMP) {
+        if (this.movement.kicking) {
+          return {
+            x: 60,
+            y: 40 + facingRightOffset
+          };
+        } else if (this.movement.punching) {
+          return {
+            x: 60 + facingRightOffset,
+            y: 80 + facingRightOffset
+          };
+        }
+        return {
+          x: 60 + facingRightOffset,
+          y: facingRightOffset
+        };
+      }
+
+      const tickOffset = runtime % 2
+        ? 20
+        : 0;
+
+      if (this.movement.running) {
+        return {
+          x: 40,
+          y: tickOffset + facingRightOffset
+        };
+      }
+
+      if (this.movement.stunned) {
+        return {
+          x: 0,
+          y: 100 + facingRightOffset
+        };
+      }
+
+      if (this.movement.punching) {
+        return {
+          x: 80,
+          y: tickOffset + facingRightOffset
+        };
+      }
+
+      if (this.movement.kicking) {
+        return {
+          x: 100,
+          y: tickOffset + facingRightOffset
+        };
+      }
+
+      return {
+        x: 0,
+        y: 20 + facingRightOffset + tickOffset
+      };
+    },
+
     /**
      * Reset the state of a sprite.
      */
@@ -293,11 +365,11 @@ export default function Sprite(loadState) {
       this.equipment.head = null;
       this.equipment.boots = null;
       this.equipment.accessories.length = 0;
-      this.equipment.tileset.src = '/assets/sprite/ryan.gif';
-      this.equipment.tileset.x = 0;
-      this.equipment.tileset.y = 0;
-      this.equipment.speed.x = 5;
-      this.equipment.speed.y = 5;
+      this.tileset.src = '/assets/sprite/ryan.gif';
+      this.tileset.x = 0;
+      this.tileset.y = 0;
+      this.speed.x = 5;
+      this.speed.y = 5;
       this.x = 0;
       this.y = 0;
       this.height = 30;

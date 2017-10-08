@@ -82,7 +82,7 @@ export default function TouchInput(config, inputState, context) {
    * Helper function to add our event listener on press.
    *
    * @param {String} found
-   * @returns {function(*=)}
+   * @returns {function(*)}
    * @private
    */
   const _releaseEventListener = (found) => {
@@ -101,7 +101,7 @@ export default function TouchInput(config, inputState, context) {
 
   const _elements = _elementList.map(item => {
     item.element = _findElementOrCreateIt('button-' + item.element);
-    item.element.style.display = 'visible';
+    item.element.style.display = 'block';
     item.press = _pressEventListener(item.input);
     item.release = _releaseEventListener(item.input);
     item.element.addEventListener('touchstart', item.press);
@@ -115,9 +115,11 @@ export default function TouchInput(config, inputState, context) {
     const directional = _findElementOrCreateIt('button-directional');
     directional.style.height = directional.style.width = SIZER.relativeSize(SIZER.height / 3) + 'px';
     directional.style.bottom = (SIZER.maxHeight - SIZER.height) + 'px';
+    directional.style.display = 'block';
     const abxy = _findElementOrCreateIt('button-abxy');
     abxy.style.bottom = (SIZER.maxHeight - SIZER.height) + 'px';
     abxy.style.right = (SIZER.maxWidth - SIZER.width) + 'px';
+    abxy.style.display = 'block';
     for (let i = 0, count = abxy.childNodes.length; i < count; ++i) {
       abxy.childNodes[i].style.height = abxy.childNodes[i].style.width = SIZER.relativeSize(SIZER.height / 3 / 2) + 'px';
     }

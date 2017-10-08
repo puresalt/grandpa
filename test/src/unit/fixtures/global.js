@@ -28,4 +28,4 @@ global.stateMachine = new StateMachine({
     {name: 'ready', from: 'loading', to: 'playing'}
   ]
 });
-global.stateMachine.ready();
+

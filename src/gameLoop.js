@@ -27,6 +27,7 @@ export default function GameLoop(options) {
   let _paused = null;
   let _delta = 0;
   let _lastRun = 0;
+  let _runtime = 0;
   let _lastFpsUpdate = 0;
   let _framesThisSecond = 0;
   let _renderingFps = options.fps || 60;
@@ -42,53 +43,54 @@ export default function GameLoop(options) {
      * @returns {Boolean}
      */
     panic() {
-      this.pause().start();
+      console.error('PANIC!');
+      this.pause();
+      setTimeout(() => {
+        this.start();
+      }, 0);
       return true;
     },
 
     /**
      * Trigger a canvas rendering.
      */
-    render() {
+    render(runtime) {
       throw new Error(this.name + ' is missing a render callback.');
     },
 
     /**
      * Method to trigger anytime an update happens.
      */
-    update(fps) {
+    update(fps, runtime, gameLoop) {
       throw new Error(this.name + ' is missing a render callback. (' + fps + ')');
     },
 
     /**
      * Pause our Game Loop.
-     *
-     * @returns {Object}
      */
     pause() {
       if (_paused === true) {
-        return this;
+        return;
       }
+      console.log('gameLoop.pause');
       _paused = true;
       _lastFpsUpdate = 0;
       _framesThisSecond = 0;
-      return this;
     },
 
     /**
      * Resume our Game Loop.
-     *
-     * @returns {Object}
      */
     start() {
       if (_paused === false) {
-        return this;
+        return;
       }
+      console.log('gameLoop.start');
       _delta = 0;
       _lastRun = window.performance.now();
+      _runtime = _lastRun;
       _paused = false;
       requestAnimationFrame(_run);
-      return this;
     },
 
     /**
@@ -115,6 +117,7 @@ export default function GameLoop(options) {
    * @param {Number} now
    */
   function _run(now) {
+    _runtime = window.performance.now();
     if (_paused) {
       return;
     }
@@ -125,7 +128,7 @@ export default function GameLoop(options) {
     _lastRun = now;
     _logFps(now);
     if (_runUpdate()) {
-      gameLoop.render();
+      gameLoop.render(_runtime);
     }
     requestAnimationFrame(_run);
   }
@@ -139,7 +142,7 @@ export default function GameLoop(options) {
   function _runUpdate() {
     let numUpdateSteps = 0;
     while (_delta >= _interval) {
-      gameLoop.update(_renderingFps, gameLoop);
+      gameLoop.update(_runtime, _renderingFps);
       _delta -= _interval;
       numUpdateSteps = numUpdateSteps + 1;
       if (numUpdateSteps >= gameLoop.panicLimit) {

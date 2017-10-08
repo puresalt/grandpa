@@ -29,7 +29,7 @@ const MathUtility = {
    * @returns {Boolean}
    */
   between: (x, from, to) => {
-    return x && from <= x && x <= to;
+    return x && x >= from && x <= to;
   },
 
   /**
@@ -124,9 +124,7 @@ const MathUtility = {
    * @returns {Number}
    */
   getDegreeOfPoints(pointX, pointY, centerX, centerY) {
-    centerX = centerX || 0;
-    centerY = centerY || 0;
-    return Math.atan2(pointY - centerY, pointX - centerX) * TO_DEGREES;
+    return Math.atan2(pointY - (centerY || 0), pointX - (centerX || 0)) * TO_DEGREES;
   },
 
   /**

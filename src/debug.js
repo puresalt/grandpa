@@ -32,7 +32,6 @@ const _movementKeys = [
 ];
 
 let _overlay = null;
-
 let _displayed = false;
 
 export default {
@@ -49,7 +48,7 @@ export default {
   /**
    * Render a state update.
    */
-  update(player, inputState, gameLoop) {
+  update(player, inputState, runtime, fps) {
     if (!_overlay) {
       return;
     }
@@ -71,12 +70,13 @@ export default {
 
     const stats = [
       '<strong>STATE:</strong><hr>',
-      stylizeKey('fps') + stylizeValue(MathUtility.round(gameLoop.getRenderedFps() * 100) / 100)
+      stylizeKey('runtime') + stylizeValue(MathUtility.round((runtime / 1000) * 100) / 100),
+      stylizeKey('fps') + stylizeValue(MathUtility.round(fps * 100) / 100)
     ];
 
     for (let i = 0, count = _movementKeys.length; i < count; ++i) {
-      let key = _movementKeys[i];
-      stats.push(stylizeKey(key) + stylizeValue( player.movement[key]));
+      const key = _movementKeys[i];
+      stats.push(stylizeKey(key) + stylizeValue(player.movement[key]));
     }
     stats.push(stylizeKey('location') + stylizeValue('(' + player.x + ',' + player.y + ')'));
 
@@ -101,7 +101,7 @@ export default {
  * @returns {String}
  */
 function stylizeKey(key) {
-  let length = 9;
+  const length = 9;
   let padding = '';
   for (let i = 0; i < length; ++i) {
     padding = padding + ' ';

@@ -58,7 +58,6 @@ const Sizer = {
 
     let height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
     let width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
-
     if (height / width < this.aspect.height / this.aspect.width) {
       width = MathUtility.round((height * 16) / 9);
     } else {

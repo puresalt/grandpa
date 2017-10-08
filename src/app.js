@@ -62,10 +62,13 @@ import Sizer from './sizer';
 
   const spriteFactory = SpriteFactory();
   const player = spriteFactory.create('player');
+  const npc1 = spriteFactory.create('npc');
   const entities = [
     player,
-    spriteFactory.create('npc')
+    npc1
   ];
+
+  spriteFactory.remove(npc1);
   const tilesets = entities.reduce((gathered, item) => {
     for (let i = 0, count = gathered.length; i < count; ++i) {
       if (gathered[i].src === item.tileset.src) {
@@ -84,28 +87,43 @@ import Sizer from './sizer';
     stateMachine.play();
   });
 
+  setTimeout(() => {
+    canvas.removeEntity(npc1);
+    setTimeout(() => {
+      spriteFactory.remove(npc1);
+      setTimeout(() => {
+        const npc2 = spriteFactory.create('npc', {name: 'Ralph'});
+        canvas.addEntity(npc2);
+        setTimeout(() => {
+          canvas.removeEntity(npc2);
+          spriteFactory.remove(npc2);
+        }, 3000);
+      }, 1000);
+    }, 1000);
+  }, 3000);
+
   const inputState = InputState(player.movement/* , loadState */);
   const debugInput = InputFactory(config.input, inputState, stateMachine);
 
   const gameLoop = GameLoop({
-    render() {
+    render(runtime) {
       if (stateMachine.state === 'loading') {
         return;
       }
-      canvas.render();
+      canvas.render(runtime);
     },
-    update() {
+    update(runtime, fps) {
       if (stateMachine.state === 'loading') {
         return;
       }
       for (let i = 0, count = entities.length; i < count; ++i) {
         entities[i].update();
       }
-      Debug.update(player, debugInput, this);
+      Debug.update(player, debugInput, runtime, fps, this);
     }
   });
 
-  Debug.init(DEBUG_FLAG);
+  Debug.init(window.DEBUG_FLAG);
   if (!document.hidden) {
     gameLoop.start();
   }

@@ -34,8 +34,10 @@
     "webpack-dev-server": "^1.16.5"
   },
   "devDependencies": {
+    "babel-cli": "^6.26.0",
     "chai": "3.5.0",
     "grunt-contrib-watch": "^1.0.0",
+    "isparta": "^4.0.0",
     "istanbul": "0.4.5",
     "jsdom": "11.1.0",
     "jsdom-global": "3.0.2",
@@ -49,7 +51,7 @@
     "start": "./node_modules/.bin/pm2 start pm2.yml",
     "stop": "./node_modules/.bin/pm2 stop pm2.yml",
     "test": "npm run test-app;npm run test-server",
-    "test-app": "./node_modules/.bin/istanbul test ./node_modules/.bin/_mocha -- --harmony --full-trace --check-leaks --recursive ./test/src/unit",
+    "test-app": "babel-node ./node_modules/.bin/isparta cover _mocha -- --check-leaks --recursive ./test/src/unit",
     "test-server": "./node_modules/.bin/istanbul test ./node_modules/.bin/_mocha -- --harmony --full-trace --check-leaks --recursive ./test/server/unit",
     "watch": "./node_modules/.bin/grunt watch"
   }

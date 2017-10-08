@@ -48,7 +48,7 @@ if (module.parent) {
   module.exports = runServer;
 } else {
   process.title = process.argv[2];
-  const port = process.env.PORT || 4001;
+  const port = process.env.PORT || 5001;
   runServer(process.env.NODE_ENV)
     .on('error', function(err) {
       if (err.code === 'EADDRINUSE') {

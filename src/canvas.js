@@ -60,16 +60,20 @@ export default function canvasFunction(element) {
   const _element = element.getContext('2d');
   const _tilesets = {};
   const _alive = [];
+  let _runtime = 0;
+
+  const _renderEntity = entity => {
+    entity.render(_element, _tilesets[entity.tileset.src], _runtime);
+  };
 
   const methods = {
     /**
      * Render our canvas.
      */
-    render() {
+    render(runtime) {
+      _runtime = runtime;
       _element.clearRect(0, 0, SIZER.width, SIZER.height);
-      _alive.sort(_sortByY).forEach(entity => {
-        entity.render(_element, _tilesets[entity.tileset.src]);
-      });
+      _alive.sort(_sortByY).forEach(_renderEntity);
     },
 
     /**
@@ -79,6 +83,7 @@ export default function canvasFunction(element) {
      * @returns {Object}
      */
     addEntity(entity) {
+      console.log('ADDING:', entity.name);
       _alive.push(entity);
       return methods;
     },
@@ -94,7 +99,8 @@ export default function canvasFunction(element) {
         if (_alive[i] !== entity) {
           continue;
         }
-        _alive[i].splice(i, 1);
+        console.log('REMOVING:', entity.name);
+        _alive.splice(i, 1);
       }
       return methods;
     },
