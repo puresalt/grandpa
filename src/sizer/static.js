@@ -19,9 +19,10 @@
 'use strict';
 
 import EVENT from '../event';
-import PUB_SUB from '../pubSub';
+import PubSub from '../pubSub';
 import MathUtility from '../math';
 
+const pubSub = PubSub.singleton();
 let _canvasElement = null;
 
 const Sizer = {
@@ -56,8 +57,8 @@ const Sizer = {
       return this;
     }
 
-    let height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
-    let width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+    let height = Math.max(window.innerHeight, document.documentElement.clientHeight, document.body.clientHeight);
+    let width = Math.max(window.innerWidth, document.documentElement.clientWidth, document.body.clientWidth);
     if (height / width < this.aspect.height / this.aspect.width) {
       width = MathUtility.round((height * 16) / 9);
     } else {
@@ -68,7 +69,7 @@ const Sizer = {
     _canvasElement.style.transformOrigin = '0 0'; //scale from top left
     _canvasElement.style.transform = 'scale(' + this.ratio + ')';
 
-    PUB_SUB.publish(EVENT.RESIZE, this);
+    pubSub.publish(EVENT.RESIZE, this);
     return this;
   },
 

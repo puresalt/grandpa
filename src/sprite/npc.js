@@ -19,7 +19,11 @@ import _ from 'lodash/fp';
 import MathUtility from '../math';
 import BaseSprite from '../sprite';
 
-const _objectType = 'npc';
+const _objectType = {
+  configurable: false,
+  writeable: false,
+  value: 'npc'
+};
 
 /**
  * Load our player.
@@ -29,7 +33,6 @@ const _objectType = 'npc';
 export default function Npc(loadState) {
   const baseSprite = BaseSprite();
   const npc = Object.assign(_.extend(baseSprite, {
-    type: _objectType,
     hp: 20,
     name: 'NPC',
     tileset: {
@@ -44,6 +47,7 @@ export default function Npc(loadState) {
      * {@inheritDoc}
      */
     update() {
+      /* istanbul ignore next */
       if (MathUtility.randomBoolean()) {
         if (MathUtility.randomNumber(0, 10) <= 2) {
           this.movement.move(MathUtility.randomNumber(-180, 180));
@@ -52,6 +56,7 @@ export default function Npc(loadState) {
           this.movement.jump(true);
         }
       }
+      /* istanbul ignore next */
       baseSprite.update.call(this, null);
     },
 
@@ -67,8 +72,8 @@ export default function Npc(loadState) {
       this.tileset.y = 3;
       this.height = 66;
       this.width = 36;
-      return this;
     }
   }), loadState || {});
+  Object.defineProperty(npc, 'type', _objectType);
   return npc;
 }

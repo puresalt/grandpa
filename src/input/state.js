@@ -104,7 +104,7 @@ export default function InputState(movement, loadState) {
     {
       input: KEY.DIRECTIONAL,
       state: 'playing',
-      trigger: (direction, angle) => {
+      trigger(direction, angle) {
         movement.move(direction === EVENT.PRESS ? angle : null);
       }
     },
@@ -151,13 +151,13 @@ export default function InputState(movement, loadState) {
     {
       input: KEY.MENU,
       state: 'playing',
-      trigger: () => {
+      trigger() {
         // do nothing.
       }
     },
     {
       input: KEY.DEBUG,
-      trigger: (direction) => {
+      trigger(direction) {
         debug.toggle(direction === EVENT.PRESS);
       }
     }

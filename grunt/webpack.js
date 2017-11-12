@@ -17,11 +17,9 @@
 
 module.exports = {
   grandpa: {
-    entry: [
-      './src/app.js'
-    ],
+    entry: './src/app.js',
     output: {
-      path: 'build',
+      path: __dirname + '/../build',
       filename: 'grandpa.dev.js',
       publicPath: '/'
     },
@@ -31,9 +29,6 @@ module.exports = {
         exclude: /node_modules/,
         loader: 'babel-loader'
       }]
-    },
-    env: {
-      NODE_PATH: './src/app'
     }
   }
 };

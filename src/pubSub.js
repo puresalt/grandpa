@@ -15,86 +15,125 @@
 
 'use strict';
 
-const _events = {};
+/**
+ * Create a PubSub.
+ *
+ * @returns {{
+ *   subscribe: (function(String, Function)),
+ *   unsubscribe: (function(String, Function)),
+ *   publish: (function(String, ...[Array])),
+ *   clear: (function(String=))
+ * }}
+ * @constructor
+ */
+function PubSub() {
+  const _events = {};
 
-const PubSub = {
-
-  /**
-   * Subscribe an event.
-   *
-   * @param {String} event
-   * @param {Function} callback
-   * @returns {{unsubscribe: Function}}
-   */
-  subscribe: (event, callback) => {
-    if (!_events.hasOwnProperty(event)) {
-      _events[event] = [];
-    }
-    const id = _events[event].push(callback) - 1;
-    return {
-      unsubscribe: () => {
-        _events[event].splice(id, 1);
+  const methods = {
+    /**
+     * Subscribe an event.
+     *
+     * @param {String} event
+     * @param {Function} callback
+     * @returns {{unsubscribe: Function}}
+     */
+    subscribe(event, callback) {
+      if (!_events.hasOwnProperty(event)) {
+        _events[event] = [];
       }
-    };
+      const id = _events[event].push(callback) - 1;
+      return {
+        unsubscribe() {
+          _events[event].splice(id, 1);
+        }
+      };
+    },
+
+    /**
+     * Unsubscribe an event.
+     *
+     * @param {String} event
+     * @param {Function} callback
+     */
+    unsubscribe(event, callback) {
+      const filter = item => item !== callback;
+      for (let key in _events) {
+        /* istanbul ignore if */
+        if (!_events.hasOwnProperty(key)) {
+          continue;
+        }
+        _events[event] = _events[event].filter(filter);
+      }
+    },
+
+    /**
+     * Trigger a given event if it exists.
+     *
+     * @param {String} event
+     * @param {Array} args
+     */
+    publish(event, ...args) {
+      if (!_events.hasOwnProperty(event)) {
+        return;
+      }
+      _events[event].forEach(item => item.apply(this, args));
+    },
+
+    /**
+     * Remove ever a specific event or all if no event is provided.
+     *
+     * @param {String?} event
+     */
+    clear(event) {
+      if (event) {
+        _events[event] = null;
+        delete _events[event];
+        return;
+      }
+      for (let key in _events) {
+        /* istanbul ignore if */
+        if (!_events.hasOwnProperty(key)) {
+          continue;
+        }
+        _events[key] = null;
+        delete _events[key];
+      }
+    }
+  };
+
+  Object.freeze(methods);
+
+  return methods;
+}
+
+const singleton = PubSub();
+
+export default {
+  /**
+   * Get a global singleton.
+   *
+   * @returns {{
+   *   subscribe: (function(String, Function)),
+   *   unsubscribe: (function(String, Function)),
+   *   publish: (function(String, ...[Array])),
+   *   clear: (function(String=))
+   * }}
+   */
+  singleton() {
+    return singleton;
   },
 
   /**
-   * Unsubscribe an event.
+   * Get a single instance.
    *
-   * @param {String} event
-   * @param {Function} callback
+   * @returns {{
+   *   subscribe: (function(String, Function)),
+   *   unsubscribe: (function(String, Function)),
+   *   publish: (function(String, ...[Array])),
+   *   clear: (function(String=))
+   * }}
    */
-  unsubscribe: (event, callback) => {
-    const filter = item => {
-      return item !== callback;
-    };
-    for (let key in _events) {
-      if (!_events.hasOwnProperty(key)) {
-        continue;
-      }
-      _events[event] = _events[event].filter(filter);
-    }
-  },
-
-  /**
-   * Trigger a given event if it exists.
-   *
-   * @param {String} event
-   * @param {Array} args
-   */
-  publish: (event, ...args) => {
-    if (!_events.hasOwnProperty(event)) {
-      return;
-    }
-    _events[event].forEach(item => {
-      item.apply(this, args);
-    });
-  },
-
-  /**
-   * Remove ever a specific event or all if no event is provided.
-   *
-   * @param {String?} event
-   */
-  clear: (event) => {
-    if (event) {
-      _events[event] = null;
-      delete _events[event];
-      return;
-    }
-    for (let key in _events) {
-      if (!_events.hasOwnProperty(key)) {
-        continue;
-      }
-      _events[key] = null;
-      delete _events[key];
-    }
+  instance() {
+    return PubSub();
   }
 };
-
-Object.freeze(PubSub);
-
-/**
- * Our PubSub object.
- */
-export default PubSub;

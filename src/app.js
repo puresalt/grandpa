@@ -13,7 +13,8 @@
  *
  */
 
-/* globals document,window */
+/* jshint ignore:start */
+//* globals document,window */
 
 'use strict';
 
@@ -79,9 +80,7 @@ import Sizer from './sizer';
     return gathered;
   }, []);
 
-  entities.forEach(item => {
-    canvas.addEntity(item);
-  });
+  entities.forEach(item => canvas.addEntity(item));
 
   canvas.loadTilesets(tilesets, () => {
     stateMachine.play();
@@ -139,7 +138,6 @@ import Sizer from './sizer';
       gameLoop.start();
     }
   });
-  window.addEventListener('blur', () => {
-    gameLoop.pause();
-  });
+  window.addEventListener('blur', () => gameLoop.pause());
 })();
+/* jshint ignore:end */

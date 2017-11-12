@@ -14,7 +14,7 @@
  */
 
 /* jshint maxstatements:17 */
-/* globals document,window */
+/* globals requestAnimationFrame,CustomEvent,window */
 
 'use strict';
 

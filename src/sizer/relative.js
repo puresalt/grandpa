@@ -19,9 +19,10 @@
 'use strict';
 
 import EVENT from '../event';
-import PUB_SUB from '../pubSub';
+import PubSub from '../pubSub';
 import MathUtility from '../math';
 
+const pubSub = PubSub.singleton();
 let _canvasElement = null;
 
 const Sizer = {
@@ -54,12 +55,13 @@ const Sizer = {
    * @returns {Sizer}
    */
   update() {
+    /* jshint maxstatements:22 */
     if (_canvasElement === null) {
       return this;
     }
 
-    const maxHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
-    const maxWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+    const maxHeight = Math.max(window.innerHeight, document.documentElement.clientHeight, document.body.clientHeight);
+    const maxWidth = Math.max(window.innerWidth, document.documentElement.clientWidth, document.body.clientWidth);
     if (maxHeight === this.maxHeight && maxWidth === this.maxWidth) {
       return this;
     }
@@ -82,7 +84,7 @@ const Sizer = {
     _canvasElement.style.height = this.height + 'px';
     _canvasElement.style.width = this.width + 'px';
 
-    PUB_SUB.publish(EVENT.RESIZE, this);
+    pubSub.publish(EVENT.RESIZE, this);
     return this;
   },
 

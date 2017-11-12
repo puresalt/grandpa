@@ -24,7 +24,12 @@ import SIZER from './sizer';
 import MathUtility from './math';
 import movementFactory from './movement';
 
-const _objectType = 'sprite';
+const _objectType = {
+  configurable: false,
+  writeable: false,
+  value: 'sprite'
+};
+
 const DEGREES_PER_SLICE = 45;
 const JUMP_PEAK_REFERENCE = 0.55;
 
@@ -35,7 +40,7 @@ const JUMP_PEAK_REFERENCE = 0.55;
  * @returns {Object}
  */
 export default function Sprite(loadState) {
-  return Object.assign(Object.create({
+  const sprite = Object.assign(Object.create({
     type: _objectType,
     equipment: {
       leftHand: null,
@@ -48,6 +53,12 @@ export default function Sprite(loadState) {
       src: '/assets/sprite/ryan.gif',
       x: 0,
       y: 0
+    },
+    tilesetOffset: {
+      x: 0,
+      y: 0,
+      lastTick: 0,
+      tick: 0
     },
     speed: {
       x: 5,
@@ -118,13 +129,20 @@ export default function Sprite(loadState) {
       this.detectMovement();
     },
 
+    /**
+     * Tell a sprite to render itself.
+     *
+     * @param {CanvasRenderingContext2D} canvas
+     * @param {Object} tileset
+     * @param {Number} runtime
+     */
     render(canvas, tileset, runtime) {
-      const tileOffset = this._getOffsetPosition(runtime);
+      this._getOffsetPosition(runtime);
 
       canvas.drawImage(
         tileset.image,
-        tileOffset.x,
-        tileOffset.y,
+        this.tilesetOffset.x,
+        this.tilesetOffset.y,
         this.width,
         this.height,
         this.x,
@@ -132,75 +150,30 @@ export default function Sprite(loadState) {
         this.width,
         this.height
       );
-
-      // @TODO Remove this, it is for just drawing the math involved for jumping.
-      if (this.jump.origin.x !== -1) {
-        this._gcAvoidance.jumpPoint.x = this.jump.origin.x;
-        this._gcAvoidance.jumpPoint.y = this.jump.origin.y - SIZER.relativeSize(this.movement.jumpHeight) - SIZER.relativeSize(this.height);
-        _drawEllipse(this, canvas, this._gcAvoidance.jumpPoint, this.jump.air);
-        _drawEllipse(this, canvas, this.jump.origin, this.jump.ground);
-
-        canvas.beginPath();
-        canvas.moveTo(this.jump.origin.x, this.jump.origin.y);
-        canvas.quadraticCurveTo(this.jump.control.x, this.jump.control.y, this.jump.destination.x, this.jump.destination.y);
-        canvas.stroke();
-        canvas.closePath();
-        canvas.beginPath();
-        canvas.arc(
-          this.jump.control.x,
-          this.jump.control.y,
-          SIZER.relativeSize(10),
-          SIZER.relativeSize(5),
-          0,
-          Math.PI * 2,
-          true
-        );
-        canvas.closePath();
-        canvas.fill();
-      }
     },
 
     detectJumpLocation() {
       if (this.movement.guided !== GUIDED.JUMP) {
         return;
       }
-      if (this.jump.origin.x === -1) {
-        const distanceModifier = this.movement.running
-          ? 1.25
-          : 1;
-        const degree = !this.movement.moving
-          ? ANGLE[DIRECTION.UP]
-          : this.movement.direction;
-        const angle = -1 * (degree * Math.PI * 2) / 360;
-        this.jump.origin.x = this.x + (SIZER.relativeSize(this.width) / 2);
-        this.jump.origin.y = this.y + SIZER.relativeSize(this.height);
-        this.jump.air.width = SIZER.relativeSize(120 * distanceModifier);
-        this.jump.air.height = SIZER.relativeSize(30 * distanceModifier);
-        this.jump.air.angle = angle;
-        this.jump.ground.width = SIZER.relativeSize(200 * distanceModifier);
-        this.jump.ground.height = SIZER.relativeSize(50 * distanceModifier);
-        this.jump.ground.angle = angle;
 
-        this._gcAvoidance.ellipsePoint.x = this.x + (SIZER.relativeSize(this.width) / 2);
-        this._gcAvoidance.ellipsePoint.y = this.y - SIZER.relativeSize(this.movement.jumpHeight);
-        MathUtility.setPointOnEllipse(this._gcAvoidance.ellipsePoint, this.jump.air, this._gcAvoidance.point);
-        this.jump.peak.x = this._gcAvoidance.point.x;
-        this.jump.peak.y = this._gcAvoidance.point.y;
-        if (this.movement.direction === null) {
-          this.jump.destination.x = this.jump.origin.x;
-          this.jump.destination.y = this.jump.origin.y;
-        } else {
-          MathUtility.setPointOnEllipse(this.jump.origin, this.jump.ground, this._gcAvoidance.point);
-          this.jump.destination.x = this._gcAvoidance.point.x;
-          this.jump.destination.y = this._gcAvoidance.point.y;
-        }
-        this.jump.control.x = (this.jump.peak.x / (2 * JUMP_PEAK_REFERENCE * (1 - JUMP_PEAK_REFERENCE))) - (this.jump.origin.x * JUMP_PEAK_REFERENCE / (2 * (1 - JUMP_PEAK_REFERENCE))) - (this.jump.destination.x * (1 - JUMP_PEAK_REFERENCE) / (2 * JUMP_PEAK_REFERENCE));
-        this.jump.control.y = (this.jump.peak.y / (2 * JUMP_PEAK_REFERENCE * (1 - JUMP_PEAK_REFERENCE))) - (this.jump.origin.y * JUMP_PEAK_REFERENCE / (2 * (1 - JUMP_PEAK_REFERENCE))) - (this.jump.destination.y * (1 - JUMP_PEAK_REFERENCE) / (2 * JUMP_PEAK_REFERENCE));
+      if (this.jump.origin.x === -1) {
+        this._createJumpTrajectory();
       }
       const step = this.movement.jumping / (this.movement.jumpSpeed);
       this.attemptToMoveTo(
-        MathUtility.getPointOnQuadraticCurve(this.jump.origin.x, this.jump.control.x, this.jump.destination.x, step) - (SIZER.relativeSize(this.width) / 2),
-        MathUtility.getPointOnQuadraticCurve(this.jump.origin.y, this.jump.control.y, this.jump.destination.y, step) - SIZER.relativeSize(this.height)
+        MathUtility.getPointOnQuadraticCurve(
+          this.jump.origin.x,
+          this.jump.control.x,
+          this.jump.destination.x,
+          step
+        ) - (SIZER.relativeSize(this.width) / 2),
+        MathUtility.getPointOnQuadraticCurve(
+          this.jump.origin.y,
+          this.jump.control.y,
+          this.jump.destination.y,
+          step
+        ) - SIZER.relativeSize(this.height)
       );
       this.movement.jumping = MathUtility.coolDown(this.movement.jumping);
       if (!this.movement.jumping) {
@@ -271,7 +244,18 @@ export default function Sprite(loadState) {
           y = y + speedY;
         }
       }
-      this.attemptToMoveTo(MathUtility.minMax(SIZER.relativeSize(x), 0, SIZER.width - SIZER.relativeSize(this.width)), MathUtility.minMax(SIZER.relativeSize(y), 0, SIZER.height - SIZER.relativeSize(this.height)));
+      this.attemptToMoveTo(
+        MathUtility.minMax(
+          SIZER.relativeSize(x),
+          0,
+          SIZER.width - SIZER.relativeSize(this.width)
+        ),
+        MathUtility.minMax(
+          SIZER.relativeSize(y),
+          0,
+          SIZER.height - SIZER.relativeSize(this.height)
+        )
+      );
     },
 
     /**
@@ -281,84 +265,116 @@ export default function Sprite(loadState) {
      * @param y
      */
     attemptToMoveTo(x, y) {
-      this.x = MathUtility.round(MathUtility.minMax(x, 0, SIZER.width - SIZER.relativeSize(this.width)));
-      this.y = MathUtility.round(MathUtility.minMax(y, (this.movement.jumping ? this.jump.peak.y - SIZER.relativeSize(this.height) : 0), SIZER.height - SIZER.relativeSize(this.height)));
+      this.x = MathUtility.round(MathUtility.minMax(
+        x,
+        0,
+        SIZER.width - SIZER.relativeSize(this.width)
+      ));
+      this.y = MathUtility.round(MathUtility.minMax(
+        y,
+        this.movement.jumping
+          ? this.jump.peak.y - SIZER.relativeSize(this.height)
+          : 0,
+        SIZER.height - SIZER.relativeSize(this.height)
+      ));
+    },
+
+    /**
+     * Create our jump trajectory in the cases of a good jump.
+     */
+    _createJumpTrajectory() {
+      /* jshint maxstatements:24 */
+      const distanceModifier = this.movement.running
+        ? 1.25
+        : 1;
+      const degree = !this.movement.moving
+        ? ANGLE[DIRECTION.UP]
+        : this.movement.direction;
+      const angle = -1 * (degree * Math.PI * 2) / 360;
+      this.jump.origin.x = this.x + (SIZER.relativeSize(this.width) / 2);
+      this.jump.origin.y = this.y + SIZER.relativeSize(this.height);
+      this.jump.air.width = SIZER.relativeSize(120 * distanceModifier);
+      this.jump.air.height = SIZER.relativeSize(30 * distanceModifier);
+      this.jump.air.angle = angle;
+      this.jump.ground.width = SIZER.relativeSize(200 * distanceModifier);
+      this.jump.ground.height = SIZER.relativeSize(50 * distanceModifier);
+      this.jump.ground.angle = angle;
+
+      this._gcAvoidance.ellipsePoint.x = this.x + (SIZER.relativeSize(this.width) / 2);
+      this._gcAvoidance.ellipsePoint.y = this.y - SIZER.relativeSize(this.movement.jumpHeight);
+      MathUtility.setPointOnEllipse(this._gcAvoidance.ellipsePoint, this.jump.air, this._gcAvoidance.point);
+      this.jump.peak.x = this._gcAvoidance.point.x;
+      this.jump.peak.y = this._gcAvoidance.point.y;
+      if (this.movement.direction === null) {
+        this.jump.destination.x = this.jump.origin.x;
+        this.jump.destination.y = this.jump.origin.y;
+      } else {
+        MathUtility.setPointOnEllipse(this.jump.origin, this.jump.ground, this._gcAvoidance.point);
+        this.jump.destination.x = this._gcAvoidance.point.x;
+        this.jump.destination.y = this._gcAvoidance.point.y;
+      }
+      this.jump.control.x = _calculateControlPoint(this.jump.origin.x, this.jump.peak.x, this.jump.destination.x);
+      this.jump.control.y = _calculateControlPoint(this.jump.origin.y, this.jump.peak.y, this.jump.destination.y);
     },
 
     _getOffsetPosition(runtime) {
-      return this.tileset;
-
-      const facingRightOffset = this.movement.facing === DIRECTION.RIGHT
+      /* jshint maxcomplexity:13, maxstatements:29 */
+      this.tilesetOffset.x = this.movement.facing === DIRECTION.RIGHT
         ? 20
         : 0;
+      this.tilesetOffset.y = 0;
 
       if (!this.movement.moving || this.movement.guided === GUIDED.NARRATIVE) {
-        return {
-          x: this.tileset.x,
-          y: this.tileset.y + facingRightOffset
-        };
+        this.tilesetOffset.x = this.tileset.x;
+        this.tilesetOffset.y += this.tileset.y;
+        return;
+      }
+
+      if (this.movement.stunned) {
+        this.tilesetOffset.x += 100;
+        return;
       }
 
       if (this.movement.guided === GUIDED.JUMP) {
         if (this.movement.kicking) {
-          return {
-            x: 60,
-            y: 40 + facingRightOffset
-          };
+          this.tilesetOffset.x += 40;
         } else if (this.movement.punching) {
-          return {
-            x: 60 + facingRightOffset,
-            y: 80 + facingRightOffset
-          };
+          this.tilesetOffset.x += 80;
         }
-        return {
-          x: 60 + facingRightOffset,
-          y: facingRightOffset
-        };
+        this.tilesetOffset.y = 60;
+        return;
       }
 
-      const tickOffset = runtime % 2
-        ? 20
-        : 0;
+      // We will be looping through our offset keys for animated walk cycles and things like that.
+      if (runtime - 250 > this.tilesetOffset.lastTick) {
+        this.tilesetOffset.lastTick = runtime;
+        if (++this.tilesetOffset.tick >= 5) {
+          this.tilesetOffset.tick = 0;
+        }
+      }
+      this.tilesetOffset.x += this.tilesetOffset.tick * 20;
 
       if (this.movement.running) {
-        return {
-          x: 40,
-          y: tickOffset + facingRightOffset
-        };
-      }
-
-      if (this.movement.stunned) {
-        return {
-          x: 0,
-          y: 100 + facingRightOffset
-        };
+        this.tilesetOffset.y = 40;
+        return;
       }
 
       if (this.movement.punching) {
-        return {
-          x: 80,
-          y: tickOffset + facingRightOffset
-        };
+        this.tilesetOffset.y = 80;
+        return;
       }
 
       if (this.movement.kicking) {
-        return {
-          x: 100,
-          y: tickOffset + facingRightOffset
-        };
+        this.tilesetOffset.x += 20;
+        this.tilesetOffset.y = 100;
       }
-
-      return {
-        x: 0,
-        y: 20 + facingRightOffset + tickOffset
-      };
     },
 
     /**
      * Reset the state of a sprite.
      */
     reset() {
+      /* jshint maxstatements:29 */
       this.movement.reset();
       this.equipment.leftHand = null;
       this.equipment.rightHand = null;
@@ -388,53 +404,23 @@ export default function Sprite(loadState) {
       this.jump.ground.width = -1;
       this.jump.ground.height = -1;
       this.jump.ground.angle = -1;
-      return this;
     }
   }, loadState || {}));
+  Object.defineProperty(sprite, 'type', _objectType);
+  return sprite;
 }
 
 /**
- * Draw an ellipse on a canvas based off of the sizing.
+ * Calculate the control point for our curve.
  *
- * @param {Object} sprite
- * @param {CanvasRenderingContext2D} canvas
- * @param {{x: Number, y: Number}} origin
- * @param {{angle: Number, height: Number, width: Number}} ellipse
+ * @param {Number} origin
+ * @param {Number} peak
+ * @param {Number} destination
+ * @returns {Number}
  * @private
  */
-function _drawEllipse(sprite, canvas, origin, ellipse) {
-  canvas.beginPath();
-  sprite._gcAvoidance.renderingEllipse.height = ellipse.height;
-  sprite._gcAvoidance.renderingEllipse.width = ellipse.width;
-  for (let i = 0; i < 2 * Math.PI; i = i + 0.01) {
-    sprite._gcAvoidance.renderingEllipse.angle = i;
-    MathUtility.setPointOnEllipse(origin, sprite._gcAvoidance.renderingEllipse, sprite._gcAvoidance.point);
-    sprite._gcAvoidance.point.x = MathUtility.round(sprite._gcAvoidance.point.x);
-    sprite._gcAvoidance.point.y = MathUtility.round(sprite._gcAvoidance.point.y);
-    if (!i) {
-      canvas.moveTo(sprite._gcAvoidance.point.x, sprite._gcAvoidance.point.y);
-    } else {
-      canvas.lineTo(sprite._gcAvoidance.point.x, sprite._gcAvoidance.point.y);
-    }
-  }
-  canvas.lineWidth = 2;
-  canvas.strokeStyle = sprite._debug.strokeColor;
-  canvas.stroke();
-  canvas.closePath();
-
-  MathUtility.setPointOnEllipse(origin, ellipse, sprite._gcAvoidance.point);
-  sprite._gcAvoidance.point.x = MathUtility.round(sprite._gcAvoidance.point.x);
-  sprite._gcAvoidance.point.y = MathUtility.round(sprite._gcAvoidance.point.y);
-  canvas.beginPath();
-  canvas.arc(
-    sprite._gcAvoidance.point.x,
-    sprite._gcAvoidance.point.y,
-    SIZER.relativeSize(10),
-    SIZER.relativeSize(5),
-    0,
-    Math.PI * 2,
-    true
-  );
-  canvas.closePath();
-  canvas.fill();
+function _calculateControlPoint(origin, peak, destination) {
+  return (peak / (2 * JUMP_PEAK_REFERENCE * (1 - JUMP_PEAK_REFERENCE)))
+    - (origin * JUMP_PEAK_REFERENCE / (2 * (1 - JUMP_PEAK_REFERENCE)))
+    - (destination * (1 - JUMP_PEAK_REFERENCE) / (2 * JUMP_PEAK_REFERENCE));
 }

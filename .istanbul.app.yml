@@ -1,0 +1,7 @@
+reporting:
+  dir: ./coverage/app
+instrumentation:
+  root: src
+  default-excludes: true
+  excludes:
+    - 'vendor/**'

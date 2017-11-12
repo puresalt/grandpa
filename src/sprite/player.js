@@ -18,7 +18,11 @@
 import _ from 'lodash/fp';
 import BaseSprite from '../sprite';
 
-const _objectType = 'player';
+const _objectType = {
+  configurable: false,
+  writeable: false,
+  value: 'player'
+};
 
 /**
  * Load our player.
@@ -28,7 +32,6 @@ const _objectType = 'player';
 export default function Player(loadState) {
   const baseSprite = BaseSprite();
   const player = Object.assign(_.extend(baseSprite, {
-    type: _objectType,
     hp: 100,
     name: 'Gramps',
     speed: {
@@ -62,8 +65,8 @@ export default function Player(loadState) {
       this.height = 67;
       this.width = 36;
       this.standing = 0;
-      return this;
     }
   }), loadState || {});
+  Object.defineProperty(player, 'type', _objectType);
   return player;
 }

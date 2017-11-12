@@ -32,7 +32,9 @@ const _spriteTypes = {
 export default function spriteFactory() {
   const _alive = [];
   const _graveyard = {};
+
   for (let key in _spriteTypes) {
+    /* istanbul ignore if */
     if (!_spriteTypes.hasOwnProperty(key)) {
       continue;
     }
@@ -43,28 +45,19 @@ export default function spriteFactory() {
     /**
      * Set all of the entities for our canvas.
      *
-     * @param {Object} sprite
-     * @returns {Object}
-     */
-    add(sprite) {
-      _alive.push(sprite);
-      return methods;
-    },
-
-    /**
-     * Set all of the entities for our canvas.
-     *
      * @param {String} type
      * @param {Object?} data
      * @returns {Object}
      */
     create(type, data) {
-      const sprite = _.merge(
-        _graveyard[type].length
-          ? _graveyard[type].shift().reset()
-          : _spriteTypes[type](),
-        data || {}
-      );
+      let sprite;
+      if (_graveyard[type].length) {
+        sprite = _graveyard[type].shift();
+        sprite.reset();
+        sprite = _.merge(sprite, data || {});
+      } else {
+        sprite = _.merge(_spriteTypes[type](), data || {});
+      }
       _alive.push(sprite);
       return sprite;
     },
@@ -77,13 +70,13 @@ export default function spriteFactory() {
      */
     remove(sprite) {
       for (let i = 0, count = _alive.length; i < count; ++i) {
+        /* istanbul ignore if */
         if (sprite !== _alive[i]) {
           continue;
         }
         _graveyard[sprite.type].push(_alive[i]);
         _alive.splice(i, 1);
       }
-      return methods;
     },
 
     /**
@@ -93,6 +86,19 @@ export default function spriteFactory() {
      */
     all() {
       return _alive.sort(_sortByY);
+    },
+
+    /**
+     * Remove all of the items from our graveyard.
+     */
+    cremate() {
+      for (let key in _spriteTypes) {
+        /* istanbul ignore if */
+        if (!_spriteTypes.hasOwnProperty(key)) {
+          continue;
+        }
+        _graveyard[key] = [];
+      }
     }
   };
 

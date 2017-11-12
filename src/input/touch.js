@@ -13,7 +13,7 @@
  *
  */
 
-/* jshint maxcomplexity:10, maxstatements:24 */
+/* jshint maxcomplexity:10, maxparams:5, maxstatements:24 */
 /* globals document */
 
 'use strict';
@@ -21,10 +21,11 @@
 import _ from 'lodash/fp';
 import KEY from './key';
 import EVENT from '../event';
-import PUB_SUB from '../pubSub';
+import PubSub from '../pubSub';
 import SIZER from '../sizer';
 import MathUtility from '../math';
 
+const pubSub = PubSub.singleton();
 const INNER_DEADZONE = 0.1;
 
 const _defaultConfig = {
@@ -121,10 +122,12 @@ export default function TouchInput(config, inputState, context) {
     abxy.style.right = (SIZER.maxWidth - SIZER.width) + 'px';
     abxy.style.display = 'block';
     for (let i = 0, count = abxy.childNodes.length; i < count; ++i) {
-      abxy.childNodes[i].style.height = abxy.childNodes[i].style.width = SIZER.relativeSize(SIZER.height / 3 / 2) + 'px';
+      const size = SIZER.relativeSize(SIZER.height / 3 / 2) + 'px';
+      abxy.childNodes[i].style.width = size;
+      abxy.childNodes[i].style.height = size;
     }
   };
-  const _subscribed = PUB_SUB.subscribe(EVENT.RESIZE, _resizer);
+  const _subscribed = pubSub.subscribe(EVENT.RESIZE, _resizer);
   _resizer();
 
   return Object.freeze({
@@ -191,11 +194,19 @@ function _handleDirectionalEvent(inputState, event, context) {
   const touchY = touchEvent.clientY - clientY;
 
   // If we are within the innerDeadzone or outside of the circle then we should release our keys and return.
-  if (_insideCircle(touchX, touchY, radius, radius, radius * INNER_DEADZONE) || !_insideCircle(touchX, touchY, radius, radius, radius)) {
+  if (
+    _insideCircle(touchX, touchY, radius, radius, radius * INNER_DEADZONE)
+    || !_insideCircle(touchX, touchY, radius, radius, radius)
+  ) {
     return inputState.triggerEvent(EVENT.RELEASE, KEY.DIRECTIONAL, context);
   }
 
-  return inputState.triggerEvent(EVENT.PRESS, KEY.DIRECTIONAL, context, -1 * MathUtility.getDegreeOfPoints(touchX, touchY, radius, radius));
+  return inputState.triggerEvent(
+    EVENT.PRESS,
+    KEY.DIRECTIONAL,
+    context,
+    -1 * MathUtility.getDegreeOfPoints(touchX, touchY, radius, radius)
+  );
 }
 
 /**

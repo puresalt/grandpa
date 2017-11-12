@@ -17,7 +17,7 @@
 
 'use strict';
 
-import inputKeyLookup from './input/key/lookup';
+import { lookup } from './input/key/lookup';
 import MathUtility from './math';
 
 const _movementKeys = [
@@ -49,6 +49,7 @@ export default {
    * Render a state update.
    */
   update(player, inputState, runtime, fps) {
+    /* jshint maxcomplexity:7, maxstatements:18 */
     if (!_overlay) {
       return;
     }
@@ -65,7 +66,12 @@ export default {
       '<strong>' + (inputState.getConfig().type === 'keyboard' ? 'KEYS' : 'BUTTONS') + ':</strong><hr>'
     ];
     for (let i = 0, count = definedKeys.length; i < count; ++i) {
-      keys.push(stylizeKey(definedKeys[i].input) + '<span class="on">' + (inputType === 'keyboard' ? inputKeyLookup(definedKeys[i].keyCode) : '#' + definedKeys[i].element.id) + '</span>');
+      keys.push(stylizeKey(
+        definedKeys[i].input)
+        + '<span class="on">'
+        + (inputType === 'keyboard' ? lookup(definedKeys[i].keyCode) : '#' + definedKeys[i].element.id)
+        + '</span>'
+      );
     }
 
     const stats = [

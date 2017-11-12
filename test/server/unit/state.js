@@ -13,6 +13,7 @@
  *
  */
 
+/* jshint expr: true */
 /* globals describe,it,expect */
 
 'use strict';
@@ -20,7 +21,6 @@
 const STATE = require('../../../server/state');
 
 describe('State', () => {
-
   describe('get', () => {
     it('should be false if the object doesn\'t exist', () => {
       const state = STATE();
@@ -35,7 +35,7 @@ describe('State', () => {
       const data = {a: 1};
 
       state.save(id, data);
-      expect(state.get(id).a).to.be.equal(1);
+      expect(state.get(id).a).to.equal(1);
     });
   });
 
@@ -64,7 +64,7 @@ describe('State', () => {
       const data = {a: 1};
 
       state.save(id, data);
-      expect(state.get(id).a).to.be.equal(1);
+      expect(state.get(id).a).to.equal(1);
     });
 
     it('should remove id from data', () => {
@@ -83,7 +83,7 @@ describe('State', () => {
 
       state.save(id, data);
       state.save(id, {a: 2});
-      expect(state.get(id).a).to.be.equal(2);
+      expect(state.get(id).a).to.equal(2);
     });
 
     it('should add a value', () => {
@@ -93,8 +93,8 @@ describe('State', () => {
 
       state.save(id, data);
       state.save(id, {b: 2});
-      expect(state.get(id).a).to.be.equal(1);
-      expect(state.get(id).b).to.be.equal(2);
+      expect(state.get(id).a).to.equal(1);
+      expect(state.get(id).b).to.equal(2);
     });
   });
 
@@ -108,7 +108,7 @@ describe('State', () => {
       const replaced = state.replace(id, {b: 3});
       expect(replaced).to.be.true;
       expect(state.get(id).a).to.not.exist;
-      expect(state.get(id).b).to.be.equal(3);
+      expect(state.get(id).b).to.equal(3);
     });
 
     it('should overwrite a value', () => {
@@ -158,7 +158,7 @@ describe('State', () => {
       state.save(id, data);
       state.remove(id, ['a']);
       expect(state.get(id).a).to.not.exist;
-      expect(state.get(id).b).to.be.equal(2);
+      expect(state.get(id).b).to.equal(2);
     });
   });
 
@@ -173,7 +173,7 @@ describe('State', () => {
       state.save(123, {a: 1});
       state.save(124, {b: 2});
       state.save(125, {b: 3});
-      expect(state.all().length).to.be.equal(3);
+      expect(state.all().length).to.equal(3);
     });
 
     it('should give us a list of known object keys', () => {
@@ -182,7 +182,7 @@ describe('State', () => {
       state.save(124, {b: 2});
       state.save(125, {b: 3});
       state.remove(124);
-      expect(state.all().length).to.be.equal(2);
+      expect(state.all().length).to.equal(2);
     });
   });
 });

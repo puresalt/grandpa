@@ -79,16 +79,36 @@ const LOOKUP = {
   192: 'TILDA'
 };
 
+const REVERSE_LOOKUP = Object.keys(LOOKUP).reduce((gathered, item) => {
+  gathered[LOOKUP[item]] = item;
+  return gathered;
+}, {});
+
 Object.freeze(LOOKUP);
+Object.freeze(REVERSE_LOOKUP);
 
 /**
- * Lookup a given key for debugging purposes.
+ * Lookup a given human readable key.
  *
  * @param {Number} key
  * @returns {String|Boolean}
  */
-export default function keyLookup(key) {
+function lookup(key) {
   return LOOKUP[key]
     ? LOOKUP[key]
     : false;
 }
+
+/**
+ * Get the key's number via a human readable key.
+ *
+ * @param {String} key
+ * @returns {Number|Boolean}
+ */
+function reverseLookup(key) {
+  return REVERSE_LOOKUP[key]
+    ? REVERSE_LOOKUP[key]
+    : false;
+}
+
+export {lookup, reverseLookup};

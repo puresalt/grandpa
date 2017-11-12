@@ -28,7 +28,7 @@ const State = (() => {
        *
        * @returns {Array}
        */
-      all: () => {
+      all() {
         return Object.keys(_data);
       },
 
@@ -38,7 +38,7 @@ const State = (() => {
        * @param {String} id
        * @returns {Object|false}
        */
-      get: (id) => {
+      get(id) {
         if (!_data[id]) {
           return false;
         }
@@ -51,7 +51,7 @@ const State = (() => {
        * @param {String} id
        * @returns {Boolean}
        */
-      has: (id) => {
+      has(id) {
         return typeof _data[id] !== 'undefined';
       },
 
@@ -62,7 +62,7 @@ const State = (() => {
        * @param {Array?} properties
        * @returns {Boolean}
        */
-      remove: (id, properties) => {
+      remove(id, properties) {
         if (!_data[id]) {
           return false;
         } else if (!properties) {
@@ -81,7 +81,7 @@ const State = (() => {
        * @param {String} id
        * @param {Object} data
        */
-      save: (id, data) => {
+      save(id, data) {
         _data[id] = _.defaults(data, _data[id] || {});
         if (_data[id].id) {
           delete _data[id].id;
@@ -94,7 +94,7 @@ const State = (() => {
        * @param {String} id
        * @param {Object} data
        */
-      replace: (id, data) => {
+      replace(id, data) {
         if (!_data[id]) {
           return false;
         }

@@ -20,7 +20,7 @@ const flakeIdGenerator = new FlakeIdGenerator();
 const intFormat = require('biguint-format');
 
 const helper = {
-  generateId: () => {
+  generateId() {
     return 'i' + intFormat(flakeIdGenerator.next(), 'dec');
   }
 };

@@ -20,14 +20,12 @@ const mangleProperties = {regex: /^_/};
 
 const options = {
   mangleProperties: {regex: /^_/},
-  banner: '/*! NUMBER ONE GRANDPA (Generated: <%= grunt.template.today("yyyy-mm-dd") %>) */\n',
+  banner: '/*! NUMBER ONE GRANDPA (Generated: <%= grunt.template.today("yyyy-mm-dd") %>) */',
   mangle: {
-    screw_ie8: true,
     toplevel: true,
     eval: true
   },
   compress: {
-    screw_ie8: false,
     sequences: true,
     conditionals: true,
     booleans: true,
@@ -35,9 +33,6 @@ const options = {
     if_return: true,
     join_vars: true,
     drop_console: true
-  },
-  output: {
-    screw_ie8: false
   }
 };
 

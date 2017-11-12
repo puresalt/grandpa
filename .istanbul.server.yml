@@ -1,0 +1,4 @@
+reporting:
+  dir: ./coverage/server
+instrumentation:
+  root: src

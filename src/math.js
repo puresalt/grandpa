@@ -28,7 +28,7 @@ const MathUtility = {
    * @param {Number} to
    * @returns {Boolean}
    */
-  between: (x, from, to) => {
+  between(x, from, to) {
     return x && x >= from && x <= to;
   },
 
@@ -39,7 +39,7 @@ const MathUtility = {
    * @param {Number?} decrement
    * @returns {Number}
    */
-  coolDown: (start, decrement) => {
+  coolDown(start, decrement) {
     return start
       ? Math.max(0, start - (decrement || 1))
       : 0;
@@ -48,13 +48,13 @@ const MathUtility = {
   /**
    * Get x if it's between minimum and maximum, otherwise the minimum or maximum depending on which side of the bounds.
    *
-   * @param {Number} x
+   * @param {Number} number
    * @param {Number} minimum
    * @param {Number} maximum
    * @returns {Number}
    */
-  minMax: (x, minimum, maximum) => {
-    return Math.max(minimum, Math.min(maximum, x));
+  minMax(number, minimum, maximum) {
+    return Math.max(minimum, Math.min(maximum, number));
   },
 
   /**
@@ -64,7 +64,7 @@ const MathUtility = {
    * @param {{h: Number, w: Number, x: Number, y: Number}} dimensions2
    * @returns {Boolean}
    */
-  overlap: (dimensions1, dimensions2) => {
+  overlap(dimensions1, dimensions2) {
     return !(
       (dimensions1.x + dimensions1.w - 1) < dimensions2.x
       || (dimensions2.x + dimensions2.w - 1) < dimensions1.x
@@ -80,7 +80,7 @@ const MathUtility = {
    * @param {Number} maximum
    * @returns {Number}
    */
-  random: (minimum, maximum) => {
+  random(minimum, maximum) {
     return (minimum + (Math.random() * (maximum - minimum)));
   },
 
@@ -90,7 +90,7 @@ const MathUtility = {
    * @param {Array} choices
    * @returns {*}
    */
-  randomChoice: (choices) => {
+  randomChoice(choices) {
     return choices[MathUtility.randomNumber(0, choices.length - 1)];
   },
 
@@ -99,7 +99,7 @@ const MathUtility = {
    *
    * @returns {Boolean}
    */
-  randomBoolean: () => {
+  randomBoolean() {
     return MathUtility.randomChoice(TRUE_OR_FALSE);
   },
 
@@ -110,7 +110,7 @@ const MathUtility = {
    * @param {Number} maximum
    * @returns {Number}
    */
-  randomNumber: (minimum, maximum) => {
+  randomNumber(minimum, maximum) {
     return MathUtility.round(MathUtility.random(minimum, maximum));
   },
 
@@ -124,7 +124,7 @@ const MathUtility = {
    * @returns {Number}
    */
   getDegreeOfPoints(pointX, pointY, centerX, centerY) {
-    return Math.atan2(pointY - (centerY || 0), pointX - (centerX || 0)) * TO_DEGREES;
+    return Math.atan2(pointY - centerY, pointX - centerX) * TO_DEGREES;
   },
 
   /**
@@ -137,8 +137,12 @@ const MathUtility = {
    * @private
    */
   setPointOnEllipse(origin, ellipse, reusedObject) {
-    reusedObject.x = origin.x - (ellipse.height * Math.sin(ellipse.angle)) * Math.sin(0) + (ellipse.width * Math.cos(ellipse.angle)) * Math.cos(0);
-    reusedObject.y = origin.y + (ellipse.width * Math.cos(ellipse.angle)) * Math.sin(0) + (ellipse.height * Math.sin(ellipse.angle)) * Math.cos(0);
+    reusedObject.x = origin.x
+      - (ellipse.height * Math.sin(ellipse.angle)) * Math.sin(0)
+      + (ellipse.width * Math.cos(ellipse.angle)) * Math.cos(0);
+    reusedObject.y = origin.y
+      + (ellipse.width * Math.cos(ellipse.angle)) * Math.sin(0)
+      + (ellipse.height * Math.sin(ellipse.angle)) * Math.cos(0);
   },
 
   /**
@@ -162,6 +166,7 @@ const MathUtility = {
    * @returns {Number}
    */
   round(number) {
+    /* jshint bitwise:false */
     return (number + 0.5) | 0;
   }
 };

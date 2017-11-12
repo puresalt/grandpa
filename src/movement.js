@@ -21,8 +21,6 @@ import DIRECTION from './movement/direction';
 import ANGLE from './movement/direction/angle';
 import GUIDED from './movement/guided';
 
-const TAP_RESPONSE_TIME = 100;
-
 /**
  * Resolve any direction issues and keep the state internal.
  *
@@ -30,7 +28,7 @@ const TAP_RESPONSE_TIME = 100;
  * @returns {Object}
  * @constructor
  */
-export default function InputMovement(loadState) {
+function MovementFactory(loadState) {
   const _lastDirection = {
     direction: DIRECTION.RIGHT
   };
@@ -81,21 +79,17 @@ export default function InputMovement(loadState) {
 
       this.direction = angle;
       if (this.direction <= ANGLE[DIRECTION.UP] && this.direction >= ANGLE[DIRECTION.DOWN]) {
-        if (this.facing !== DIRECTION.RIGHT) {
-          this.running = false;
-        } else if (this.direction < ANGLE[DIRECTION.UP_RIGHT] && this.direction > ANGLE[DIRECTION.DOWN_RIGHT] && _lastDirection[DIRECTION.RIGHT]) {
-          this.running = this.running || Date.now() - _lastDirection[DIRECTION.RIGHT] < TAP_RESPONSE_TIME;
-        } else if (this.direction >= ANGLE[DIRECTION.UP_RIGHT] || this.direction <= ANGLE[DIRECTION.DOWN_RIGHT]) {
+        if (_lastDirection[DIRECTION.RIGHT] && (this.direction < ANGLE[DIRECTION.UP_RIGHT] && this.direction > ANGLE[DIRECTION.DOWN_RIGHT])) {
+          this.running = this.running || Date.now() - _lastDirection[DIRECTION.RIGHT] < MovementFactory.TAP_RESPONSE_TIME;
+        } else if (this.facing !== DIRECTION.RIGHT || this.direction >= ANGLE[DIRECTION.UP_RIGHT] || this.direction <= ANGLE[DIRECTION.DOWN_RIGHT]) {
           this.running = false;
         }
         this.facing = DIRECTION.RIGHT;
         _lastDirection.direction = DIRECTION.RIGHT;
       } else {
-        if (this.facing !== DIRECTION.LEFT) {
-          this.running = false;
-        } else if (this.direction > ANGLE[DIRECTION.UP_LEFT] || this.direction < ANGLE[DIRECTION.DOWN_RIGHT] && _lastDirection[DIRECTION.LEFT]) {
-          this.running = this.running || Date.now() - _lastDirection[DIRECTION.LEFT] < TAP_RESPONSE_TIME;
-        } else if (this.direction <= ANGLE[DIRECTION.UP_LEFT] || this.direction >= ANGLE[DIRECTION.DOWN_RIGHT]) {
+        if (_lastDirection[DIRECTION.LEFT] && (this.direction > ANGLE[DIRECTION.UP_LEFT] || this.direction < ANGLE[DIRECTION.DOWN_LEFT])) {
+          this.running = this.running || Date.now() - _lastDirection[DIRECTION.LEFT] < MovementFactory.TAP_RESPONSE_TIME;
+        } else if (this.facing !== DIRECTION.LEFT || (this.direction <= ANGLE[DIRECTION.UP_LEFT] && this.direction >= ANGLE[DIRECTION.DOWN_LEFT])) {
           this.running = false;
         }
         this.facing = DIRECTION.LEFT;
@@ -175,3 +169,8 @@ export default function InputMovement(loadState) {
     }
   }), loadState || {});
 }
+
+MovementFactory.TAP_RESPONSE_TIME = 100;
+Object.freeze(MovementFactory);
+
+export default MovementFactory;

@@ -62,9 +62,7 @@ export default function canvasFunction(element) {
   const _alive = [];
   let _runtime = 0;
 
-  const _renderEntity = entity => {
-    entity.render(_element, _tilesets[entity.tileset.src], _runtime);
-  };
+  const _renderEntity = entity => entity.render(_element, _tilesets[entity.tileset.src], _runtime);
 
   const methods = {
     /**
@@ -80,19 +78,16 @@ export default function canvasFunction(element) {
      * Add an entity to be drawn.
      *
      * @param {Object} entity
-     * @returns {Object}
      */
     addEntity(entity) {
       console.log('ADDING:', entity.name);
       _alive.push(entity);
-      return methods;
     },
 
     /**
      * Remove a specific entity.
      *
      * @param {Object} entity
-     * @returns {Object}
      */
     removeEntity(entity) {
       for (let i = 0, count = _alive.length; i < count; ++i) {
@@ -102,7 +97,6 @@ export default function canvasFunction(element) {
         console.log('REMOVING:', entity.name);
         _alive.splice(i, 1);
       }
-      return methods;
     },
 
     /**
@@ -110,7 +104,6 @@ export default function canvasFunction(element) {
      *
      * @param {Array} tilesets
      * @param {Function} callback
-     * @returns {Object}
      */
     loadTilesets(tilesets, callback) {
       const waitingFor = tilesets.length;
@@ -127,7 +120,6 @@ export default function canvasFunction(element) {
           }
         });
       });
-      return methods;
     }
   };
 

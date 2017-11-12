@@ -30,7 +30,7 @@
   "node": true,
   "noempty": true,
   "nonew": false,
-  "plusplus": true,
+  "plusplus": false,
   "quotmark": "single",
   "strict": true,
   "undef": true,

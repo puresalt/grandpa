@@ -26,7 +26,7 @@ const routeState = require('./router/state');
  * @param {String} environment
  * @returns {*|Function}
  */
-const runServer = function(environment) {
+const runServer = (environment) => {
   let app = express();
   app.use('/assets', express.static(path.join(__dirname, '../', 'assets')));
   app.use('/build', express.static(path.join(__dirname, '../', 'build')));
@@ -38,7 +38,8 @@ const runServer = function(environment) {
 
   /* If we're in a dev environment then we should show coverage */
   if (environment === 'development') {
-    app.use('/coverage', express.static(path.join(__dirname, '../', 'coverage/lcov-report')));
+    app.use('/coverage', express.static(path.join(__dirname, '../', 'coverage/app/lcov-report')));
+    app.use('/coverage-server', express.static(path.join(__dirname, '../', 'coverage/server/lcov-report')));
   }
 
   return app;
@@ -50,7 +51,7 @@ if (module.parent) {
   process.title = process.argv[2];
   const port = process.env.PORT || 5001;
   runServer(process.env.NODE_ENV)
-    .on('error', function(err) {
+    .on('error', (err) => {
       if (err.code === 'EADDRINUSE') {
         console.warn('Port: ' + port + ' is already in use');
       }

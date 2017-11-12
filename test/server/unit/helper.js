@@ -13,6 +13,7 @@
  *
  */
 
+/* jshint expr: true */
 /* globals describe,it,expect */
 
 'use strict';
