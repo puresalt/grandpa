@@ -23,7 +23,7 @@ import SIZER from './sizer';
  * And a callback when an element successfully loads.
  *
  * @param {HTMLElement} element
- * @param {Function} callback
+ * @param {function(HTMLElement)} callback
  */
 function elementLoader(element, callback) {
   let loaded = false;
@@ -40,7 +40,7 @@ function elementLoader(element, callback) {
  * Create an image from a given tileset config.
  *
  * @param {Object} tileset
- * @param {Function?} callback
+ * @param {function()?} callback
  * @returns {HTMLImageElement}
  */
 function createImageElementForTileset(tileset, callback) {
@@ -103,7 +103,7 @@ export default function canvasFunction(element) {
      * Define the tilesets to use for a given level. Trigger `callback` when all images are loaded.
      *
      * @param {Array} tilesets
-     * @param {Function} callback
+     * @param {function()} callback
      */
     loadTilesets(tilesets, callback) {
       const waitingFor = tilesets.length;

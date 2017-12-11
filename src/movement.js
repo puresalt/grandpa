@@ -17,6 +17,7 @@
 
 'use strict';
 
+import _ from 'lodash';
 import DIRECTION from './movement/direction';
 import ANGLE from './movement/direction/angle';
 import GUIDED from './movement/guided';
@@ -50,7 +51,7 @@ function MovementFactory(loadState) {
     }
   }
 
-  return Object.assign(Object.create({
+  return _.merge({
     direction: 0,
     guided: false,
     jumpHeight: 20,
@@ -167,7 +168,7 @@ function MovementFactory(loadState) {
       this.stunned = false;
       this.guided = false;
     }
-  }), loadState || {});
+  }, loadState || {});
 }
 
 MovementFactory.TAP_RESPONSE_TIME = 100;

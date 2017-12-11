@@ -17,6 +17,7 @@
 
 /* @TODO This is just for testing */
 
+import _ from 'lodash';
 import DIRECTION from './movement/direction';
 import ANGLE from './movement/direction/angle';
 import GUIDED from './movement/guided';
@@ -40,7 +41,7 @@ const JUMP_PEAK_REFERENCE = 0.55;
  * @returns {Object}
  */
 export default function Sprite(loadState) {
-  const sprite = Object.assign(Object.create({
+  const sprite = _.merge({
     type: _objectType,
     equipment: {
       leftHand: null,
@@ -95,9 +96,6 @@ export default function Sprite(loadState) {
         height: -1,
         angle: -1
       }
-    },
-    _debug: {
-      strokeColor: '#800'
     },
     _gcAvoidance: {
       jumpPoint: {
@@ -404,8 +402,17 @@ export default function Sprite(loadState) {
       this.jump.ground.width = -1;
       this.jump.ground.height = -1;
       this.jump.ground.angle = -1;
+      this._gcAvoidance.jumpPoint.x = -1;
+      this._gcAvoidance.jumpPoint.y = -1;
+      this._gcAvoidance.ellipsePoint.x = -1;
+      this._gcAvoidance.ellipsePoint.y = -1;
+      this._gcAvoidance.renderingEllipse.angle = -1;
+      this._gcAvoidance.renderingEllipse.height = -1;
+      this._gcAvoidance.renderingEllipse.width = -1;
+      this._gcAvoidance.point.x = -1;
+      this._gcAvoidance.point.y = -1;
     }
-  }, loadState || {}));
+  }, loadState || {});
   Object.defineProperty(sprite, 'type', _objectType);
   return sprite;
 }

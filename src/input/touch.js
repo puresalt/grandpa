@@ -48,7 +48,7 @@ const _defaultConfig = {
  * @param {Object} config
  * @param {Object} inputState
  * @param {StateMachine?} context
- * @returns {{getConfig: Function}}
+ * @returns {{getConfig: function(), remove: function()}}
  */
 export default function TouchInput(config, inputState, context) {
   const _extendedConfig = _.defaults(_defaultConfig, config || {});
@@ -58,7 +58,7 @@ export default function TouchInput(config, inputState, context) {
    * Helper function to add our event listener on press.
    *
    * @param {String} found
-   * @returns {function(*=)}
+   * @returns {function(event: Event)}
    * @private
    */
   const _pressEventListener = (found) => {
@@ -83,7 +83,7 @@ export default function TouchInput(config, inputState, context) {
    * Helper function to add our event listener on press.
    *
    * @param {String} found
-   * @returns {function(*)}
+   * @returns {function(event: Event)}
    * @private
    */
   const _releaseEventListener = (found) => {
@@ -130,7 +130,7 @@ export default function TouchInput(config, inputState, context) {
   const _subscribed = pubSub.subscribe(EVENT.RESIZE, _resizer);
   _resizer();
 
-  return Object.freeze({
+  const methods = {
     /**
      * Get the current config.
      *
@@ -143,7 +143,6 @@ export default function TouchInput(config, inputState, context) {
     /**
      * Remove our event listeners in the case that we're going to switch input.
      */
-
     remove() {
       for (let i = 0, count = _elements.length; i < count; ++i) {
         const item = _elements[i];
@@ -157,7 +156,11 @@ export default function TouchInput(config, inputState, context) {
       _elements.length = 0;
       _subscribed.unsubscribe();
     }
-  });
+  };
+
+  Object.freeze(methods);
+
+  return methods;
 }
 
 /**
@@ -178,7 +181,7 @@ function _generateElementList(elements) {
  * trigger the necessary events.
  *
  * @param {Object} inputState
- * @param {TouchEvent} event
+ * @param {Event} event
  * @param {Object} context
  * @returns {Boolean}
  * @private

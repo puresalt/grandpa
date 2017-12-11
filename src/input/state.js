@@ -45,7 +45,10 @@ function setInitial() {
  *
  * @param {Object} movement
  * @param {{key: Object, movement: String}?} loadState
- * @returns {{getKeys: (function()), triggerEvent: (function())}}
+ * @returns {{
+ *   getKeys: function(),
+ *   triggerEvent: function(direction: String, key: String, context: StateMachine=, ...[Array])
+ * }}
  */
 export default function InputState(movement, loadState) {
   const _keys = loadState || setInitial();
@@ -54,7 +57,7 @@ export default function InputState(movement, loadState) {
    * Hold a directional action based on key presses.
    *
    * @param key
-   * @returns {function(*)}
+   * @returns {function(direction: String)}
    * @private
    */
   const _holdDirectionalAction = (key) => {
@@ -89,7 +92,7 @@ export default function InputState(movement, loadState) {
    *
    * @param {String} key
    * @param {String} action
-   * @returns {function(*)}
+   * @returns {function(direction: String)}
    * @private
    */
   const _triggerDirectionalAction = (key, action) => {
@@ -165,7 +168,7 @@ export default function InputState(movement, loadState) {
 
   const _eventLookup = _generateEventLookup(_events);
 
-  return Object.freeze({
+  const methods = {
     /**
      * Get defined keys.
      *
@@ -202,7 +205,11 @@ export default function InputState(movement, loadState) {
         return true;
       }, false);
     }
-  });
+  };
+
+  Object.freeze(methods);
+
+  return methods;
 }
 
 /**

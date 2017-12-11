@@ -32,7 +32,7 @@ const _objectType = {
  */
 export default function Npc(loadState) {
   const baseSprite = BaseSprite();
-  const npc = Object.assign(_.extend(baseSprite, {
+  const npc = _.merge(baseSprite, {
     hp: 20,
     name: 'NPC',
     tileset: {
@@ -73,7 +73,7 @@ export default function Npc(loadState) {
       this.height = 66;
       this.width = 36;
     }
-  }), loadState || {});
+  }, loadState || {});
   Object.defineProperty(npc, 'type', _objectType);
   return npc;
 }

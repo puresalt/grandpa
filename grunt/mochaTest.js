@@ -18,26 +18,11 @@
 /* jshint camelcase: false */
 module.exports = {
   grandpa: {
-    mangleProperties: {regex: /^_/},
-    options: {
-      mangleProperties: {regex: /^_/},
-      banner: '/*! NUMBER ONE GRANDPA (Generated: <%= grunt.template.today("yyyy-mm-dd") %>) */',
-      mangle: {
-        toplevel: true,
-        eval: true
+    test: {
+      options: {
+        require: 'babel-register'
       },
-      compress: {
-        sequences: true,
-        conditionals: true,
-        booleans: true,
-        unused: true,
-        if_return: true,
-        join_vars: true,
-        drop_console: true
-      }
-    },
-    files: {
-      'build/grandpa.js': 'build/grandpa.dev.js'
+      src: ['test/**/*.js']
     }
   }
 };

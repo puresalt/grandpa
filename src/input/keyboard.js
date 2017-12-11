@@ -45,7 +45,7 @@ const _defaultConfig = {
  * @param {Object} config
  * @param {Object} inputState
  * @param {StateMachine?} context
- * @returns {{getConfig: Function}}
+ * @returns {{getConfig: function(), remove: function()}}
  */
 export default function KeyboardInput(config, inputState, context) {
   const _extendedConfig = _.defaults(_defaultConfig, config || {});
@@ -55,7 +55,7 @@ export default function KeyboardInput(config, inputState, context) {
    * Helper function to add our event listener on both up and down.
    *
    * @param {String} direction
-   * @returns {function(*)}
+   * @returns {function(event: KeyboardEvent)}
    * @private
    */
   const _eventListener = (direction) => {
@@ -79,7 +79,7 @@ export default function KeyboardInput(config, inputState, context) {
   _extendedConfig.element.addEventListener('keydown', _press);
   _extendedConfig.element.addEventListener('keyup', _release);
 
-  return Object.freeze({
+  const methods = {
     /**
      * Get the current config.
      *
@@ -96,7 +96,11 @@ export default function KeyboardInput(config, inputState, context) {
       _extendedConfig.element.removeEventListener('keydown', _press);
       _extendedConfig.element.removeEventListener('keyup', _release);
     }
-  });
+  };
+
+  Object.freeze(methods);
+
+  return methods;
 }
 
 /**

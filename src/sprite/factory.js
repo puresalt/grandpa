@@ -27,7 +27,12 @@ const _spriteTypes = {
 /**
  * Keep track of all dead/alive sprites.
  *
- * @returns {Object}
+ * @returns {{
+ *   all: function(),
+ *   create: function(type: String, loadData: Object=),
+ *   cremate: function(),
+ *   remove: function(Object)
+ * }}
  */
 export default function spriteFactory() {
   const _alive = [];
@@ -43,23 +48,42 @@ export default function spriteFactory() {
 
   const methods = {
     /**
+     * Get all alive sprites in their expected direction.
+     *
+     * @returns {Array}
+     */
+    all() {
+      return _alive.sort(_sortByY);
+    },
+
+    /**
      * Set all of the entities for our canvas.
      *
      * @param {String} type
-     * @param {Object?} data
+     * @param {Object?} loadData
      * @returns {Object}
      */
-    create(type, data) {
-      let sprite;
-      if (_graveyard[type].length) {
-        sprite = _graveyard[type].shift();
-        sprite.reset();
-        sprite = _.merge(sprite, data || {});
-      } else {
-        sprite = _.merge(_spriteTypes[type](), data || {});
-      }
+    create(type, loadData) {
+      let sprite = _graveyard[type].length
+        ? _graveyard[type].shift()
+        : _spriteTypes[type]();
+      sprite.reset();
+      sprite = _.merge(sprite, loadData || {});
       _alive.push(sprite);
       return sprite;
+    },
+
+    /**
+     * Remove all of the items from our graveyard.
+     */
+    cremate() {
+      for (let key in _spriteTypes) {
+        /* istanbul ignore if */
+        if (!_spriteTypes.hasOwnProperty(key)) {
+          continue;
+        }
+        _graveyard[key] = [];
+      }
     },
 
     /**
@@ -77,32 +101,12 @@ export default function spriteFactory() {
         _graveyard[sprite.type].push(_alive[i]);
         _alive.splice(i, 1);
       }
-    },
-
-    /**
-     * Get all alive sprites in their expected direction.
-     *
-     * @returns {Array}
-     */
-    all() {
-      return _alive.sort(_sortByY);
-    },
-
-    /**
-     * Remove all of the items from our graveyard.
-     */
-    cremate() {
-      for (let key in _spriteTypes) {
-        /* istanbul ignore if */
-        if (!_spriteTypes.hasOwnProperty(key)) {
-          continue;
-        }
-        _graveyard[key] = [];
-      }
     }
   };
 
-  return Object.freeze(methods);
+  Object.freeze(methods);
+
+  return methods;
 }
 
 /**

@@ -31,7 +31,7 @@ const _objectType = {
  */
 export default function Player(loadState) {
   const baseSprite = BaseSprite();
-  const player = Object.assign(_.extend(baseSprite, {
+  const player = _.merge(baseSprite, {
     hp: 100,
     name: 'Gramps',
     speed: {
@@ -46,9 +46,6 @@ export default function Player(loadState) {
     height: 67,
     width: 36,
     standing: 0,
-    _debug: {
-      strokeColor: '#080'
-    },
 
     /**
      * {@inheritDoc}
@@ -66,7 +63,7 @@ export default function Player(loadState) {
       this.width = 36;
       this.standing = 0;
     }
-  }), loadState || {});
+  }, loadState || {});
   Object.defineProperty(player, 'type', _objectType);
   return player;
 }

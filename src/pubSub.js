@@ -19,10 +19,10 @@
  * Create a PubSub.
  *
  * @returns {{
- *   subscribe: (function(String, Function)),
- *   unsubscribe: (function(String, Function)),
- *   publish: (function(String, ...[Array])),
- *   clear: (function(String=))
+ *   subscribe: function(event: String, callback: function()),
+ *   unsubscribe: function(event: String, callback: function()),
+ *   publish: function(event: String, ...[Array]),
+ *   clear: function(event: String=)
  * }}
  * @constructor
  */
@@ -34,8 +34,8 @@ function PubSub() {
      * Subscribe an event.
      *
      * @param {String} event
-     * @param {Function} callback
-     * @returns {{unsubscribe: Function}}
+     * @param {function()} callback
+     * @returns {{unsubscribe: function()}}
      */
     subscribe(event, callback) {
       if (!_events.hasOwnProperty(event)) {
@@ -53,7 +53,7 @@ function PubSub() {
      * Unsubscribe an event.
      *
      * @param {String} event
-     * @param {Function} callback
+     * @param {function()} callback
      */
     unsubscribe(event, callback) {
       const filter = item => item !== callback;
@@ -113,10 +113,10 @@ export default {
    * Get a global singleton.
    *
    * @returns {{
-   *   subscribe: (function(String, Function)),
-   *   unsubscribe: (function(String, Function)),
-   *   publish: (function(String, ...[Array])),
-   *   clear: (function(String=))
+   *   subscribe: function(String, function(event: String, callback: function())),
+   *   unsubscribe: function(String, function()),
+   *   publish: function(String, ...[Array]),
+   *   clear: function(String=)
    * }}
    */
   singleton() {
@@ -127,10 +127,10 @@ export default {
    * Get a single instance.
    *
    * @returns {{
-   *   subscribe: (function(String, Function)),
-   *   unsubscribe: (function(String, Function)),
-   *   publish: (function(String, ...[Array])),
-   *   clear: (function(String=))
+   *   subscribe: function(String, function(event: String, callback: function())),
+   *   unsubscribe: function(String, function()),
+   *   publish: function(String, ...[Array]),
+   *   clear: function(String=)
    * }}
    */
   instance() {
