@@ -1,7 +1,7 @@
 /* TEAM */
 	Creator: John Mullanaphy
 	Contact: kandy [at] puresalt.gg
-	Twitter: @KandyOppa
+	Twitter: @KandyCodes
 	From: New Jersey, USA
 
 /* SITE */
