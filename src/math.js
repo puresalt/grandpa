@@ -170,7 +170,6 @@ const MathUtility = {
     return (number + 0.5) | 0;
   }
 };
-
 Object.freeze(MathUtility);
 
 export default MathUtility;

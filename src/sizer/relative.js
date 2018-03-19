@@ -22,7 +22,7 @@ import EVENT from '../event';
 import PubSub from '../pubSub';
 import MathUtility from '../math';
 
-const pubSub = PubSub.singleton();
+const globalPubSub = PubSub.singleton();
 let _canvasElement = null;
 
 const Sizer = {
@@ -84,7 +84,7 @@ const Sizer = {
     _canvasElement.style.height = this.height + 'px';
     _canvasElement.style.width = this.width + 'px';
 
-    pubSub.publish(EVENT.RESIZE, this);
+    globalPubSub.publish(EVENT.RESIZE, this);
     return this;
   },
 

@@ -23,6 +23,7 @@ const _objectType = {
   writeable: false,
   value: 'player'
 };
+Object.freeze(_objectType);
 
 /**
  * Load our player.
@@ -65,5 +66,6 @@ export default function Player(loadState) {
     }
   }, loadState || {});
   Object.defineProperty(player, 'type', _objectType);
+
   return player;
 }

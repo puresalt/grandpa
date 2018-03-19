@@ -30,6 +30,7 @@ const _objectType = {
   writeable: false,
   value: 'sprite'
 };
+Object.freeze(_objectType);
 
 const DEGREES_PER_SLICE = 45;
 const JUMP_PEAK_REFERENCE = 0.55;
@@ -303,7 +304,7 @@ export default function Sprite(loadState) {
       MathUtility.setPointOnEllipse(this._gcAvoidance.ellipsePoint, this.jump.air, this._gcAvoidance.point);
       this.jump.peak.x = this._gcAvoidance.point.x;
       this.jump.peak.y = this._gcAvoidance.point.y;
-      if (this.movement.direction === null) {
+      if (!this.movement.moving) {
         this.jump.destination.x = this.jump.origin.x;
         this.jump.destination.y = this.jump.origin.y;
       } else {
@@ -414,6 +415,7 @@ export default function Sprite(loadState) {
     }
   }, loadState || {});
   Object.defineProperty(sprite, 'type', _objectType);
+
   return sprite;
 }
 

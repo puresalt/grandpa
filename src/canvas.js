@@ -108,8 +108,8 @@ export default function canvasFunction(element) {
     loadTilesets(tilesets, callback) {
       const waitingFor = tilesets.length;
       let loaded = 0;
-      tilesets.forEach(tileset => {
-        createImageElementForTileset(tileset, element => {
+      tilesets.forEach((tileset) => {
+        createImageElementForTileset(tileset, (element) => {
           _tilesets[tileset.src] = {
             image: element,
             height: element.height,
@@ -122,8 +122,9 @@ export default function canvasFunction(element) {
       });
     }
   };
+  Object.freeze(methods);
 
-  return Object.freeze(methods);
+  return methods;
 }
 
 /**

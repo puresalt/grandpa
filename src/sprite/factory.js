@@ -23,6 +23,7 @@ const _spriteTypes = {
   player: playerFactory,
   npc: npcFactory
 };
+Object.freeze(_spriteTypes);
 
 /**
  * Keep track of all dead/alive sprites.
@@ -103,7 +104,6 @@ export default function spriteFactory() {
       }
     }
   };
-
   Object.freeze(methods);
 
   return methods;

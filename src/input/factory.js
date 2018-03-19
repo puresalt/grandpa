@@ -22,6 +22,7 @@ const allowedInputs = {
   keyboard: keyboardInput,
   touch: touchInput
 };
+Object.freeze(allowedInputs);
 
 /**
  * Build a factory of our allowed Inputs.

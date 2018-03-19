@@ -20,6 +20,7 @@
 
 import Sprite from '../../../src/sprite/npc';
 import SIZER from '../../../src/sizer';
+import ANGLE from '../../../src/movement/direction/angle';
 
 describe('Sprite', () => {
   describe('movement', () => {
@@ -39,6 +40,116 @@ describe('Sprite', () => {
     });
   });
 
+  describe('detectMovement', () => {
+    it('we should not move if we are not moving', () => {
+      const sprite = Sprite();
+      const originalX = sprite.x;
+      const originalY = sprite.y;
+      expect(sprite.movement.moving).to.be.false;
+      sprite.detectMovement();
+      expect(sprite.x).to.equal(originalX);
+      expect(sprite.y).to.equal(originalY);
+    });
+
+    describe('we should move directionally', () => {
+      it('we should move right', () => {
+        const sprite = Sprite();
+        const originalX = sprite.x;
+        const originalY = sprite.y;
+        expect(sprite.movement.moving).to.be.false;
+        sprite.movement.move(ANGLE.RIGHT);
+        expect(sprite.movement.moving).to.be.true;
+        sprite.detectMovement();
+        expect(sprite.x).to.be.at.least(originalX + 1);
+        expect(sprite.y).to.equal(originalY);
+      });
+
+      it('we should move left', () => {
+        const sprite = Sprite();
+        sprite.x = 1;
+        const originalY = sprite.y;
+        expect(sprite.movement.moving).to.be.false;
+        sprite.movement.move(ANGLE.LEFT);
+        expect(sprite.movement.moving).to.be.true;
+        sprite.detectMovement();
+        expect(sprite.x).to.equal(0);
+        expect(sprite.y).to.equal(originalY);
+      });
+
+      it('we should move up', () => {
+        const sprite = Sprite();
+        sprite.y = 1;
+        const originalX = sprite.x;
+        expect(sprite.movement.moving).to.be.false;
+        sprite.movement.move(ANGLE.UP);
+        expect(sprite.movement.moving).to.be.true;
+        sprite.detectMovement();
+        expect(sprite.x).to.equal(originalX);
+        expect(sprite.y).to.equal(0);
+      });
+
+      it('we should move down', () => {
+        const sprite = Sprite();
+        const originalX = sprite.x;
+        const originalY = sprite.y;
+        expect(sprite.movement.moving).to.be.false;
+        sprite.movement.move(ANGLE.DOWN);
+        expect(sprite.movement.moving).to.be.true;
+        sprite.detectMovement();
+        expect(sprite.x).to.equal(originalX);
+        expect(sprite.y).to.be.at.least(originalY + 1);
+      });
+
+      it('we should move up right', () => {
+        const sprite = Sprite();
+        const originalX = sprite.x;
+        sprite.y = 1;
+        expect(sprite.movement.moving).to.be.false;
+        sprite.movement.move(ANGLE.UP_RIGHT);
+        expect(sprite.movement.moving).to.be.true;
+        sprite.detectMovement();
+        expect(sprite.x).to.be.at.least(originalX + 1);
+        expect(sprite.y).to.equal(0);
+      });
+
+      it('we should move up left', () => {
+        const sprite = Sprite();
+        sprite.x = 1;
+        sprite.y = 1;
+        expect(sprite.movement.moving).to.be.false;
+        sprite.movement.move(ANGLE.UP_LEFT);
+        expect(sprite.movement.moving).to.be.true;
+        sprite.detectMovement();
+        expect(sprite.x).to.equal(0);
+        expect(sprite.y).to.equal(0);
+      });
+
+      it('we should move down right', () => {
+        const sprite = Sprite();
+        const originalX = sprite.x;
+        const originalY = sprite.y;
+        expect(sprite.movement.moving).to.be.false;
+        sprite.movement.move(ANGLE.DOWN_RIGHT);
+        expect(sprite.movement.moving).to.be.true;
+        sprite.detectMovement();
+        expect(sprite.x).to.be.at.least(originalX + 1);
+        expect(sprite.y).to.be.at.least(originalY + 1);
+      });
+
+      it('we should move down left', () => {
+        const sprite = Sprite();
+        sprite.x = 1;
+        const originalY = sprite.y;
+        expect(sprite.movement.moving).to.be.false;
+        sprite.movement.move(ANGLE.DOWN_LEFT);
+        expect(sprite.movement.moving).to.be.true;
+        sprite.detectMovement();
+        expect(sprite.x).to.equal(0);
+        expect(sprite.y).to.be.at.least(originalY + 1);
+      });
+    });
+  });
+
   describe('reset should match the signature', () => {
     const sprite = Sprite();
     const originalName = sprite.name;
@@ -47,4 +158,5 @@ describe('Sprite', () => {
     sprite.reset();
     expect(sprite.name).to.equal(originalName);
   });
+
 });

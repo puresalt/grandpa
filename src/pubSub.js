@@ -34,7 +34,7 @@ function PubSub() {
      * Subscribe an event.
      *
      * @param {String} event
-     * @param {function()} callback
+     * @param {function(String: event, callback: function())} callback
      * @returns {{unsubscribe: function()}}
      */
     subscribe(event, callback) {
@@ -113,7 +113,7 @@ export default {
    * Get a global singleton.
    *
    * @returns {{
-   *   subscribe: function(String, function(event: String, callback: function())),
+   *   subscribe: function(String, function()),
    *   unsubscribe: function(String, function()),
    *   publish: function(String, ...[Array]),
    *   clear: function(String=)
@@ -127,7 +127,7 @@ export default {
    * Get a single instance.
    *
    * @returns {{
-   *   subscribe: function(String, function(event: String, callback: function())),
+   *   subscribe: function(String, function()),
    *   unsubscribe: function(String, function()),
    *   publish: function(String, ...[Array]),
    *   clear: function(String=)

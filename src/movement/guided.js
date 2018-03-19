@@ -19,7 +19,6 @@ const GUIDED = {
   JUMP: 'JUMP',
   NARRATIVE: 'NARRATIVE'
 };
-
 Object.freeze(GUIDED);
 
 export default GUIDED;

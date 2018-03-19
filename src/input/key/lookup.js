@@ -78,13 +78,12 @@ const LOOKUP = {
   120: 'F9',
   192: 'TILDA'
 };
+Object.freeze(LOOKUP);
 
 const REVERSE_LOOKUP = Object.keys(LOOKUP).reduce((gathered, item) => {
   gathered[LOOKUP[item]] = item;
   return gathered;
 }, {});
-
-Object.freeze(LOOKUP);
 Object.freeze(REVERSE_LOOKUP);
 
 /**

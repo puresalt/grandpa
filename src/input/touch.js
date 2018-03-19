@@ -25,7 +25,7 @@ import PubSub from '../pubSub';
 import SIZER from '../sizer';
 import MathUtility from '../math';
 
-const pubSub = PubSub.singleton();
+const globalPubSub = PubSub.singleton();
 const INNER_DEADZONE = 0.1;
 
 const _defaultConfig = {
@@ -40,6 +40,7 @@ const _defaultConfig = {
     {input: KEY.DEBUG, element: 'debug'}
   ]
 };
+Object.freeze(_defaultConfig);
 
 /**
  * Function to first map a configuration to our Input.KEY enum, and then to map that to an event lookup and attach it to
@@ -100,7 +101,7 @@ export default function TouchInput(config, inputState, context) {
     };
   };
 
-  const _elements = _elementList.map(item => {
+  const _elements = _elementList.map((item) => {
     item.element = _findElementOrCreateIt('button-' + item.element);
     item.element.style.display = 'block';
     item.press = _pressEventListener(item.input);
@@ -127,7 +128,7 @@ export default function TouchInput(config, inputState, context) {
       abxy.childNodes[i].style.height = size;
     }
   };
-  const _subscribed = pubSub.subscribe(EVENT.RESIZE, _resizer);
+  const _subscribed = globalPubSub.subscribe(EVENT.RESIZE, _resizer);
   _resizer();
 
   const methods = {
@@ -157,7 +158,6 @@ export default function TouchInput(config, inputState, context) {
       _subscribed.unsubscribe();
     }
   };
-
   Object.freeze(methods);
 
   return methods;

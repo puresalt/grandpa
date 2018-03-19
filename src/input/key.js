@@ -28,7 +28,6 @@ const KEY = {
   MENU: 'MENU',
   DEBUG: 'DEBUG'
 };
-
 Object.freeze(KEY);
 
 export default KEY;

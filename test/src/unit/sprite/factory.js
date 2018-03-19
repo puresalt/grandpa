@@ -43,6 +43,14 @@ describe('SpriteFactory', () => {
       expect(spriteFactory.all().length).to.equal(1);
     });
 
+    it('should return an npc with loadState', () => {
+      const spriteFactory = SpriteFactory();
+      const npcCreated = spriteFactory.create('npc');
+      expect(npcCreated.constructor).to.equal(npcComparison.constructor);
+      expect(JSON.stringify(npcCreated)).to.equal(JSON.stringify(npcComparison));
+      expect(spriteFactory.all().length).to.equal(1);
+    });
+
     it('all should have 2 sprites', () => {
       const spriteFactory = SpriteFactory();
       spriteFactory.create('npc');
@@ -83,5 +91,6 @@ describe('SpriteFactory', () => {
       const playerRecreated = spriteFactory.create('player');
       expect(playerCreated).to.not.equal(playerRecreated);
     });
+
   });
 });

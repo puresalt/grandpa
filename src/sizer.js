@@ -25,6 +25,7 @@ const allowedSizers = {
   relative: relativeSizer,
   static: staticSizer
 };
+Object.freeze(allowedSizers);
 
 const _Sizer = allowedSizers.static;
 

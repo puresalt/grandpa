@@ -15,14 +15,26 @@
 
 'use strict';
 
-/* jshint camelcase: false */
-module.exports = {
-  grandpa: {
-    test: {
-      options: {
-        require: 'babel-register'
-      },
-      src: ['test/**/*.js']
-    }
-  }
+import _ from 'lodash';
+
+const _objectType = {
+  configurable: false,
+  writeable: false,
+  value: 'ai'
 };
+
+/**
+ * Return NPC AI.
+ *
+ * @param {Object?} loadState
+ */
+export default function Ai(loadState) {
+  const ai = _.merge({
+    update() {
+
+    }
+  }, loadState || {});
+  Object.defineProperty(ai, 'type', _objectType);
+
+  return ai;
+}

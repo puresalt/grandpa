@@ -24,6 +24,7 @@ const _objectType = {
   writeable: false,
   value: 'npc'
 };
+Object.freeze(_objectType);
 
 /**
  * Load our player.
@@ -75,5 +76,6 @@ export default function Npc(loadState) {
     }
   }, loadState || {});
   Object.defineProperty(npc, 'type', _objectType);
+
   return npc;
 }

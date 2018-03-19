@@ -165,6 +165,7 @@ export default function InputState(movement, loadState) {
       }
     }
   ];
+  Object.freeze(_events);
 
   const _eventLookup = _generateEventLookup(_events);
 
@@ -206,7 +207,6 @@ export default function InputState(movement, loadState) {
       }, false);
     }
   };
-
   Object.freeze(methods);
 
   return methods;

@@ -169,5 +169,5 @@ export default function GameLoop(options) {
     _framesThisSecond = _framesThisSecond + 1;
   }
 
-  return Object.freeze(gameLoop);
+  return gameLoop;
 }

@@ -17,7 +17,7 @@
 
 'use strict';
 
-import { lookup } from './input/key/lookup';
+import {lookup} from './input/key/lookup';
 import MathUtility from './math';
 
 const _movementKeys = [
@@ -30,11 +30,12 @@ const _movementKeys = [
   'running',
   'stunned'
 ];
+Object.freeze(_movementKeys);
 
 let _overlay = null;
 let _displayed = false;
 
-export default {
+const debug = {
   init(display) {
     if (_overlay) {
       return;
@@ -99,6 +100,9 @@ export default {
     _displayed = !_displayed;
   }
 };
+Object.freeze(debug);
+
+export default debug;
 
 /**
  * Stylize a key.

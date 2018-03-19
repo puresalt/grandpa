@@ -37,6 +37,7 @@ const _defaultConfig = {
     {input: KEY.DEBUG, keyCode: 112}
   ]
 };
+Object.freeze(_defaultConfig);
 
 /**
  * Function to first map a configuration to our Input.KEY enum, and then to map that to an event lookup and attach it to
@@ -97,7 +98,6 @@ export default function KeyboardInput(config, inputState, context) {
       _extendedConfig.element.removeEventListener('keyup', _release);
     }
   };
-
   Object.freeze(methods);
 
   return methods;

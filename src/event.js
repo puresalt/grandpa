@@ -20,7 +20,6 @@ const EVENT = {
   RELEASE: 'RELEASE',
   RESIZE: 'RESIZE'
 };
-
 Object.freeze(EVENT);
 
 export default EVENT;
