@@ -1,7 +1,7 @@
 [NUMBER ONE GRANDPA](http://grandpa.puresalt.gg/)
 ================================================================================
 
-This is the source code for NUMBER ONE GRANDPA, a game developed by [John Mullanaphy](https:/jo.mu/) as part of 
+This is the source code for NUMBER ONE GRANDPA, a game developed by [John Mullanaphy](https://jo.mu/) as part of 
 [Pure Salt Gaming](https://puresalt.gg/).
 
 Requirements
