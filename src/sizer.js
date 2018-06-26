@@ -31,6 +31,7 @@ const _Sizer = allowedSizers.static;
 
 export default _Sizer;
 
+/* istanbul ignore next */
 (() => {
   const throttle = (type, name, obj) => {
     obj = obj || window;
@@ -48,11 +49,10 @@ export default _Sizer;
     obj.addEventListener(type, func);
   };
 
-  /* init - you can init any event */
   throttle('resize', 'optimizedResize');
 })();
 
-// handle event
+/* istanbul ignore next */
 window.addEventListener('optimizedResize', () => {
   _Sizer.update();
 });

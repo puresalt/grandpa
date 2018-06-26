@@ -158,5 +158,4 @@ describe('Sprite', () => {
     sprite.reset();
     expect(sprite.name).to.equal(originalName);
   });
-
 });

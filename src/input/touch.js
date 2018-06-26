@@ -29,7 +29,6 @@ const globalPubSub = PubSub.singleton();
 const INNER_DEADZONE = 0.1;
 
 const _defaultConfig = {
-  type: 'touch',
   keys: [
     {input: KEY.DIRECTIONAL, element: 'directional'},
     {input: KEY.PUNCH, element: 'punch'},
@@ -53,6 +52,7 @@ Object.freeze(_defaultConfig);
  */
 export default function TouchInput(config, inputState, context) {
   const _extendedConfig = _.defaults(_defaultConfig, config || {});
+  _extendedConfig.type = 'touch';
   const _elementList = _generateElementList(_extendedConfig.keys);
 
   /**
@@ -101,17 +101,7 @@ export default function TouchInput(config, inputState, context) {
     };
   };
 
-  const _elements = _elementList.map((item) => {
-    item.element = _findElementOrCreateIt('button-' + item.element);
-    item.element.style.display = 'block';
-    item.press = _pressEventListener(item.input);
-    item.release = _releaseEventListener(item.input);
-    item.element.addEventListener('touchstart', item.press);
-    item.element.addEventListener('touchmove', item.press);
-    item.element.addEventListener('touchend', item.release);
-    item.element.addEventListener('touchcancel', item.release);
-    return item;
-  }, []);
+  const _elements = [];
 
   const _resizer = () => {
     const directional = _findElementOrCreateIt('button-directional');
@@ -132,6 +122,28 @@ export default function TouchInput(config, inputState, context) {
   _resizer();
 
   const methods = {
+    /**
+     * Add our event listeners onto our element in the case someone switches back to keyboard.
+     */
+    add() {
+      // Remove first so we don't accidentally keep adding these elements.
+      if (_elements.length) {
+        this.remove();
+      }
+      for (let i = 0, count = _elementList.length; i < count; ++i) {
+        const item = _elementList[i];
+        item.element = _findElementOrCreateIt('button-' + item.element);
+        item.element.style.display = 'block';
+        item.press = _pressEventListener(item.input);
+        item.release = _releaseEventListener(item.input);
+        item.element.addEventListener('touchstart', item.press);
+        item.element.addEventListener('touchmove', item.press);
+        item.element.addEventListener('touchend', item.release);
+        item.element.addEventListener('touchcancel', item.release);
+        _elements.push(item);
+      }
+    },
+
     /**
      * Get the current config.
      *
@@ -159,6 +171,7 @@ export default function TouchInput(config, inputState, context) {
     }
   };
   Object.freeze(methods);
+  methods.add();
 
   return methods;
 }

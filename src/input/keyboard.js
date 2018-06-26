@@ -20,21 +20,21 @@
 import _ from 'lodash/fp';
 import EVENT from '../event';
 import KEY from './key';
+import {reverseLookup} from './key/lookup';
 
 const _defaultConfig = {
   element: document.body,
-  type: 'keyboard',
   keys: [
-    {input: KEY.LEFT, keyCode: 65},
-    {input: KEY.RIGHT, keyCode: 68},
-    {input: KEY.UP, keyCode: 87},
-    {input: KEY.DOWN, keyCode: 83},
-    {input: KEY.PUNCH, keyCode: 74},
-    {input: KEY.KICK, keyCode: 75},
-    {input: KEY.JUMP, keyCode: 32},
-    {input: KEY.CROUCH, keyCode: 16},
-    {input: KEY.MENU, keyCode: 27},
-    {input: KEY.DEBUG, keyCode: 112}
+    {input: KEY.LEFT, keyCode: reverseLookup('A')},
+    {input: KEY.RIGHT, keyCode: reverseLookup('D')},
+    {input: KEY.UP, keyCode: reverseLookup('W')},
+    {input: KEY.DOWN, keyCode: reverseLookup('S')},
+    {input: KEY.PUNCH, keyCode: reverseLookup('J')},
+    {input: KEY.KICK, keyCode: reverseLookup('K')},
+    {input: KEY.JUMP, keyCode: reverseLookup('SPACE')},
+    {input: KEY.CROUCH, keyCode: reverseLookup('SHIFT_LEFT')},
+    {input: KEY.MENU, keyCode: reverseLookup('ESC')},
+    {input: KEY.DEBUG, keyCode: reverseLookup('F1')}
   ]
 };
 Object.freeze(_defaultConfig);
@@ -50,6 +50,7 @@ Object.freeze(_defaultConfig);
  */
 export default function KeyboardInput(config, inputState, context) {
   const _extendedConfig = _.defaults(_defaultConfig, config || {});
+  _extendedConfig.type = 'keyboard';
   const _eventLookup = _generateEventLookup(_extendedConfig.keys);
 
   /**
@@ -61,13 +62,11 @@ export default function KeyboardInput(config, inputState, context) {
    */
   const _eventListener = (direction) => {
     return (event) => {
-      const found = _eventLookup[event.keyCode];
+      const found = _eventLookup[event.keyCode + '-' + event.location];
       if (!found || !inputState.triggerEvent(direction, found, context)) {
         return;
       }
-      if (event.preventDefault) {
-        event.preventDefault();
-      }
+      event.preventDefault();
       event.cancelBubble = true;
       event.returnValue = false;
       return false;
@@ -77,10 +76,15 @@ export default function KeyboardInput(config, inputState, context) {
   const _press = _eventListener(EVENT.PRESS);
   const _release = _eventListener(EVENT.RELEASE);
 
-  _extendedConfig.element.addEventListener('keydown', _press);
-  _extendedConfig.element.addEventListener('keyup', _release);
-
   const methods = {
+    /**
+     * Add our event listeners onto our element in the case someone switches back to keyboard.
+     */
+    add() {
+      _extendedConfig.element.addEventListener('keydown', _press);
+      _extendedConfig.element.addEventListener('keyup', _release);
+    },
+
     /**
      * Get the current config.
      *
@@ -99,6 +103,7 @@ export default function KeyboardInput(config, inputState, context) {
     }
   };
   Object.freeze(methods);
+  methods.add();
 
   return methods;
 }

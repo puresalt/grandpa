@@ -25,21 +25,29 @@ import InputState from '../../../../src/input/state';
 
 const inputState = InputState({});
 const inputKeyboard = InputKeyboard({}, inputState);
+const inputKeyboardType = inputKeyboard.getConfig().type;
 const inputTouch = InputTouch({}, inputState);
+const inputTouchType = inputTouch.getConfig().type;
 
 describe('InputFactory', () => {
-  it('return a touch input', () => {
-    const input = JSON.stringify(InputFactory({type: 'touch'}, inputState));
-    expect(input.type).to.be.equal(inputTouch.type);
+  it('should return a touch input', () => {
+    const input = InputFactory({type: 'touch'}, inputState);
+    const type = input.getConfig().type;
+    expect(type).to.be.equal(inputTouchType);
+    expect(type).to.not.equal(inputKeyboardType);
   });
 
-  it('return a keyboard input', () => {
-    const input = JSON.stringify(InputFactory({type: 'keyboard'}, inputState));
-    expect(input.type).to.be.equal(inputKeyboard.type);
+  it('should return a keyboard input', () => {
+    const input = InputFactory({type: 'keyboard'}, inputState);
+    const type = input.getConfig().type;
+    expect(type).to.be.equal(inputKeyboardType);
+    expect(type).to.not.equal(inputTouchType);
   });
 
-  it('return a keyboard input if unknown', () => {
-    const input = JSON.stringify(InputFactory({type: 'unknown'}, inputState));
-    expect(input.type).to.be.equal(inputKeyboard.type);
+  it('should return a keyboard input if unknown', () => {
+    const input = InputFactory({type: 'unknown'}, inputState);
+    const type = input.getConfig().type;
+    expect(type).to.be.equal(inputKeyboardType);
+    expect(type).to.not.equal(inputTouchType);
   });
 });

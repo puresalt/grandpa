@@ -25,6 +25,7 @@ import MathUtility from '../math';
 const globalPubSub = PubSub.singleton();
 let _canvasElement = null;
 
+/* istanbul ignore next */
 const Sizer = {
   defaultHeight: 360,
   defaultWidth: 640,

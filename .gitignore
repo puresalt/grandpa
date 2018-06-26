@@ -1,6 +1,9 @@
-logs
-*.log
-build
-.idea
-*.iml
 assets/sprite
+build
+coverage
+logs
+node_modules
+package-lock.json
+*.log
+*.iml
+.idea

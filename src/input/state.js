@@ -32,6 +32,7 @@ import debug from '../debug';
 function setInitial() {
   const keys = {};
   for (let key in KEY) {
+    /* istanbul ignore if */
     if (!KEY.hasOwnProperty(key)) {
       continue;
     }

@@ -91,6 +91,5 @@ describe('SpriteFactory', () => {
       const playerRecreated = spriteFactory.create('player');
       expect(playerCreated).to.not.equal(playerRecreated);
     });
-
   });
 });

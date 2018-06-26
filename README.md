@@ -7,7 +7,7 @@ This is the source code for NUMBER ONE GRANDPA, a game developed by [John Mullan
 Requirements
 ------------
 
-This is built using `NodeJS 8.9.1` and using `EMCAScript 6` on the frontend. No guarantees on the server side code
+This is built using `NodeJS 10.4.1` and using `EMCAScript 6` on the frontend. No guarantees on the server side code
 running on other builds of NodeJS.
 
 Commands
@@ -33,7 +33,7 @@ Submitting bugs and feature requests
 ------------------------------------
 
 Please send bugs to me via
-[GitHub](https://github.com/mullanaphy/grandpa/issues)
+[GitHub](https://github.com/PureSalt/grandpa/issues)
 
 Author
 ------

@@ -35,6 +35,7 @@ Object.freeze(_movementKeys);
 let _overlay = null;
 let _displayed = false;
 
+/* istanbul ignore next */
 const debug = {
   init(display) {
     if (_overlay) {
@@ -104,6 +105,7 @@ Object.freeze(debug);
 
 export default debug;
 
+/* istanbul ignore next */
 /**
  * Stylize a key.
  *
@@ -120,6 +122,7 @@ function stylizeKey(key) {
   return '<strong>' + String(key.toUpperCase() + padding).slice(0, length) + ' : </strong>';
 }
 
+/* istanbul ignore next */
 /**
  * Stylize a value.
  *
