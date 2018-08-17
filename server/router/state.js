@@ -18,8 +18,8 @@
 const express = require('express');
 const router = express.Router();
 const helper = require('../helper');
-const STATE = require('../state');
-const state = STATE();
+const State = require('../state');
+const state = State();
 
 /**
  * Get all of the ids from our states.

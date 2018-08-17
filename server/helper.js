@@ -24,5 +24,6 @@ const helper = {
     return 'i' + intFormat(flakeIdGenerator.next(), 'dec');
   }
 };
+Object.freeze(helper);
 
 module.exports = helper;

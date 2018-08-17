@@ -49,12 +49,8 @@ if (module.parent) {
   module.exports = runServer;
 } else {
   process.title = process.argv[2];
-  const port = process.env.PORT || 5001;
+  const port = process.env.PORT || 4001;
   runServer(process.env.NODE_ENV)
-    .on('error', (err) => {
-      if (err.code === 'EADDRINUSE') {
-        console.warn('Port: ' + port + ' is already in use');
-      }
-    })
+    .on('error', err => err.code === 'EADDRINUSE' && console.warn('Port: ' + port + ' is already in use'))
     .listen(port);
 }

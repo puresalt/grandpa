@@ -112,11 +112,13 @@ export default function TouchInput(config, inputState, context) {
     abxy.style.bottom = (SIZER.maxHeight - SIZER.height) + 'px';
     abxy.style.right = (SIZER.maxWidth - SIZER.width) + 'px';
     abxy.style.display = 'block';
-    for (let i = 0, count = abxy.childNodes.length; i < count; ++i) {
-      const size = SIZER.relativeSize(SIZER.height / 3 / 2) + 'px';
-      abxy.childNodes[i].style.width = size;
-      abxy.childNodes[i].style.height = size;
-    }
+    const size = SIZER.relativeSize(SIZER.height / 3 / 2) + 'px';
+    setTimeout(() => {
+      for (let i = 0, count = abxy.childNodes.length; i < count; ++i) {
+        abxy.childNodes[i].style.width = size;
+        abxy.childNodes[i].style.height = size;
+      }
+    }, 0);
   };
   const _subscribed = globalPubSub.subscribe(EVENT.RESIZE, _resizer);
   _resizer();
