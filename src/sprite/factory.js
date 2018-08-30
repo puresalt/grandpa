@@ -39,7 +39,7 @@ export default function spriteFactory() {
   const _alive = [];
   const _graveyard = {};
 
-  for (let key in _spriteTypes) {
+  for (const key in _spriteTypes) {
     /* istanbul ignore if */
     if (!_spriteTypes.hasOwnProperty(key)) {
       continue;
@@ -78,7 +78,7 @@ export default function spriteFactory() {
      * Remove all of the items from our graveyard.
      */
     cremate() {
-      for (let key in _spriteTypes) {
+      for (const key in _spriteTypes) {
         /* istanbul ignore if */
         if (!_spriteTypes.hasOwnProperty(key)) {
           continue;

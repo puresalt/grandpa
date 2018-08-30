@@ -57,7 +57,7 @@ function PubSub() {
      */
     unsubscribe(event, callback) {
       const filter = item => item !== callback;
-      for (let key in _events) {
+      for (const key in _events) {
         /* istanbul ignore if */
         if (!_events.hasOwnProperty(key)) {
           continue;
@@ -90,7 +90,7 @@ function PubSub() {
         delete _events[event];
         return;
       }
-      for (let key in _events) {
+      for (const key in _events) {
         /* istanbul ignore if */
         if (!_events.hasOwnProperty(key)) {
           continue;

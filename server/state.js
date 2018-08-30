@@ -50,7 +50,7 @@ const State = () => {
      * @returns {Object|false}
      */
     get(id) {
-      if (!this.has(_data[id])) {
+      if (!this.has(id)) {
         return false;
       }
       return _data[id];
@@ -106,7 +106,7 @@ const State = () => {
      * @param {Object} data
      */
     replace(id, data) {
-      if (!this.has(_data[id])) {
+      if (!this.has(id)) {
         return false;
       }
       _data[id] = data;

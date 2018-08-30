@@ -46,7 +46,7 @@ router.delete('/', (req, res) => {
  * Save our state data for a given user.
  */
 router.post('/', (req, res) => {
-  let id = helper.generateId();
+  const id = helper.generateId();
   state.save(id, req.body);
   console.log('CREATED:', id, state.get(id));
   res.status(200).json(state.get(id));
@@ -56,11 +56,11 @@ router.post('/', (req, res) => {
  * Load our state data for a given user.
  */
 router.get('/:id', (req, res) => {
-  let id = req.params.id;
+  const id = req.params.id;
   if (!state.has(id)) {
     return res.status(404).json({});
   }
-  let data = state.get(id);
+  const data = state.get(id);
   console.log('LOADED:', id, data);
   res.status(200).json(data);
 });
@@ -69,7 +69,7 @@ router.get('/:id', (req, res) => {
  * Save our state data for a given user.
  */
 router.post('/:id', (req, res) => {
-  let id = req.params.id;
+  const id = req.params.id;
   if (state.has(id)) {
     return res.status(403).json({});
   }
@@ -82,7 +82,7 @@ router.post('/:id', (req, res) => {
  * Save our state data for a given user.
  */
 router.put('/:id', (req, res) => {
-  let id = req.params.id;
+  const id = req.params.id;
   if (!state.has(id)) {
     return res.status(404).json({});
   }
@@ -95,7 +95,7 @@ router.put('/:id', (req, res) => {
  * Delete save data for a given user.
  */
 router.delete('/:id', (req, res) => {
-  let id = req.params.id;
+  const id = req.params.id;
   if (!state.has(id)) {
     return res.status(404).json({});
   }

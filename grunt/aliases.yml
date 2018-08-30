@@ -16,5 +16,6 @@
 default: []
 
 grandpa:
+  - mochacli:grandpa
   - webpack:grandpa
   - uglify:grandpa

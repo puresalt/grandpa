@@ -26,8 +26,8 @@ const routeState = require('./router/state');
  * @param {String} environment
  * @returns {*|Function}
  */
-const runServer = (environment) => {
-  let app = express();
+const createServer = (environment) => {
+  const app = express();
   app.use('/assets', express.static(path.join(__dirname, '../', 'assets')));
   app.use('/build', express.static(path.join(__dirname, '../', 'build')));
   app.use(express.static(path.join(__dirname, '../', '/static')));
@@ -46,11 +46,11 @@ const runServer = (environment) => {
 };
 
 if (module.parent) {
-  module.exports = runServer;
+  module.exports = createServer;
 } else {
   process.title = process.argv[2];
   const port = process.env.PORT || 4001;
-  runServer(process.env.NODE_ENV)
+  createServer(process.env.NODE_ENV)
     .on('error', err => err.code === 'EADDRINUSE' && console.warn('Port: ' + port + ' is already in use'))
     .listen(port);
 }

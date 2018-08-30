@@ -15,12 +15,12 @@
 
 'use strict';
 
+/* jshint camelcase: false */
 module.exports = {
-  scripts: {
-    files: ['src/**/*.js'],
-    tasks: ['grandpa'],
+  grandpa: {
     options: {
-      spawn: false
+      files: ['test/**/*.js'],
+      compilers: ['babel-register']
     }
   }
 };
