@@ -114,9 +114,26 @@ export default function spriteFactory() {
  *
  * @param {{x: Number, y: Number}} entity1
  * @param {{x: Number, y: Number}} entity2
- * @returns {Boolean}
+ * @returns {Number}
  * @private
  */
 function _sortByY(entity1, entity2) {
-  return entity1.x > entity2.x || (entity1.x === entity2.x && entity1.y > entity2.y);
+  /* jshint maxcomplexity:5 */
+  if (entity1.x > entity2.x) {
+    return 1;
+  }
+
+  if (entity1.x < entity2.x) {
+    return -1;
+  }
+
+  if (entity1.y > entity2.y) {
+    return 1;
+  }
+
+  if (entity1.y < entity2.y) {
+    return -1;
+  }
+
+  return 0;
 }
