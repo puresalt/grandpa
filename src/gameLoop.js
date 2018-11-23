@@ -148,7 +148,7 @@ export default function GameLoop(options) {
       _delta -= _interval;
       numUpdateSteps = numUpdateSteps + 1;
       if (numUpdateSteps >= gameLoop.panicLimit) {
-        return gameLoop.panic(gameLoop);
+        return gameLoop.panic();
       }
     }
     return true;

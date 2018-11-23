@@ -18,6 +18,7 @@
 'use strict';
 
 import SIZER from './sizer';
+import SpriteFactory from './sprite/factory';
 
 /**
  * And a callback when an element successfully loads.
@@ -41,7 +42,7 @@ function elementLoader(element, callback) {
  *
  * @param {Object} tileset
  * @param {function()?} callback
- * @returns {HTMLImageElement}
+ * @returns {HTMLElement}
  */
 function createImageElementForTileset(tileset, callback) {
   const element = document.createElement('img');
@@ -71,7 +72,7 @@ export default function canvasFunction(element) {
     render(runtime) {
       _runtime = runtime;
       _element.clearRect(0, 0, SIZER.width, SIZER.height);
-      _alive.sort(_sortByY).forEach(_renderEntity);
+      _alive.sort(SpriteFactory.sort).forEach(_renderEntity);
     },
 
     /**
@@ -125,16 +126,4 @@ export default function canvasFunction(element) {
   Object.freeze(methods);
 
   return methods;
-}
-
-/**
- * Sort two entities by their y and then x coordinates.
- *
- * @param {{x: Number, y: Number}} entity1
- * @param {{x: Number, y: Number}} entity2
- * @returns {Boolean}
- * @private
- */
-function _sortByY(entity1, entity2) {
-  return entity1.x > entity2.x || (entity1.x === entity2.x && entity1.y > entity2.y);
 }

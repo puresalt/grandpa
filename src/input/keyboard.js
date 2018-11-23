@@ -25,16 +25,16 @@ import {reverseLookup} from './key/lookup';
 const _defaultConfig = {
   element: document.body,
   keys: [
-    {input: KEY.LEFT, keyCode: reverseLookup('A')},
-    {input: KEY.RIGHT, keyCode: reverseLookup('D')},
-    {input: KEY.UP, keyCode: reverseLookup('W')},
-    {input: KEY.DOWN, keyCode: reverseLookup('S')},
-    {input: KEY.PUNCH, keyCode: reverseLookup('J')},
-    {input: KEY.KICK, keyCode: reverseLookup('K')},
-    {input: KEY.JUMP, keyCode: reverseLookup('SPACE')},
-    {input: KEY.CROUCH, keyCode: reverseLookup('SHIFT_LEFT')},
-    {input: KEY.MENU, keyCode: reverseLookup('ESC')},
-    {input: KEY.DEBUG, keyCode: reverseLookup('F1')}
+    {input: KEY.LEFT, key: reverseLookup('A')},
+    {input: KEY.RIGHT, key: reverseLookup('D')},
+    {input: KEY.UP, key: reverseLookup('W')},
+    {input: KEY.DOWN, key: reverseLookup('S')},
+    {input: KEY.PUNCH, key: reverseLookup('J')},
+    {input: KEY.KICK, key: reverseLookup('K')},
+    {input: KEY.JUMP, key: reverseLookup('SPACE')},
+    {input: KEY.CROUCH, key: reverseLookup('SHIFT_LEFT')},
+    {input: KEY.MENU, key: reverseLookup('ESC')},
+    {input: KEY.DEBUG, key: reverseLookup('F1')}
   ]
 };
 Object.freeze(_defaultConfig);
@@ -62,7 +62,7 @@ export default function KeyboardInput(config, inputState, context) {
    */
   const _eventListener = (direction) => {
     return (event) => {
-      const found = _eventLookup[event.keyCode + '-' + event.location];
+      const found = _eventLookup[event.key + '-' + event.location];
       if (!found || !inputState.triggerEvent(direction, found, context)) {
         return;
       }
@@ -116,7 +116,7 @@ export default function KeyboardInput(config, inputState, context) {
  */
 function _generateEventLookup(events) {
   return events.reduce((gathered, item) => {
-    gathered[item.keyCode] = item.input;
+    gathered[item.key] = item.input;
     return gathered;
   }, {});
 }

@@ -21,13 +21,13 @@
 import relativeSizer from './sizer/relative';
 import staticSizer from './sizer/static';
 
-const allowedSizers = {
+const allowedSizerCollection = {
   relative: relativeSizer,
   static: staticSizer
 };
-Object.freeze(allowedSizers);
+Object.freeze(allowedSizerCollection);
 
-const _Sizer = allowedSizers.static;
+const _Sizer = allowedSizerCollection.static;
 
 export default _Sizer;
 

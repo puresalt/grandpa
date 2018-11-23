@@ -71,7 +71,7 @@ const debug = {
       keys.push(stylizeKey(
         definedKeys[i].input)
         + '<span class="on">'
-        + (inputType === 'keyboard' ? lookup(definedKeys[i].keyCode) : '#' + definedKeys[i].element.id)
+        + (inputType === 'keyboard' ? lookup(definedKeys[i].key) : '#' + definedKeys[i].element.id)
         + '</span>'
       );
     }

@@ -54,7 +54,7 @@ export default function spriteFactory() {
      * @returns {Array}
      */
     all() {
-      return _alive.sort(_sortByY);
+      return _alive.sort(spriteFactory.sort);
     },
 
     /**
@@ -115,9 +115,8 @@ export default function spriteFactory() {
  * @param {{x: Number, y: Number}} entity1
  * @param {{x: Number, y: Number}} entity2
  * @returns {Number}
- * @private
  */
-function _sortByY(entity1, entity2) {
+spriteFactory.sort = function(entity1, entity2) {
   /* jshint maxcomplexity:5 */
   if (entity1.x > entity2.x) {
     return 1;
@@ -136,4 +135,4 @@ function _sortByY(entity1, entity2) {
   }
 
   return 0;
-}
+};
