@@ -36,25 +36,24 @@
   "devDependencies": {
     "chai": "4.1.2",
     "grunt-contrib-watch": "1.1.0",
-    "isparta": "^4.1.1",
-    "istanbul": "^0.4.5",
     "jsdom": "11.3.0",
     "jsdom-global": "3.0.2",
     "mocha": "5.0.4",
+    "nyc": "^14.1.1",
     "sinon": "4.1.2"
   },
   "scripts": {
     "build": "./node_modules/.bin/grunt grandpa",
-    "coverage": "npm run coverage-app;npm run coverage-server",
-    "coverage-app": "babel-node ./node_modules/.bin/isparta cover --config=.istanbul.app.yml ./node_modules/.bin/_mocha -- --harmony --full-trace --check-leaks --recursive ./test/src/unit",
-    "coverage-server": "babel-node ./node_modules/.bin/istanbul --config=.istanbul.server.yml cover ./node_modules/.bin/_mocha -- --harmony --full-trace --check-leaks --recursive ./test/server/unit",
+    "coverage": "npm run coverage:app;npm run coverage:server",
+    "coverage:app": "nyc --reporter=text --reporter=html --report-dir=coverage/app npm run test:app",
+    "coverage:server": "nyc --reporter=text --reporter=html --report-dir=coverage/server npm run test:server",
     "install": "npm run build",
     "restart": "npm stop;npm start",
     "start": "./node_modules/.bin/pm2 start pm2.yml",
     "stop": "./node_modules/.bin/pm2 stop pm2.yml",
-    "test": "npm run test-app;npm run test-server",
-    "test-app": "babel-node ./node_modules/.bin/istanbul test --config=.istanbul.app.yml ./node_modules/.bin/_mocha -- --check-leaks --recursive ./test/src/unit",
-    "test-server": "./node_modules/.bin/istanbul test --config=.istanbul.server.yml ./node_modules/.bin/_mocha -- --full-trace --check-leaks --recursive ./test/server/unit",
+    "test": "npm run test:app;npm run test:server",
+    "test:app": "babel-node ./node_modules/.bin/_mocha --check-leaks --recursive ./test/src/unit",
+    "test:server": "./node_modules/.bin/_mocha --full-trace --check-leaks --recursive ./test/server/unit",
     "watch": "./node_modules/.bin/grunt watch"
   }
 }

@@ -7,7 +7,7 @@ This is the source code for NUMBER ONE GRANDPA, a game developed by [John Mullan
 Requirements
 ------------
 
-This is built using `NodeJS 10.4.1` and using `EMCAScript 6` on the frontend. No guarantees on the server side code
+This is built using `NodeJS 10.9.0` and using `EMCAScript 6` on the frontend. No guarantees on the server side code
 running on other builds of NodeJS.
 
 Commands
@@ -17,16 +17,16 @@ You can checkout `package.json` for the specific commands, yet here's a quick br
 
 |Command|Description|
 |-------|-----------|
-|npm start|Start our `server` to render our game in a browser on port 4001 using `pm2`.|
 |npm restart|Restart our `server`.|
+|npm start|Start our `server` to render our game in a browser on port 4001 using `pm2`.|
 |npm stop|Stop our `server`.|
 |npm test|Run the tests for both `app` and `server`.|
 |npm run build|Compile our `app` source code into the `build` directory with a minified `grandpa.js` and readable `grandpa.dev.js` version.|
 |npm run coverage|Run test code coverage on both `app` and `server`.|
-|npm run coverage-app|Run test code coverage on `app`, loads at `/coverage` when `server` is running.|
-|npm run coverage-server|Run test code coverage on `server` loads at `/coverage-server` when `server` is running.|
-|npm run test-app|Test just our `app`.|
-|npm run test-server|Test just our `server`.|
+|npm run coverage:app|Run test code coverage on `app`, loads at `/coverage` when `server` is running.|
+|npm run coverage:server|Run test code coverage on `server` loads at `/coverage/server` when `server` is running.|
+|npm run test:app|Test just our `app`.|
+|npm run test:server|Test just our `server`.|
 |npm run watch|Turn on `grunt watch` to trigger `npm run build` when the `app` code changes.|
 
 Submitting bugs and feature requests

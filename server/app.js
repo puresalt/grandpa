@@ -38,8 +38,8 @@ const createServer = (environment) => {
 
   /* If we're in a dev environment then we should show coverage */
   if (environment === 'development') {
-    app.use('/coverage', express.static(path.join(__dirname, '../', 'coverage/app/lcov-report')));
-    app.use('/coverage-server', express.static(path.join(__dirname, '../', 'coverage/server/lcov-report')));
+    app.use('/coverage', express.static(path.join(__dirname, '../', 'coverage/app')));
+    app.use('/coverage/server', express.static(path.join(__dirname, '../', 'coverage/server')));
   }
 
   return app;
