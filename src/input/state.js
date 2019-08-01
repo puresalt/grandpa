@@ -17,7 +17,6 @@
 
 'use strict';
 
-import _ from 'lodash/fp';
 import DIRECTION from '../movement/direction';
 import EVENT from '../event';
 import KEY from './key';
@@ -196,10 +195,7 @@ export default function InputState(movement, loadState) {
         if (
           item.state
           && context
-          && (
-            item.state !== context.state
-            || (_.isArray(item.state) && !_.indexOf(item.state, context.state))
-          )
+          && (item.state !== context.state || (Array.isArray(item.state) && item.state.indexOf(context.state) < 0))
         ) {
           return gathered;
         }

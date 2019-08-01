@@ -15,13 +15,10 @@
 
 'use strict';
 
-module.exports = {
-  scripts: {
-    files: ['src/**/*.js', 'test/**/*.js'],
-    tasks: ['grandpa'],
-    options: {
-      spawn: false
-    }
-  }
+const INPUT_TYPE = {
+  KEYBOARD: 'KEYBOARD',
+  TOUCH: 'TOUCH'
 };
-/* jshint ignore:end */
+Object.freeze(INPUT_TYPE);
+
+export default INPUT_TYPE;

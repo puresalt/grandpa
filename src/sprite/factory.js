@@ -15,14 +15,13 @@
 
 'use strict';
 
-import _ from 'lodash';
+import SPRITE_TYPE from './type';
 import playerFactory from './player';
 import npcFactory from './npc';
 
-const _spriteTypes = {
-  player: playerFactory,
-  npc: npcFactory
-};
+const _spriteTypes = {};
+_spriteTypes[SPRITE_TYPE.PLAYER] = playerFactory;
+_spriteTypes[SPRITE_TYPE.NPC] = npcFactory;
 Object.freeze(_spriteTypes);
 
 /**
@@ -69,7 +68,7 @@ export default function spriteFactory() {
         ? _graveyard[type].shift()
         : _spriteTypes[type]();
       sprite.reset();
-      sprite = _.merge(sprite, loadData || {});
+      sprite = Object.assign(sprite, loadData || {});
       _alive.push(sprite);
       return sprite;
     },

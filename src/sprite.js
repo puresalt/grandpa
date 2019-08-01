@@ -17,7 +17,6 @@
 
 /* @TODO This is just for testing */
 
-import _ from 'lodash';
 import DIRECTION from './movement/direction';
 import ANGLE from './movement/direction/angle';
 import GUIDED from './movement/guided';
@@ -42,7 +41,7 @@ const JUMP_PEAK_REFERENCE = 0.55;
  * @returns {Object}
  */
 export default function Sprite(loadState) {
-  const sprite = _.merge({
+  const sprite = Object.assign({}, {
     type: _objectType,
     equipment: {
       leftHand: null,

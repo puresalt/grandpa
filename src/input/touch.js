@@ -18,7 +18,7 @@
 
 'use strict';
 
-import _ from 'lodash/fp';
+import INPUT_TYPE from './type';
 import KEY from './key';
 import EVENT from '../event';
 import PubSub from '../pubSub';
@@ -51,8 +51,8 @@ Object.freeze(_defaultConfig);
  * @returns {{getConfig: function(), remove: function()}}
  */
 export default function TouchInput(config, inputState, context) {
-  const _extendedConfig = _.defaults(_defaultConfig, config || {});
-  _extendedConfig.type = 'touch';
+  const _extendedConfig = Object.assign({}, _defaultConfig, config || {});
+  _extendedConfig.type = INPUT_TYPE.TOUCH;
   const _elementList = _generateElementList(_extendedConfig.keys);
 
   /**

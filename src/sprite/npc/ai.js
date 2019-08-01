@@ -15,8 +15,6 @@
 
 'use strict';
 
-import _ from 'lodash';
-
 const _objectType = {
   configurable: false,
   writeable: false,
@@ -29,7 +27,7 @@ const _objectType = {
  * @param {Object?} loadState
  */
 export default function Ai(loadState) {
-  const ai = _.merge({
+  const ai = Object.assign({}, {
     update() {
 
     }

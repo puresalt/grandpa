@@ -17,7 +17,7 @@
 
 'use strict';
 
-import _ from 'lodash/fp';
+import INPUT_TYPE from './type';
 import EVENT from '../event';
 import KEY from './key';
 import {reverseLookup} from './key/lookup';
@@ -49,8 +49,8 @@ Object.freeze(_defaultConfig);
  * @returns {{getConfig: function(), remove: function()}}
  */
 export default function KeyboardInput(config, inputState, context) {
-  const _extendedConfig = _.defaults(_defaultConfig, config || {});
-  _extendedConfig.type = 'keyboard';
+  const _extendedConfig = Object.assign({}, _defaultConfig, config || {});
+  _extendedConfig.type = INPUT_TYPE.KEYBOARD;
   const _eventLookup = _generateEventLookup(_extendedConfig.keys);
 
   /**
@@ -62,7 +62,7 @@ export default function KeyboardInput(config, inputState, context) {
    */
   const _eventListener = (direction) => {
     return (event) => {
-      const found = _eventLookup[event.key + '-' + event.location];
+      const found = _eventLookup[event.keyCode + '-' + event.location];
       if (!found || !inputState.triggerEvent(direction, found, context)) {
         return;
       }

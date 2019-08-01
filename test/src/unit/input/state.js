@@ -38,9 +38,9 @@ describe('InputState', () => {
     const inputState = InputState(movement, loadState);
     inputState.triggerEvent(EVENT.PRESS, KEY.RIGHT);
     expect(loadState.RIGHT).to.be.true;
-    expect(movement.facing).to.be.equal(DIRECTION.RIGHT);
+    expect(movement.facing).to.equal(DIRECTION.RIGHT);
     expect(movement.moving).to.be.true;
-    expect(movement.direction).to.be.equal(ANGLE[DIRECTION.RIGHT]);
+    expect(movement.direction).to.equal(ANGLE[DIRECTION.RIGHT]);
   });
 
   it('should move UP_RIGHT when that direction is triggered', () => {
@@ -48,18 +48,18 @@ describe('InputState', () => {
     const inputState = InputState(movement);
     inputState.triggerEvent(EVENT.PRESS, KEY.RIGHT);
     inputState.triggerEvent(EVENT.PRESS, KEY.UP);
-    expect(movement.facing).to.be.equal(DIRECTION.RIGHT);
+    expect(movement.facing).to.equal(DIRECTION.RIGHT);
     expect(movement.moving).to.be.true;
-    expect(movement.direction).to.be.equal(ANGLE[DIRECTION.UP_RIGHT]);
+    expect(movement.direction).to.equal(ANGLE[DIRECTION.UP_RIGHT]);
   });
 
   it('should move UP when that direction is triggered', () => {
     const movement = Movement();
     const inputState = InputState(movement);
     inputState.triggerEvent(EVENT.PRESS, KEY.UP);
-    expect(movement.facing).to.be.equal(DIRECTION.RIGHT);
+    expect(movement.facing).to.equal(DIRECTION.RIGHT);
     expect(movement.moving).to.be.true;
-    expect(movement.direction).to.be.equal(ANGLE[DIRECTION.UP]);
+    expect(movement.direction).to.equal(ANGLE[DIRECTION.UP]);
   });
 
   it('should move UP_LEFT when that direction is triggered', () => {
@@ -67,9 +67,9 @@ describe('InputState', () => {
     const inputState = InputState(movement);
     inputState.triggerEvent(EVENT.PRESS, KEY.LEFT);
     inputState.triggerEvent(EVENT.PRESS, KEY.UP);
-    expect(movement.facing).to.be.equal(DIRECTION.LEFT);
+    expect(movement.facing).to.equal(DIRECTION.LEFT);
     expect(movement.moving).to.be.true;
-    expect(movement.direction).to.be.equal(ANGLE[DIRECTION.UP_LEFT]);
+    expect(movement.direction).to.equal(ANGLE[DIRECTION.UP_LEFT]);
   });
 
   it('should move LEFT when that direction is triggered', () => {
@@ -77,9 +77,9 @@ describe('InputState', () => {
     const loadState = {};
     const inputState = InputState(movement, loadState);
     inputState.triggerEvent(EVENT.PRESS, KEY.LEFT);
-    expect(movement.facing).to.be.equal(DIRECTION.LEFT);
+    expect(movement.facing).to.equal(DIRECTION.LEFT);
     expect(movement.moving).to.be.true;
-    expect(movement.direction).to.be.equal(ANGLE[DIRECTION.LEFT]);
+    expect(movement.direction).to.equal(ANGLE[DIRECTION.LEFT]);
   });
 
   it('should move DOWN_LEFT when that direction is triggered', () => {
@@ -87,18 +87,18 @@ describe('InputState', () => {
     const inputState = InputState(movement);
     inputState.triggerEvent(EVENT.PRESS, KEY.LEFT);
     inputState.triggerEvent(EVENT.PRESS, KEY.DOWN);
-    expect(movement.facing).to.be.equal(DIRECTION.LEFT);
+    expect(movement.facing).to.equal(DIRECTION.LEFT);
     expect(movement.moving).to.be.true;
-    expect(movement.direction).to.be.equal(ANGLE[DIRECTION.DOWN_LEFT]);
+    expect(movement.direction).to.equal(ANGLE[DIRECTION.DOWN_LEFT]);
   });
 
   it('should move DOWN when that direction is triggered', () => {
     const movement = Movement();
     const inputState = InputState(movement);
     inputState.triggerEvent(EVENT.PRESS, KEY.DOWN);
-    expect(movement.facing).to.be.equal(DIRECTION.RIGHT);
+    expect(movement.facing).to.equal(DIRECTION.RIGHT);
     expect(movement.moving).to.be.true;
-    expect(movement.direction).to.be.equal(ANGLE[DIRECTION.DOWN]);
+    expect(movement.direction).to.equal(ANGLE[DIRECTION.DOWN]);
   });
 
   it('should move DOWN_RIGHT when that direction is triggered', () => {
@@ -106,9 +106,9 @@ describe('InputState', () => {
     const inputState = InputState(movement);
     inputState.triggerEvent(EVENT.PRESS, KEY.RIGHT);
     inputState.triggerEvent(EVENT.PRESS, KEY.DOWN);
-    expect(movement.facing).to.be.equal(DIRECTION.RIGHT);
+    expect(movement.facing).to.equal(DIRECTION.RIGHT);
     expect(movement.moving).to.be.true;
-    expect(movement.direction).to.be.equal(ANGLE[DIRECTION.DOWN_RIGHT]);
+    expect(movement.direction).to.equal(ANGLE[DIRECTION.DOWN_RIGHT]);
   });
 
   it('should move UP_RIGHT when directional is triggered and angle is UP_RIGHT', () => {
@@ -122,7 +122,7 @@ describe('InputState', () => {
     const inputState = InputState(movement);
     expect(movement.punching).to.be.false;
     inputState.triggerEvent(EVENT.PRESS, KEY.PUNCH);
-    expect(movement.punching).to.be.equal(startTime);
+    expect(movement.punching).to.equal(startTime);
     inputState.triggerEvent(EVENT.RELEASE, KEY.PUNCH);
     expect(movement.punching).to.be.false;
   });
@@ -132,7 +132,7 @@ describe('InputState', () => {
     const inputState = InputState(movement);
     expect(movement.kicking).to.be.false;
     inputState.triggerEvent(EVENT.PRESS, KEY.KICK);
-    expect(movement.kicking).to.be.equal(startTime);
+    expect(movement.kicking).to.equal(startTime);
     inputState.triggerEvent(EVENT.RELEASE, KEY.KICK);
     expect(movement.kicking).to.be.false;
   });

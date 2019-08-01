@@ -18,6 +18,7 @@
 
 'use strict';
 
+import INPUT_TYPE from '../../../../src/input/type';
 import KEY from '../../../../src/input/key';
 import DIRECTION from '../../../../src/movement/direction';
 import ANGLE from '../../../../src/movement/direction/angle';
@@ -59,14 +60,14 @@ describe('InputKeyboard', () => {
     InputKeyboard({
       element: element,
       keys: [{
-        input: KEY.UP, keyCode: reverseLookup('A')
+        input: KEY.UP, key: reverseLookup('A')
       }]
     }, inputState);
     expect(movement.moving).to.be.false;
     const event = _createEvent(reverseLookup('A'));
     element.dispatchEvent(event);
     expect(movement.moving).to.be.true;
-    expect(movement.direction).to.be.equal(ANGLE[DIRECTION.UP]);
+    expect(movement.direction).to.equal(ANGLE[DIRECTION.UP]);
   });
 
   it('should do nothing if our delegate element doesn\'t understand the keyboard input', () => {
@@ -76,7 +77,7 @@ describe('InputKeyboard', () => {
     InputKeyboard({
       element: element,
       keys: [{
-        input: KEY.UP, keyCode: reverseLookup('A')
+        input: KEY.UP, key: reverseLookup('A')
       }]
     }, inputState);
     expect(movement.moving).to.be.false;
@@ -92,7 +93,7 @@ describe('InputKeyboard', () => {
     const input = InputKeyboard({
       element: element,
       keys: [{
-        input: KEY.UP, keyCode: reverseLookup('A')
+        input: KEY.UP, key: reverseLookup('A')
       }]
     }, inputState);
     expect(movement.moving).to.be.false;
@@ -109,7 +110,7 @@ describe('InputKeyboard', () => {
     const input = InputKeyboard({
       element: element,
       keys: [{
-        input: KEY.UP, keyCode: reverseLookup('A')
+        input: KEY.UP, key: reverseLookup('A')
       }]
     }, inputState);
     expect(movement.moving).to.be.false;
@@ -127,11 +128,11 @@ describe('InputKeyboard', () => {
     const input = InputKeyboard({
       element: element,
       keys: [{
-        input: KEY.UP, keyCode: reverseLookup('A')
+        input: KEY.UP, key: reverseLookup('A')
       }]
     }, inputState);
     const config = input.getConfig();
-    expect(config.keys.length).to.be.equal(1);
-    expect(config.type).to.be.equal('keyboard');
+    expect(config.keys.length).to.equal(1);
+    expect(config.type).to.equal(INPUT_TYPE.KEYBOARD);
   });
 });

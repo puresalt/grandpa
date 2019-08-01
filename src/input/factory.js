@@ -15,13 +15,13 @@
 
 'use strict';
 
+import INPUT_TYPE from './type';
 import keyboardInput from './keyboard';
 import touchInput from './touch';
 
-const allowedInputs = {
-  keyboard: keyboardInput,
-  touch: touchInput
-};
+const allowedInputs = {};
+allowedInputs[INPUT_TYPE.KEYBOARD] = keyboardInput;
+allowedInputs[INPUT_TYPE.TOUCH] = touchInput;
 Object.freeze(allowedInputs);
 
 /**
@@ -35,5 +35,5 @@ export default function InputFactory(config, inputState, context) {
   if (allowedInputs[config.type]) {
     return allowedInputs[config.type](config, inputState, context);
   }
-  return allowedInputs.keyboard(config, inputState, context);
+  return allowedInputs[INPUT_TYPE.KEYBOARD](config, inputState, context);
 }

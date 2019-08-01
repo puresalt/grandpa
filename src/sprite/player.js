@@ -15,13 +15,13 @@
 
 'use strict';
 
-import _ from 'lodash/fp';
+import SPRITE_TYPE from './type';
 import BaseSprite from '../sprite';
 
 const _objectType = {
   configurable: false,
   writeable: false,
-  value: 'player'
+  value: SPRITE_TYPE.PLAYER
 };
 Object.freeze(_objectType);
 
@@ -32,7 +32,7 @@ Object.freeze(_objectType);
  */
 export default function Player(loadState) {
   const baseSprite = BaseSprite();
-  const player = _.merge(baseSprite, {
+  const player = Object.assign({}, baseSprite, {
     hp: 100,
     name: 'Gramps',
     speed: {

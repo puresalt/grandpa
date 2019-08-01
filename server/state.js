@@ -15,20 +15,17 @@
 
 'use strict';
 
-const _ = require('lodash');
-
 /**
- *
- *
  * @TODO Transfer this to a datastore and add authentication on top of this.
+ *
  * @returns {{
- *   all(): Array,
- *   get(String): (Object|false),
- *   has(String): Boolean,
- *   remove(String, Array=): Boolean,
- *   save(String, Object): void, replace(String, Object): boolean
+ *   all: function(): Array,
+ *   get: function(String): Object|false,
+ *   save: function(String, Object),
+ *   replace: function(String, Object): Boolean,
+ *   has: function(String): Boolean,
+ *   remove: function(String, Array=): Boolean
  * }}
- * @constructor
  */
 const State = () => {
   const _data = {};
@@ -93,7 +90,7 @@ const State = () => {
      * @param {Object} data
      */
     save(id, data) {
-      _data[id] = _.defaults(data, _data[id] || {});
+      _data[id] = Object.assign({}, _data[id] || {}, data);
       if (_data[id].id) {
         delete _data[id].id;
       }

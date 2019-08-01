@@ -15,13 +15,10 @@
 
 'use strict';
 
-module.exports = {
-  scripts: {
-    files: ['src/**/*.js', 'test/**/*.js'],
-    tasks: ['grandpa'],
-    options: {
-      spawn: false
-    }
-  }
+const SPRITE_TYPE = {
+  PLAYER: 'PLAYER',
+  NPC: 'NPC',
 };
-/* jshint ignore:end */
+Object.freeze(SPRITE_TYPE);
+
+export default SPRITE_TYPE;

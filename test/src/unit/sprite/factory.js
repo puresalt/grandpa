@@ -18,6 +18,7 @@
 
 'use strict';
 
+import SPRITE_TYPE from '../../../../src/sprite/type';
 import PlayerFactory from '../../../../src/sprite/player';
 import NpcFactory from '../../../../src/sprite/npc';
 import SpriteFactory from '../../../../src/sprite/factory';
@@ -29,7 +30,7 @@ describe('SpriteFactory', () => {
   describe('create', () => {
     it('should return a player', () => {
       const spriteFactory = SpriteFactory();
-      const playerCreated = spriteFactory.create('player');
+      const playerCreated = spriteFactory.create(SPRITE_TYPE.PLAYER);
       expect(playerCreated.constructor).to.equal(playerComparison.constructor);
       expect(JSON.stringify(playerCreated)).to.equal(JSON.stringify(playerComparison));
       expect(spriteFactory.all().length).to.equal(1);
@@ -37,7 +38,7 @@ describe('SpriteFactory', () => {
 
     it('should return an npc', () => {
       const spriteFactory = SpriteFactory();
-      const npcCreated = spriteFactory.create('npc');
+      const npcCreated = spriteFactory.create(SPRITE_TYPE.NPC);
       expect(npcCreated.constructor).to.equal(npcComparison.constructor);
       expect(JSON.stringify(npcCreated)).to.equal(JSON.stringify(npcComparison));
       expect(spriteFactory.all().length).to.equal(1);
@@ -45,7 +46,7 @@ describe('SpriteFactory', () => {
 
     it('should return an npc with loadState', () => {
       const spriteFactory = SpriteFactory();
-      const npcCreated = spriteFactory.create('npc');
+      const npcCreated = spriteFactory.create(SPRITE_TYPE.NPC);
       expect(npcCreated.constructor).to.equal(npcComparison.constructor);
       expect(JSON.stringify(npcCreated)).to.equal(JSON.stringify(npcComparison));
       expect(spriteFactory.all().length).to.equal(1);
@@ -53,15 +54,15 @@ describe('SpriteFactory', () => {
 
     it('all should have 2 sprites', () => {
       const spriteFactory = SpriteFactory();
-      spriteFactory.create('npc');
-      spriteFactory.create('player');
+      spriteFactory.create(SPRITE_TYPE.NPC);
+      spriteFactory.create(SPRITE_TYPE.PLAYER);
       expect(spriteFactory.all().length).to.equal(2);
     });
 
     it('remove a sprite', () => {
       const spriteFactory = SpriteFactory();
-      const playerCreated = spriteFactory.create('player');
-      const npcCreated = spriteFactory.create('npc');
+      const playerCreated = spriteFactory.create(SPRITE_TYPE.PLAYER);
+      const npcCreated = spriteFactory.create(SPRITE_TYPE.NPC);
       expect(spriteFactory.all().length).to.equal(2);
       spriteFactory.remove(playerCreated);
       const all = spriteFactory.all();
@@ -72,23 +73,23 @@ describe('SpriteFactory', () => {
 
     it('reuse a sprite', () => {
       const spriteFactory = SpriteFactory();
-      const playerCreated = spriteFactory.create('player');
+      const playerCreated = spriteFactory.create(SPRITE_TYPE.PLAYER);
       const defaultName = playerCreated.name;
       playerCreated.name = playerCreated.name + ' New Name';
       spriteFactory.remove(playerCreated);
-      const playerRecreated = spriteFactory.create('player');
+      const playerRecreated = spriteFactory.create(SPRITE_TYPE.PLAYER);
       expect(playerCreated).to.equal(playerRecreated);
       expect(playerCreated.name).to.equal(defaultName);
-      const anotherPlayer = spriteFactory.create('player');
+      const anotherPlayer = spriteFactory.create(SPRITE_TYPE.PLAYER);
       expect(playerCreated).to.not.equal(anotherPlayer);
     });
 
     it('cremate all used sprites and create anew', () => {
       const spriteFactory = SpriteFactory();
-      const playerCreated = spriteFactory.create('player');
+      const playerCreated = spriteFactory.create(SPRITE_TYPE.PLAYER);
       spriteFactory.remove(playerCreated);
       spriteFactory.cremate();
-      const playerRecreated = spriteFactory.create('player');
+      const playerRecreated = spriteFactory.create(SPRITE_TYPE.PLAYER);
       expect(playerCreated).to.not.equal(playerRecreated);
     });
   });

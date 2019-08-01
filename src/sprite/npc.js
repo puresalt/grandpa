@@ -15,14 +15,14 @@
 
 'use strict';
 
-import _ from 'lodash/fp';
+import SPRITE_TYPE from './type';
 import MathUtility from '../math';
 import BaseSprite from '../sprite';
 
 const _objectType = {
   configurable: false,
   writeable: false,
-  value: 'npc'
+  value: SPRITE_TYPE.NPC
 };
 Object.freeze(_objectType);
 
@@ -33,9 +33,9 @@ Object.freeze(_objectType);
  */
 export default function Npc(loadState) {
   const baseSprite = BaseSprite();
-  const npc = _.merge(baseSprite, {
+  const npc = Object.assign({}, baseSprite, {
     hp: 20,
-    name: 'NPC',
+    name:  'Larsson',
     tileset: {
       src: '/assets/sprite/ryan.gif',
       x: 47,
@@ -67,7 +67,7 @@ export default function Npc(loadState) {
     reset() {
       baseSprite.reset.call(this);
       this.hp = 20;
-      this.name = 'NPC';
+      this.name = 'Larsson';
       this.tileset.src = '/assets/sprite/ryan.gif';
       this.tileset.x = 47;
       this.tileset.y = 3;

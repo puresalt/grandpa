@@ -18,36 +18,31 @@
 
 'use strict';
 
-import InputKeyboard from '../../../../src/input/keyboard';
-import InputTouch from '../../../../src/input/touch';
+import INPUT_TYPE from '../../../../src/input/type';
 import InputFactory from '../../../../src/input/factory';
 import InputState from '../../../../src/input/state';
 
 const inputState = InputState({});
-const inputKeyboard = InputKeyboard({}, inputState);
-const inputKeyboardType = inputKeyboard.getConfig().type;
-const inputTouch = InputTouch({}, inputState);
-const inputTouchType = inputTouch.getConfig().type;
 
 describe('InputFactory', () => {
   it('should return a touch input', () => {
-    const input = InputFactory({type: 'touch'}, inputState);
+    const input = InputFactory({type: INPUT_TYPE.TOUCH}, inputState);
     const type = input.getConfig().type;
-    expect(type).to.be.equal(inputTouchType);
-    expect(type).to.not.equal(inputKeyboardType);
+    expect(type).to.equal(INPUT_TYPE.TOUCH);
+    expect(type).to.not.equal(INPUT_TYPE.KEYBOARD);
   });
 
   it('should return a keyboard input', () => {
-    const input = InputFactory({type: 'keyboard'}, inputState);
+    const input = InputFactory({type: INPUT_TYPE.KEYBOARD}, inputState);
     const type = input.getConfig().type;
-    expect(type).to.be.equal(inputKeyboardType);
-    expect(type).to.not.equal(inputTouchType);
+    expect(type).to.equal(INPUT_TYPE.KEYBOARD);
+    expect(type).to.not.equal(INPUT_TYPE.TOUCH);
   });
 
   it('should return a keyboard input if unknown', () => {
     const input = InputFactory({type: 'unknown'}, inputState);
     const type = input.getConfig().type;
-    expect(type).to.be.equal(inputKeyboardType);
-    expect(type).to.not.equal(inputTouchType);
+    expect(type).to.equal(INPUT_TYPE.KEYBOARD);
+    expect(type).to.not.equal(INPUT_TYPE.TOUCH);
   });
 });

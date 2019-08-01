@@ -17,6 +17,7 @@
 
 'use strict';
 
+import INPUT_TYPE from './input/type';
 import {lookup} from './input/key/lookup';
 import MathUtility from './math';
 
@@ -65,13 +66,13 @@ const debug = {
     const inputType = inputConfig.type;
     const definedKeys = inputState.getConfig().keys;
     const keys = [
-      '<strong>' + (inputState.getConfig().type === 'keyboard' ? 'KEYS' : 'BUTTONS') + ':</strong><hr>'
+      '<strong>' + (inputState.getConfig().type === INPUT_TYPE.KEYBOARD ? 'KEYS' : 'BUTTONS') + ':</strong><hr>'
     ];
     for (let i = 0, count = definedKeys.length; i < count; ++i) {
       keys.push(stylizeKey(
         definedKeys[i].input)
         + '<span class="on">'
-        + (inputType === 'keyboard' ? lookup(definedKeys[i].key) : '#' + definedKeys[i].element.id)
+        + (inputType === INPUT_TYPE.KEYBOARD ? lookup(definedKeys[i].key) : '#' + definedKeys[i].element.id)
         + '</span>'
       );
     }

@@ -18,8 +18,6 @@
 
 'use strict';
 
-import _ from 'lodash';
-
 /**
  * Create our Game Loop. This will delegate rendering based off of state changes.
  *
@@ -35,7 +33,7 @@ export default function GameLoop(options) {
   let _renderingFps = options.fps || 60;
   let _interval = 1000 / (options.fps || 60);
 
-  const gameLoop = _.merge({
+  const gameLoop = Object.assign({}, {
     fps: 60,
     panicLimit: 240,
 

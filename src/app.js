@@ -26,6 +26,8 @@ import Canvas from './canvas';
 import SpriteFactory from './sprite/factory';
 import Debug from './debug';
 import Sizer from './sizer';
+import INPUT_TYPE from './input/type';
+import SPRITE_TYPE from './sprite/type';
 
 (function app() {
   const touchscreen = 'ontouchstart' in document.documentElement;
@@ -36,10 +38,11 @@ import Sizer from './sizer';
     },
     input: {
       type: touchscreen
-        ? 'touch'
-        : 'keyboard'
+        ? INPUT_TYPE.TOUCH
+        : INPUT_TYPE.KEYBOARD
     }
   };
+  console.log('app.config:', config);
 
   const canvasElement = document.getElementById(config.element.id);
   Sizer.init(canvasElement).update();
@@ -62,8 +65,8 @@ import Sizer from './sizer';
   });
 
   const spriteFactory = SpriteFactory();
-  const player = spriteFactory.create('player');
-  const npc1 = spriteFactory.create('npc');
+  const player = spriteFactory.create(SPRITE_TYPE.PLAYER);
+  const npc1 = spriteFactory.create(SPRITE_TYPE.NPC);
   const entities = [
     player,
     npc1
@@ -91,7 +94,7 @@ import Sizer from './sizer';
     setTimeout(() => {
       spriteFactory.remove(npc1);
       setTimeout(() => {
-        const npc2 = spriteFactory.create('npc', {name: 'Ralph'});
+        const npc2 = spriteFactory.create(SPRITE_TYPE.NPC, {name: 'Ralph'});
         canvas.addEntity(npc2);
         setTimeout(() => {
           canvas.removeEntity(npc2);
@@ -102,7 +105,9 @@ import Sizer from './sizer';
   }, 3000);
 
   const inputState = InputState(player.movement/* , loadState */);
+  console.log('app.inputState', inputState);
   const debugInput = InputFactory(config.input, inputState, stateMachine);
+  console.log('app.debugInput', debugInput);
 
   const gameLoop = GameLoop({
     render(runtime) {
