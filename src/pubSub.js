@@ -13,18 +13,20 @@
  *
  */
 
+/** @module pubSub */
+
 'use strict';
 
 /**
  * Create a PubSub.
  *
  * @returns {{
- *   subscribe: function(event: String, callback: function()),
- *   unsubscribe: function(event: String, callback: function()),
- *   publish: function(event: String, ...[Array]),
- *   clear: function(event: String=)
+ *   subscribe: Function,
+ *   unsubscribe: Function,
+ *   publish: Function,
+ *   clear: Function
  * }}
- * @constructor
+ * @alias module:pubSub
  */
 function PubSub() {
   const _events = {};
@@ -34,8 +36,8 @@ function PubSub() {
      * Subscribe an event.
      *
      * @param {String} event
-     * @param {function(String: event, callback: function())} callback
-     * @returns {{unsubscribe: function()}}
+     * @param {Function} callback
+     * @returns {{unsubscribe: Function}}
      */
     subscribe(event, callback) {
       if (!_events.hasOwnProperty(event)) {
@@ -53,7 +55,7 @@ function PubSub() {
      * Unsubscribe an event.
      *
      * @param {String} event
-     * @param {function()} callback
+     * @param {Function} callback
      */
     unsubscribe(event, callback) {
       const filter = item => item !== callback;
@@ -70,7 +72,7 @@ function PubSub() {
      * Trigger a given event if it exists.
      *
      * @param {String} event
-     * @param {Array} args
+     * @param {...Array} args
      */
     publish(event, ...args) {
       if (!_events.hasOwnProperty(event)) {
@@ -82,7 +84,7 @@ function PubSub() {
     /**
      * Remove ever a specific event or all if no event is provided.
      *
-     * @param {String?} event
+     * @param {String=} event
      */
     clear(event) {
       if (event) {
@@ -113,10 +115,10 @@ export default {
    * Get a global singleton.
    *
    * @returns {{
-   *   subscribe: function(String, function()),
-   *   unsubscribe: function(String, function()),
-   *   publish: function(String, ...[Array]),
-   *   clear: function(String=)
+   *   subscribe: Function,
+   *   unsubscribe: Function,
+   *   publish: Function,
+   *   clear: Function
    * }}
    */
   singleton() {
@@ -127,10 +129,10 @@ export default {
    * Get a single instance.
    *
    * @returns {{
-   *   subscribe: function(String, function()),
-   *   unsubscribe: function(String, function()),
-   *   publish: function(String, ...[Array]),
-   *   clear: function(String=)
+   *   subscribe: Function,
+   *   unsubscribe: Function,
+   *   publish: Function,
+   *   clear: Function
    * }}
    */
   instance() {

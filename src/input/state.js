@@ -13,7 +13,7 @@
  *
  */
 
-/* jshint maxcomplexity: 9 */
+/** @module input/state */
 
 'use strict';
 
@@ -27,6 +27,8 @@ import debug from '../debug';
  * Get our initial state.
  *
  * @returns {Object}
+ * @private
+ * @ignore
  */
 function setInitial() {
   const keys = {};
@@ -43,12 +45,13 @@ function setInitial() {
 /**
  * Handle our input state.
  *
- * @param {Object} movement
- * @param {{key: Object, movement: String}?} loadState
+ * @param {Object} movement Our `module:movement` object that `module:input/state` will trigger movement on.
+ * @param {{key: Object, movement: String}=} loadState Default state to use if it exists
  * @returns {{
- *   getKeys: function(),
- *   triggerEvent: function(direction: String, key: String, context: StateMachine=, ...[Array])
+ *   getKeys: Function,
+ *   triggerEvent: Function
  * }}
+ * @alias module:input/state
  */
 export default function InputState(movement, loadState) {
   const _keys = loadState || setInitial();
@@ -57,8 +60,8 @@ export default function InputState(movement, loadState) {
    * Hold a directional action based on key presses.
    *
    * @param key
-   * @returns {function(direction: String)}
-   * @private
+   * @returns {Function}
+   * @ignore
    */
   const _holdDirectionalAction = (key) => {
     return (direction) => {
@@ -92,8 +95,8 @@ export default function InputState(movement, loadState) {
    *
    * @param {String} key
    * @param {String} action
-   * @returns {function(direction: String)}
-   * @private
+   * @returns {Function}
+   * @ignore
    */
   const _triggerDirectionalAction = (key, action) => {
     return (direction) => {
@@ -169,11 +172,12 @@ export default function InputState(movement, loadState) {
 
   const _eventLookup = _generateEventLookup(_events);
 
+  /** @alias module:input/state */
   const methods = {
     /**
      * Get defined keys.
      *
-     * @returns {Object}
+     * @returns {Object} Keys with their attached logic
      */
     getKeys() {
       return _keys;
@@ -182,10 +186,10 @@ export default function InputState(movement, loadState) {
     /**
      * Trigger an event, which if we do we will return true so our keyboard method can short circuit the event.
      *
-     * @param {String} direction
-     * @param {String} key
-     * @param {StateMachine?} context
-     * @param {Array} args
+     * @param {String} direction Direction we are triggering on
+     * @param {String} key Key we are triggering on
+     * @param {StateMachine=} context Our global state machine, if it exists
+     * @param {...Array} args Auxiliary data to use on our event
      */
     triggerEvent(direction, key, context, ...args) {
       if (!_eventLookup[key]) {
@@ -213,7 +217,7 @@ export default function InputState(movement, loadState) {
  * Create our eventLookup matching keys to events.
  *
  * @param {Array} events
- * @private
+ * @ignore
  */
 function _generateEventLookup(events) {
   return events.reduce((gathered, event) => {

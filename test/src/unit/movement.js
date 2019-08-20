@@ -13,8 +13,7 @@
  *
  */
 
-/* jshint expr:true */
-/* globals describe,expect,it */
+/* global describe, it, expect */
 
 'use strict';
 
@@ -95,7 +94,6 @@ describe('Movement', () => {
     });
 
     it('should stop running right if we change direction', () => {
-      /* jshint maxstatements:20 */
       const movement = movementFactory();
       runInDirection(DIRECTION.RIGHT, movement);
       movement.move(ANGLE[DIRECTION.UP_RIGHT] - 1);
@@ -119,7 +117,6 @@ describe('Movement', () => {
     });
 
     it('should stop running left if we change direction', () => {
-      /* jshint maxstatements:20 */
       const movement = movementFactory();
       runInDirection(DIRECTION.LEFT, movement);
       movement.move(ANGLE[DIRECTION.UP_LEFT] + 1);

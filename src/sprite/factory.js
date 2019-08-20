@@ -13,26 +13,25 @@
  *
  */
 
+/** @module sprite/factory */
+
 'use strict';
 
 import SPRITE_TYPE from './type';
 import playerFactory from './player';
 import npcFactory from './npc';
 
-const _spriteTypes = {};
-_spriteTypes[SPRITE_TYPE.PLAYER] = playerFactory;
-_spriteTypes[SPRITE_TYPE.NPC] = npcFactory;
+const _spriteTypes = {
+  [SPRITE_TYPE.PLAYER]: playerFactory,
+  [SPRITE_TYPE.NPC]: npcFactory
+};
 Object.freeze(_spriteTypes);
 
 /**
  * Keep track of all dead/alive sprites.
  *
- * @returns {{
- *   all: function(),
- *   create: function(type: String, loadData: Object=),
- *   cremate: function(),
- *   remove: function(Object)
- * }}
+ * @returns {module:sprite/factory} Factory for generating and killing off sprites
+ * @alias module:sprite/factory
  */
 export default function spriteFactory() {
   const _alive = [];
@@ -46,11 +45,12 @@ export default function spriteFactory() {
     _graveyard[key] = [];
   }
 
+  /** @alias module:sprite/factory */
   const methods = {
     /**
      * Get all alive sprites in their expected direction.
      *
-     * @returns {Array}
+     * @returns {module:sprite[]} A list of all of our living sprites
      */
     all() {
       return _alive.sort(spriteFactory.sort);
@@ -59,16 +59,16 @@ export default function spriteFactory() {
     /**
      * Set all of the entities for our canvas.
      *
-     * @param {String} type
-     * @param {Object?} loadData
-     * @returns {Object}
+     * @param {String} type Type of sprite we should be creating
+     * @param {Object=} loadState Default data to create a sprite with
+     * @returns {module:sprite} Our created sprite with its appropriate data loaded
      */
-    create(type, loadData) {
+    create(type, loadState) {
       let sprite = _graveyard[type].length
         ? _graveyard[type].shift()
         : _spriteTypes[type]();
       sprite.reset();
-      sprite = Object.assign(sprite, loadData || {});
+      sprite = Object.assign(sprite, loadState || {});
       _alive.push(sprite);
       return sprite;
     },
@@ -89,8 +89,7 @@ export default function spriteFactory() {
     /**
      * Remove a specific sprite.
      *
-     * @param {Object} sprite
-     * @returns {Object}
+     * @param {Object} sprite Sprite we wish to kill off
      */
     remove(sprite) {
       for (let i = 0, count = _alive.length; i < count; ++i) {
@@ -111,12 +110,11 @@ export default function spriteFactory() {
 /**
  * Sort two entities by their y and then x coordinates.
  *
- * @param {{x: Number, y: Number}} entity1
- * @param {{x: Number, y: Number}} entity2
- * @returns {Number}
+ * @param {{x: Number, y: Number}} entity1 Element to compare against
+ * @param {{x: Number, y: Number}} entity2 Element to compare with
+ * @returns {Number} Which element should get the nod
  */
-spriteFactory.sort = function(entity1, entity2) {
-  /* jshint maxcomplexity:5 */
+spriteFactory.sort = (entity1, entity2) => {
   if (entity1.x > entity2.x) {
     return 1;
   }

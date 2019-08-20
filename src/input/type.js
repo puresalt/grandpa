@@ -13,6 +13,18 @@
  *
  */
 
+/**
+ * ENUM covering input connects this game supports.
+ *
+ * **Input.TYPE:**
+ * ```
+ * KEYBOARD
+ * TOUCH
+ * ```
+ *
+ * @module input/type
+ */
+
 'use strict';
 
 const INPUT_TYPE = {

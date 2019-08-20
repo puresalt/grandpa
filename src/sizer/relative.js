@@ -13,8 +13,7 @@
  *
  */
 
-/* jshint maxstatements:17 */
-/* globals document,window */
+/** @module sizer/relative */
 
 'use strict';
 
@@ -25,7 +24,11 @@ import MathUtility from '../math';
 const globalPubSub = PubSub.singleton();
 let _canvasElement = null;
 
-/* istanbul ignore next */
+/**
+ * Resize our elements in a relative manner.
+ *
+ * @alias module:sizer/relative
+ */
 const Sizer = {
   defaultHeight: 360,
   defaultWidth: 640,
@@ -42,8 +45,8 @@ const Sizer = {
   /**
    * Set what element to use for our sizer.
    *
-   * @param {HTMLElement} canvasElement
-   * @returns {Sizer}
+   * @param {HTMLElement} canvasElement A Canvas tag that we will be resizing based off of a browser's viewport
+   * @returns {Sizer} Our Sizer that will help manipulate our canvas and entities as needed
    */
   init(canvasElement) {
     _canvasElement = canvasElement;
@@ -53,10 +56,9 @@ const Sizer = {
   /**
    * Get the desired sizing based on size of the window.
    *
-   * @returns {Sizer}
+   * @returns {Sizer} Our Sizer that will help manipulate our canvas and entities as needed
    */
   update() {
-    /* jshint maxstatements:22 */
     if (_canvasElement === null) {
       return this;
     }
@@ -92,9 +94,9 @@ const Sizer = {
   /**
    * Get the size of our pixel in relation to the ratio.
    *
-   * @param {Number} pixel
-   * @param {Boolean?} useRatio
-   * @returns {Number}
+   * @param {Number} pixel Pixels we want to find their relative value for
+   * @param {Boolean=} useRatio Whether we should use the current ratio or not
+   * @returns {Number} Drawing perfect pixels
    */
   relativeSize(pixel, useRatio) {
     useRatio = useRatio !== false;

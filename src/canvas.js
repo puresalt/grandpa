@@ -13,7 +13,11 @@
  *
  */
 
-/* globals document */
+/**
+ * Keep track of all of our entities and delegate rendering accordingly.
+ *
+ * @module canvas
+ */
 
 'use strict';
 
@@ -25,6 +29,8 @@ import SpriteFactory from './sprite/factory';
  *
  * @param {HTMLElement} element
  * @param {function(HTMLElement)} callback
+ * @private
+ * @ignore
  */
 function elementLoader(element, callback) {
   let loaded = false;
@@ -41,8 +47,10 @@ function elementLoader(element, callback) {
  * Create an image from a given tileset config.
  *
  * @param {Object} tileset
- * @param {function()?} callback
+ * @param {function()=} callback
  * @returns {HTMLElement}
+ * @private
+ * @ignore
  */
 function createImageElementForTileset(tileset, callback) {
   const element = document.createElement('img');
@@ -52,66 +60,66 @@ function createImageElementForTileset(tileset, callback) {
 }
 
 /**
- * Delegate our canvas rendering.
- *
- * @param {HTMLElement} element
- * @returns {Object}
+ * @param {HTMLElement} element Canvas element to draw on
+ * @returns {module:canvas} Our canvas object
  */
 export default function canvasFunction(element) {
   const _element = element.getContext('2d');
-  const _tilesets = {};
-  const _alive = [];
+  const _tilesetCollection = {};
+  const _entityCollection = [];
   let _runtime = 0;
 
-  const _renderEntity = entity => entity.render(_element, _tilesets[entity.tileset.src], _runtime);
+  const _renderEntity = entity => entity.render(_element, _tilesetCollection[entity.tileset.src], _runtime);
 
+  /** @alias module:canvas */
   const methods = {
     /**
      * Render our canvas.
+     *
+     * @param {Number} runtime When our render was triggered in relation to the start of our game loop
      */
     render(runtime) {
       _runtime = runtime;
       _element.clearRect(0, 0, SIZER.width, SIZER.height);
-      _alive.sort(SpriteFactory.sort).forEach(_renderEntity);
+      _entityCollection.sort(SpriteFactory.sort).forEach(_renderEntity);
     },
 
     /**
      * Add an entity to be drawn.
      *
-     * @param {Object} entity
+     * @param {Object} entity Entity that we will trigger rendering events on
      */
     addEntity(entity) {
-      console.log('ADDING:', entity.name);
-      _alive.push(entity);
+      _entityCollection.push(entity);
     },
 
     /**
      * Remove a specific entity.
      *
-     * @param {Object} entity
+     * @param {Object} entity Entity we no longer need to check rendering for
      */
     removeEntity(entity) {
-      for (let i = 0, count = _alive.length; i < count; ++i) {
-        if (_alive[i] !== entity) {
+      for (let i = 0, count = _entityCollection.length; i < count; ++i) {
+        if (_entityCollection[i] !== entity) {
           continue;
         }
-        console.log('REMOVING:', entity.name);
-        _alive.splice(i, 1);
+        _entityCollection.splice(i, 1);
       }
     },
 
     /**
      * Define the tilesets to use for a given level. Trigger `callback` when all images are loaded.
      *
-     * @param {Array} tilesets
-     * @param {function()} callback
+     * @param {Array} tilesets Tilesets to load for a given level/area. We will loop through these and load them into
+     *   memory
+     * @param {callback} callback Callback to run after we are finished loading our tilesets
      */
     loadTilesets(tilesets, callback) {
       const waitingFor = tilesets.length;
       let loaded = 0;
       tilesets.forEach((tileset) => {
         createImageElementForTileset(tileset, (element) => {
-          _tilesets[tileset.src] = {
+          _tilesetCollection[tileset.src] = {
             image: element,
             height: element.height,
             width: element.width

@@ -13,9 +13,6 @@
  *
  */
 
-/* jshint maxstatements:17 */
-/* globals requestAnimationFrame,CustomEvent,window */
-
 'use strict';
 
 import relativeSizer from './sizer/relative';
@@ -32,7 +29,7 @@ const _Sizer = allowedSizerCollection.static;
 export default _Sizer;
 
 /* istanbul ignore next */
-(() => {
+{
   const throttle = (type, name, obj) => {
     obj = obj || window;
     let running = false;
@@ -50,9 +47,9 @@ export default _Sizer;
   };
 
   throttle('resize', 'optimizedResize');
-})();
 
-/* istanbul ignore next */
-window.addEventListener('optimizedResize', () => {
-  _Sizer.update();
-});
+  /* istanbul ignore next */
+  window.addEventListener('optimizedResize', () => {
+    _Sizer.update();
+  });
+}

@@ -13,8 +13,7 @@
  *
  */
 
-/* jshint expr: true */
-/* globals expect,document,KeyboardEvent */
+/* global describe, it, expect */
 
 'use strict';
 
@@ -31,7 +30,7 @@ import {reverseLookup} from '../../../../src/input/key/lookup';
  * Create a generic Event
  *
  * @param {String} key
- * @param {String?} eventType
+ * @param {String=} eventType
  * @returns {KeyboardEvent}
  * @private
  */
@@ -46,14 +45,14 @@ function _createEvent(key, eventType) {
     ctrlKey: false,
     altKey: false,
     shiftKey: false,
-    keyCode: parseInt(keyBits[0]),
-    location: parseInt(keyBits[1]),
-    which: parseInt(keyBits[0])
+    keyCode: parseInt(keyBits[0], 10),
+    location: parseInt(keyBits[1], 10),
+    which: parseInt(keyBits[0], 10)
   });
 }
 
 describe('InputKeyboard', () => {
-  it('should move UP when the UP key is triggered on our delegated element', () => {
+  const triggerMovementOnClick = (clickButton) => {
     const element = document.createElement('DIV');
     const movement = Movement();
     const inputState = InputState(movement);
@@ -64,25 +63,19 @@ describe('InputKeyboard', () => {
       }]
     }, inputState);
     expect(movement.moving).to.be.false;
-    const event = _createEvent(reverseLookup('A'));
+    const event = _createEvent(reverseLookup(clickButton));
     element.dispatchEvent(event);
+    return movement;
+  };
+
+  it('should move UP when the UP key is triggered on our delegated element', () => {
+    const movement = triggerMovementOnClick('A');
     expect(movement.moving).to.be.true;
     expect(movement.direction).to.equal(ANGLE[DIRECTION.UP]);
   });
 
   it('should do nothing if our delegate element doesn\'t understand the keyboard input', () => {
-    const element = document.createElement('DIV');
-    const movement = Movement();
-    const inputState = InputState(movement);
-    InputKeyboard({
-      element: element,
-      keys: [{
-        input: KEY.UP, key: reverseLookup('A')
-      }]
-    }, inputState);
-    expect(movement.moving).to.be.false;
-    const event = _createEvent(reverseLookup('B'));
-    element.dispatchEvent(event);
+    const movement = triggerMovementOnClick('B');
     expect(movement.moving).to.be.false;
   });
 

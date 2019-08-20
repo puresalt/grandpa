@@ -18,23 +18,18 @@
 /**
  * @TODO Transfer this to a datastore and add authentication on top of this.
  *
- * @returns {{
- *   all: function(): Array,
- *   get: function(String): Object|false,
- *   save: function(String, Object),
- *   replace: function(String, Object): Boolean,
- *   has: function(String): Boolean,
- *   remove: function(String, Array=): Boolean
- * }}
+ * @returns {module:state} Access methods for state.
+ * @module state
  */
 const State = () => {
   const _data = {};
 
+  /** @alias module:state */
   const methods = {
     /**
      * Get all of the possible saved states.
      *
-     * @returns {Array}
+     * @returns {Array} Get all stored ids.
      */
     all() {
       return Object.keys(_data);
@@ -43,12 +38,13 @@ const State = () => {
     /**
      * Get our data if it exists.
      *
-     * @param {String} id
-     * @returns {Object|false}
+     * @param {String} id Load data for a given `id`.
+     * @returns {Object|null} Return data or `null`, if `null` is a possible type of valid data use in conjunction with
+     *   the `state.has(id)` method.
      */
     get(id) {
       if (!this.has(id)) {
-        return false;
+        return null;
       }
       return _data[id];
     },
@@ -56,8 +52,8 @@ const State = () => {
     /**
      * See if a state exists.
      *
-     * @param {String} id
-     * @returns {Boolean}
+     * @param {String} id Check if `id` exists in our data store.
+     * @returns {Boolean} `true` if it exists `false` if it doesn't.
      */
     has(id) {
       return typeof _data[id] !== 'undefined';
@@ -86,8 +82,8 @@ const State = () => {
     /**
      * Save our state.
      *
-     * @param {String} id
-     * @param {Object} data
+     * @param {String} id Location to save our data to.
+     * @param {Object} data Data to save.
      */
     save(id, data) {
       _data[id] = Object.assign({}, _data[id] || {}, data);
@@ -99,8 +95,8 @@ const State = () => {
     /**
      * Replace a state object if it exists.
      *
-     * @param {String} id
-     * @param {Object} data
+     * @param {String} id Replace data if it exists at this given location.
+     * @param {Object} data Data to replace the old data with.
      */
     replace(id, data) {
       if (!this.has(id)) {

@@ -13,23 +13,29 @@
  *
  */
 
+/** @module input/factory */
+
 'use strict';
 
 import INPUT_TYPE from './type';
 import keyboardInput from './keyboard';
 import touchInput from './touch';
 
-const allowedInputs = {};
-allowedInputs[INPUT_TYPE.KEYBOARD] = keyboardInput;
-allowedInputs[INPUT_TYPE.TOUCH] = touchInput;
+const allowedInputs = {
+  [INPUT_TYPE.KEYBOARD]: keyboardInput,
+  [INPUT_TYPE.TOUCH]: touchInput
+};
 Object.freeze(allowedInputs);
 
 /**
  * Build a factory of our allowed Inputs.
  *
- * @param {Object} config
- * @param {Object} inputState
- * @param {StateMachine?} context
+ * @param {Object} config Game config settings
+ * @param {Object} inputState Default input state (generally loaded from a save state)
+ * @param {StateMachine=} context Our global state machine, if it exists
+ * @returns {{add: Function, getConfig: Function, remove: Function}} Either `module:input/touch` or
+ *   `module:input/keyboard`, where the later is the default.
+ * @alias module:input/factory
  */
 export default function InputFactory(config, inputState, context) {
   if (allowedInputs[config.type]) {

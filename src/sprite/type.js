@@ -13,11 +13,23 @@
  *
  */
 
+/**
+ * ENUM covering sprite types.
+ *
+ * **Input.TYPE:**
+ * ```
+ * PLAYER
+ * NPC
+ * ```
+ *
+ * @module sprite/type
+ */
+
 'use strict';
 
 const SPRITE_TYPE = {
   PLAYER: 'PLAYER',
-  NPC: 'NPC',
+  NPC: 'NPC'
 };
 Object.freeze(SPRITE_TYPE);
 

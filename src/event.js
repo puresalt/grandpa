@@ -13,6 +13,19 @@
  *
  */
 
+/**
+ * ENUM covering events.
+ *
+ * **EVENT:**
+ * ```
+ * PRESS
+ * RELEASE
+ * RESIZE
+ * ```
+ *
+ * @module event
+ */
+
 'use strict';
 
 const EVENT = {

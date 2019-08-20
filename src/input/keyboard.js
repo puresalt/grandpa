@@ -13,7 +13,7 @@
  *
  */
 
-/* globals document */
+/** @module input/keyboard */
 
 'use strict';
 
@@ -43,22 +43,27 @@ Object.freeze(_defaultConfig);
  * Function to first map a configuration to our Input.KEY enum, and then to map that to an event lookup and attach it to
  * our element's event listener.
  *
- * @param {Object} config
- * @param {Object} inputState
- * @param {StateMachine?} context
- * @returns {{getConfig: function(), remove: function()}}
+ * @param {Object} config Game config settings
+ * @param {Object} inputState Default input state (generally loaded from a save state)
+ * @param {StateMachine=} context Our global state machine, if it exists
+ * @returns {{add: Function, getConfig: Function, remove: Function}}
+ * @alias module:input/keyboard
  */
 export default function KeyboardInput(config, inputState, context) {
-  const _extendedConfig = Object.assign({}, _defaultConfig, config || {});
-  _extendedConfig.type = INPUT_TYPE.KEYBOARD;
+  config = config || {};
+  const _extendedConfig = {
+    ..._defaultConfig,
+    ...config,
+    type: INPUT_TYPE.KEYBOARD
+  };
   const _eventLookup = _generateEventLookup(_extendedConfig.keys);
 
   /**
    * Helper function to add our event listener on both up and down.
    *
    * @param {String} direction
-   * @returns {function(event: KeyboardEvent)}
-   * @private
+   * @returns {Function}
+   * @ignore
    */
   const _eventListener = (direction) => {
     return (event) => {
@@ -76,6 +81,7 @@ export default function KeyboardInput(config, inputState, context) {
   const _press = _eventListener(EVENT.PRESS);
   const _release = _eventListener(EVENT.RELEASE);
 
+  /** @alias module:input/keyboard */
   const methods = {
     /**
      * Add our event listeners onto our element in the case someone switches back to keyboard.
@@ -88,7 +94,7 @@ export default function KeyboardInput(config, inputState, context) {
     /**
      * Get the current config.
      *
-     * @returns {*}
+     * @returns {Object}
      */
     getConfig() {
       return _extendedConfig;
@@ -113,6 +119,7 @@ export default function KeyboardInput(config, inputState, context) {
  *
  * @param {Array} events
  * @returns {Object}
+ * @ignore
  */
 function _generateEventLookup(events) {
   return events.reduce((gathered, item) => {

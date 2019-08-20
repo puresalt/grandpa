@@ -13,7 +13,7 @@
  *
  */
 
-/* jshint maxcomplexity: 9, maxstatements: 17 */
+/** @module movement */
 
 'use strict';
 
@@ -24,11 +24,13 @@ import GUIDED from './movement/guided';
 /**
  * Resolve any direction issues and keep the state internal.
  *
- * @param {Object?} loadState
- * @returns {Object}
- * @constructor
+ * @param {Object=} loadState Default state for our given movement object
+ * @returns {module:movement} Our movement object
+ * @alias module:movement
  */
 function MovementFactory(loadState) {
+  loadState = loadState || {};
+
   const _lastDirection = {
     direction: DIRECTION.RIGHT
   };
@@ -37,8 +39,9 @@ function MovementFactory(loadState) {
   /**
    * Set the last direction if defined.
    *
-   * @param {String?} direction
+   * @param {String=} direction
    * @private
+   * @ignore
    */
   function _setLastDirection(direction) {
     _lastDirection[DIRECTION.RIGHT] = 0;
@@ -50,7 +53,7 @@ function MovementFactory(loadState) {
     }
   }
 
-  return Object.assign({}, {
+  return {
     direction: 0,
     guided: false,
     jumpHeight: 20,
@@ -67,7 +70,7 @@ function MovementFactory(loadState) {
     /**
      * Resolve a given direction and trigger movement logic.
      *
-     * @param {Number} angle
+     * @param {Number} angle Angle of the direction we want to move with
      */
     move(angle) {
       this.moving = angle !== null;
@@ -102,7 +105,7 @@ function MovementFactory(loadState) {
     /**
      * Start getting your crouch going.
      *
-     * @param {Boolean} active
+     * @param {Boolean} active Whether we are crouching or not
      */
     crouch(active) {
       this.crouching = active;
@@ -111,8 +114,8 @@ function MovementFactory(loadState) {
     /**
      * Try and jump.
      *
-     * @param {Boolean} active
-     * @param {Boolean} alreadyFired
+     * @param {Boolean} active Whether we are jumping or not
+     * @param {Boolean=} alreadyFired Whether we have already triggered a jump event
      */
     jump(active, alreadyFired) {
       if (!active || this.guided || alreadyFired) {
@@ -125,7 +128,7 @@ function MovementFactory(loadState) {
     /**
      * Kicking time.
      *
-     * @param {Boolean} active
+     * @param {Boolean} active Whether we are kicking or not
      */
     kick(active) {
       if (!active) {
@@ -138,7 +141,7 @@ function MovementFactory(loadState) {
     /**
      * Throw the punch.
      *
-     * @param {Boolean} active
+     * @param {Boolean} active Whether we are punching or not
      */
     punch(active) {
       if (!active) {
@@ -166,8 +169,10 @@ function MovementFactory(loadState) {
       this.running = false;
       this.stunned = false;
       this.guided = false;
-    }
-  }, loadState || {});
+    },
+
+    ...loadState
+  };
 }
 
 MovementFactory.TAP_RESPONSE_TIME = 100;

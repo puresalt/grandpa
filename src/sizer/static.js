@@ -13,8 +13,7 @@
  *
  */
 
-/* jshint maxstatements:17 */
-/* globals document,window */
+/** @module sizer/static */
 
 'use strict';
 
@@ -25,7 +24,11 @@ import MathUtility from '../math';
 const globalPubSub = PubSub.singleton();
 let _canvasElement = null;
 
-/* istanbul ignore next */
+/**
+ * Resize our elements in a static manner. All values are hard coded and then stretched using built in canvas functions.
+ *
+ * @alias module:sizer/static
+ */
 const Sizer = {
   defaultHeight: 360,
   defaultWidth: 640,
@@ -40,8 +43,8 @@ const Sizer = {
   /**
    * Set what element to use for our sizer.
    *
-   * @param {HTMLElement} canvasElement
-   * @returns {Sizer}
+   * @param {HTMLElement} canvasElement A Canvas tag that we will be resizing based off of a browser's viewport
+   * @returns {Sizer} Our Sizer that will help manipulate our canvas and entities as needed
    */
   init(canvasElement) {
     _canvasElement = canvasElement;
@@ -51,7 +54,7 @@ const Sizer = {
   /**
    * Get the desired sizing based on size of the window.
    *
-   * @returns {Sizer}
+   * @returns {Sizer} Our Sizer that will help manipulate our canvas and entities as needed
    */
   update() {
     if (_canvasElement === null) {
@@ -77,8 +80,8 @@ const Sizer = {
   /**
    * Get the size of our pixel in relation to the ratio.
    *
-   * @param {Number} pixel
-   * @returns {Number}
+   * @param {Number} pixel Pixels we want to find their relative value for
+   * @returns {Number} Drawing perfect pixels
    */
   relativeSize(pixel) {
     return MathUtility.round(pixel);

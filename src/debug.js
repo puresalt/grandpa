@@ -13,7 +13,7 @@
  *
  */
 
-/* globals document */
+/** @module debug */
 
 'use strict';
 
@@ -36,8 +36,17 @@ Object.freeze(_movementKeys);
 let _overlay = null;
 let _displayed = false;
 
-/* istanbul ignore next */
+/**
+ * Debugging output.
+ *
+ * @alias module:debug
+ */
 const debug = {
+  /**
+   * Start up our debugger.
+   *
+   * @param {Boolean=} [display=false] Whether we should display our debugger or not on start.
+   */
   init(display) {
     if (_overlay) {
       return;
@@ -50,9 +59,13 @@ const debug = {
 
   /**
    * Render a state update.
+   *
+   * @param {module:sprite/player} player Our player's sprite
+   * @param {module:input/state} inputState What our current input state is
+   * @param {Number} runtime When our render was triggered in relation to the start of our game loop
+   * @param {Number} fps FPS we hit last loop
    */
   update(player, inputState, runtime, fps) {
-    /* jshint maxcomplexity:7, maxstatements:18 */
     if (!_overlay) {
       return;
     }
@@ -112,6 +125,7 @@ export default debug;
  *
  * @param {*} key
  * @returns {String}
+ * @ignore
  */
 function stylizeKey(key) {
   const length = 9;
@@ -129,6 +143,7 @@ function stylizeKey(key) {
  *
  * @param {*} value
  * @returns {String}
+ * @ignore
  */
 function stylizeValue(value) {
   if (value === null) {

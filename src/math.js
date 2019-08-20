@@ -13,20 +13,29 @@
  *
  */
 
+/** @module math */
+
 'use strict';
 
 const TO_DEGREES = (1 / Math.PI) * 180;
+const JUMP_PEAK_REFERENCE = 0.55;
+const DEGREES_PER_SLICE = 45;
 const TRUE_OR_FALSE = [true, false];
+Object.freeze(TRUE_OR_FALSE);
 
+/**
+ * Utility helper for all of our math based methods.
+ *
+ * @alias module:math
+ */
 const MathUtility = {
-
   /**
    * Make sure a number is within a range.
    *
-   * @param {Number} x
-   * @param {Number} from
-   * @param {Number} to
-   * @returns {Boolean}
+   * @param {Number} x Number to check
+   * @param {Number} from Minimum to check against
+   * @param {Number} to Maximum to check against
+   * @returns {Boolean} Whether `x` is between `from` and `to`.
    */
   between(x, from, to) {
     return x && x >= from && x <= to;
@@ -35,9 +44,9 @@ const MathUtility = {
   /**
    * Decrement by a given number to cool down to.
    *
-   * @param {Number} start
-   * @param {Number?} decrement
-   * @returns {Number}
+   * @param {Number} start Start time of our cool down
+   * @param {Number=} decrement How much we have cooled off since last trigger
+   * @returns {Number} How much time is left before our cool down is complete
    */
   coolDown(start, decrement) {
     return start
@@ -48,9 +57,9 @@ const MathUtility = {
   /**
    * Get x if it's between minimum and maximum, otherwise the minimum or maximum depending on which side of the bounds.
    *
-   * @param {Number} number
-   * @param {Number} minimum
-   * @param {Number} maximum
+   * @param {Number} number Number we want to find within a given bounds
+   * @param {Number} minimum The lower bounds of our number
+   * @param {Number} maximum The upper bounds of our number
    * @returns {Number}
    */
   minMax(number, minimum, maximum) {
@@ -60,9 +69,9 @@ const MathUtility = {
   /**
    * Compare two sets against each other.
    *
-   * @param {{h: Number, w: Number, x: Number, y: Number}} dimensions1
-   * @param {{h: Number, w: Number, x: Number, y: Number}} dimensions2
-   * @returns {Boolean}
+   * @param {{h: Number, w: Number, x: Number, y: Number}} dimensions1 Dimension to compare against
+   * @param {{h: Number, w: Number, x: Number, y: Number}} dimensions2 Dimension to compare with
+   * @returns {Boolean} Whether they overlap or not
    */
   overlap(dimensions1, dimensions2) {
     return !(
@@ -76,9 +85,9 @@ const MathUtility = {
   /**
    * Return a random floating point number.
    *
-   * @param {Number} minimum
-   * @param {Number} maximum
-   * @returns {Number}
+   * @param {Number} minimum Minimum range for our random number
+   * @param {Number} maximum Maximum range for our random number
+   * @returns {Number} Hopefully it is random and not always `4`
    */
   random(minimum, maximum) {
     return (minimum + (Math.random() * (maximum - minimum)));
@@ -87,8 +96,8 @@ const MathUtility = {
   /**
    * Return a random choice from a given array.
    *
-   * @param {Array} choices
-   * @returns {*}
+   * @param {Array} choices Choices to randomly choose from
+   * @returns {*} A random singular choice from `choices`
    */
   randomChoice(choices) {
     return choices[MathUtility.randomNumber(0, choices.length - 1)];
@@ -97,7 +106,7 @@ const MathUtility = {
   /**
    * Return a randomly selected Boolean.
    *
-   * @returns {Boolean}
+   * @returns {Boolean} Randomly returns true or false
    */
   randomBoolean() {
     return MathUtility.randomChoice(TRUE_OR_FALSE);
@@ -106,9 +115,9 @@ const MathUtility = {
   /**
    * Return a random whole number.
    *
-   * @param {Number} minimum
-   * @param {Number} maximum
-   * @returns {Number}
+   * @param {Number} minimum Minimum range for our random number
+   * @param {Number} maximum Maximum range for our random number
+   * @returns {Number} Hopefully it is random and not always `4`
    */
   randomNumber(minimum, maximum) {
     return MathUtility.round(MathUtility.random(minimum, maximum));
@@ -117,11 +126,11 @@ const MathUtility = {
   /**
    * Get the degree of a point referencing centerX and centerY.
    *
-   * @param {Number} pointX
-   * @param {Number} pointY
-   * @param {Number?} centerX
-   * @param {Number?} centerY
-   * @returns {Number}
+   * @param {Number} pointX X coordinate for our point
+   * @param {Number} pointY Y coordinate for our point
+   * @param {Number=} centerX X coordinate for the center
+   * @param {Number=} centerY Y coordinate for the center
+   * @returns {Number} Degree from the given coordinates
    */
   getDegreeOfPoints(pointX, pointY, centerX, centerY) {
     return Math.atan2(pointY - centerY, pointX - centerX) * TO_DEGREES;
@@ -130,11 +139,10 @@ const MathUtility = {
   /**
    * Get a point along an ellipse.
    *
-   * @param {{x: Number, y: Number}} origin
-   * @param {{angle: Number, height: Number, width: Number}} ellipse
-   * @param {{x: Number, y: Number}} reusedObject
-   * @returns {{x: Number, y: Number}}
-   * @private
+   * @param {Number} origin Origin coordinates
+   * @param {{angle: Number, height: Number, width: Number}} ellipse Ellipse we're moving along
+   * @param {{x: Number, y: Number}} reusedObject Garbage Collection friendly object for storing our coordinates
+   * @returns {{x: Number, y: Number}} Current coordinates along our ellipse
    */
   setPointOnEllipse(origin, ellipse, reusedObject) {
     reusedObject.x = origin.x
@@ -148,11 +156,11 @@ const MathUtility = {
   /**
    * Get a specific point along a quadratic curve.
    *
-   * @param {Number}  origin
-   * @param {Number} control
-   * @param {Number} destination
-   * @param {Number} position
-   * @returns {Number}
+   * @param {Number} origin Origin coordinates
+   * @param {Number} control Control point to curve our line around
+   * @param {Number} destination Where our curvature will end
+   * @param {Number} position Position along the route
+   * @returns {Number} Coordinates from the given `position`
    */
   getPointOnQuadraticCurve(origin, control, destination, position) {
     const T = 1 - position;
@@ -162,12 +170,40 @@ const MathUtility = {
   /**
    * Return a rounded number.
    *
-   * @param {Number} number
-   * @returns {Number}
+   * @param {Number} number Number to round
+   * @returns {Number} Quickly rounded number via bitwise
    */
   round(number) {
-    /* jshint bitwise:false */
     return (number + 0.5) | 0;
+  },
+
+  /**
+   * Return a rate to apply to a given speed as a way to control
+   *
+   * @param {Number} moving Direction we are moving
+   * @param {Number} angle Angle of our movement
+   * @param {Number=} degreesPerSlice Slices of a pie
+   * @returns {Number} Tapered rate of moving diagonally
+   */
+  getTaperedRunningRate(moving, angle, degreesPerSlice) {
+    degreesPerSlice = degreesPerSlice || DEGREES_PER_SLICE;
+    return (moving - angle) / degreesPerSlice;
+  },
+
+  /**
+   * Calculate the control point for our curve.
+   *
+   * @param {Number} origin Origin coordinates
+   * @param {Number} peak Peak coordinates
+   * @param {Number} destination Destinatin coordinates
+   * @param {Number=} peakReference Reference we are running against
+   * @returns {Number}
+   */
+  getQuadraticCurveControlPoint(origin, peak, destination, peakReference) {
+    peakReference = peakReference || JUMP_PEAK_REFERENCE;
+    return (peak / (2 * peakReference * (1 - peakReference)))
+      - (origin * peakReference / (2 * (1 - peakReference)))
+      - (destination * (1 - peakReference) / (2 * peakReference));
   }
 };
 Object.freeze(MathUtility);

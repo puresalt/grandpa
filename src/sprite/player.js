@@ -13,6 +13,8 @@
  *
  */
 
+/** @module sprite/player */
+
 'use strict';
 
 import SPRITE_TYPE from './type';
@@ -26,18 +28,27 @@ const _objectType = {
 Object.freeze(_objectType);
 
 /**
- * Load our player.
+ * Create a player for our game. For a single player game there should only be one of these created per game.
  *
- * @param {Object?} loadState
+ * @param {Object=} loadState Default data to create a Player sprite with
+ * @alias module:sprite/player Our created Player sprite with its appropriate data loaded
+ * @alias module:sprite/player
+ * @extends module:sprite
  */
 export default function Player(loadState) {
+  loadState = loadState || {};
   const baseSprite = BaseSprite();
-  const player = Object.assign({}, baseSprite, {
+
+  /** @alias module:sprite/player */
+  const player = {
+    ...baseSprite,
+
     hp: 100,
     name: 'Gramps',
     speed: {
       x: 2,
-      y: 3
+      y: 3,
+      running: 2
     },
     tileset: {
       src: '/assets/sprite/ryan.gif',
@@ -57,14 +68,17 @@ export default function Player(loadState) {
       this.name = 'Gramps';
       this.speed.x = 2;
       this.speed.y = 3;
+      this.speed.running = 2;
       this.tileset.src = '/assets/sprite/ryan.gif';
       this.tileset.x = 3;
       this.tileset.y = 2;
       this.height = 67;
       this.width = 36;
       this.standing = 0;
-    }
-  }, loadState || {});
+    },
+
+    ...loadState
+  };
   Object.defineProperty(player, 'type', _objectType);
 
   return player;

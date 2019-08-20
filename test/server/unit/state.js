@@ -13,24 +13,23 @@
  *
  */
 
-/* jshint expr:true */
-/* globals describe,it,expect */
+/* global describe, it, expect */
 
 'use strict';
 
-const STATE = require('../../../server/state');
+const StateFactory = require('../../../server/state');
 
 describe('State', () => {
   describe('get', () => {
-    it('should be false if the object doesn\'t exist', () => {
-      const state = STATE();
+    it('should be null if the object doesn\'t exist', () => {
+      const state = StateFactory();
       const id = 123;
 
-      expect(state.get(id)).to.be.false;
+      expect(state.get(id)).to.be.null;
     });
 
     it('should return an object if it exists', () => {
-      const state = STATE();
+      const state = StateFactory();
       const id = 123;
       const data = {a: 1};
 
@@ -41,14 +40,14 @@ describe('State', () => {
 
   describe('has', () => {
     it('should be false if the object doesn\'t exist', () => {
-      const state = STATE();
+      const state = StateFactory();
       const id = 123;
 
       expect(state.has(id)).to.be.false;
     });
 
     it('should return true if an object exists', () => {
-      const state = STATE();
+      const state = StateFactory();
       const id = 123;
       const data = {a: 1};
 
@@ -59,7 +58,7 @@ describe('State', () => {
 
   describe('save', () => {
     it('should create an object', () => {
-      const state = STATE();
+      const state = StateFactory();
       const id = 123;
       const data = {a: 1};
 
@@ -68,7 +67,7 @@ describe('State', () => {
     });
 
     it('should remove id from data', () => {
-      const state = STATE();
+      const state = StateFactory();
       const id = 123;
       const data = {a: 1, id: id};
 
@@ -77,7 +76,7 @@ describe('State', () => {
     });
 
     it('should overwrite a value', () => {
-      const state = STATE();
+      const state = StateFactory();
       const id = 123;
       const data = {a: 1};
 
@@ -87,7 +86,7 @@ describe('State', () => {
     });
 
     it('should add a value', () => {
-      const state = STATE();
+      const state = StateFactory();
       const id = 123;
       const data = {a: 1};
 
@@ -100,7 +99,7 @@ describe('State', () => {
 
   describe('replace', () => {
     it('should overwrite an object', () => {
-      const state = STATE();
+      const state = StateFactory();
       const id = 123;
       const data = {a: 1};
 
@@ -112,7 +111,7 @@ describe('State', () => {
     });
 
     it('should overwrite a value', () => {
-      const state = STATE();
+      const state = StateFactory();
       const id = 123;
 
       const replaced = state.replace(id, {c: 3});
@@ -120,7 +119,7 @@ describe('State', () => {
     });
 
     it('should remove id from data', () => {
-      const state = STATE();
+      const state = StateFactory();
       const id = 123;
       const data = {a: 1};
 
@@ -134,14 +133,14 @@ describe('State', () => {
 
   describe('remove', () => {
     it('should do nothing if the object doesn\'t exist', () => {
-      const state = STATE();
+      const state = StateFactory();
       const id = 123;
 
       expect(state.remove(id)).to.be.false;
     });
 
     it('should remove an entire object if data isn\'t provided', () => {
-      const state = STATE();
+      const state = StateFactory();
       const id = 123;
       const data = {a: 1};
 
@@ -151,7 +150,7 @@ describe('State', () => {
     });
 
     it('should remove only specific keys if provided', () => {
-      const state = STATE();
+      const state = StateFactory();
       const id = 123;
       const data = {a: 1, b: 2};
 
@@ -164,12 +163,12 @@ describe('State', () => {
 
   describe('all', () => {
     it('should give us an empty list of keys with no data', () => {
-      const state = STATE();
+      const state = StateFactory();
       expect(state.all()).to.be.empty;
     });
 
     it('should give us a list of known object keys', () => {
-      const state = STATE();
+      const state = StateFactory();
       state.save(123, {a: 1});
       state.save(124, {b: 2});
       state.save(125, {b: 3});
@@ -177,7 +176,7 @@ describe('State', () => {
     });
 
     it('should give us a list of known object keys', () => {
-      const state = STATE();
+      const state = StateFactory();
       state.save(123, {a: 1});
       state.save(124, {b: 2});
       state.save(125, {b: 3});

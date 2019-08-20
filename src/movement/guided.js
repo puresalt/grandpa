@@ -13,6 +13,18 @@
  *
  */
 
+/**
+ * ENUM covering our guided movement actions.
+ *
+ * **Movement.GUIDED:**
+ * ```
+ * JUMP
+ * NARRATIVE
+ * ```
+ *
+ * @module movement/guided
+ */
+
 'use strict';
 
 const GUIDED = {

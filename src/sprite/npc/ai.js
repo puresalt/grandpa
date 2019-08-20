@@ -13,6 +13,8 @@
  *
  */
 
+/** @module sprite/npc/ai */
+
 'use strict';
 
 const _objectType = {
@@ -24,7 +26,9 @@ const _objectType = {
 /**
  * Return NPC AI.
  *
- * @param {Object?} loadState
+ * @param {Object=} loadState Our AI's default state to run from
+ * @returns {Object} Out AI's logic
+ * @alias module:sprite/npc/ai
  */
 export default function Ai(loadState) {
   const ai = Object.assign({}, {

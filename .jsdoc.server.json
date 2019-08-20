@@ -1,0 +1,15 @@
+{
+  "source": {
+    "include": [
+      "server/README.md",
+      "server"
+    ]
+  },
+  "opts": {
+    "destination": "./build/server/documentation",
+    "recurse": true
+  },
+  "plugins": [
+    "plugins/markdown"
+  ]
+}

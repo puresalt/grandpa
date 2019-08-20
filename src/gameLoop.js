@@ -13,17 +13,22 @@
  *
  */
 
-/* jshint maxstatements:16 */
-/* globals requestAnimationFrame,window */
+/**
+ * Create our Game Loop. This will keep all elements in sync with each other and is a wrapper around the event loop.
+ *
+ * @module gameLoop
+ */
+
+/* eslint no-console: off */
 
 'use strict';
 
 /**
- * Create our Game Loop. This will delegate rendering based off of state changes.
- *
- * @param {Object?} options
+ * @param {Object=} options
  */
 export default function GameLoop(options) {
+  options = options || {};
+
   let _paused = null;
   let _delta = 0;
   let _lastRun = 0;
@@ -33,14 +38,13 @@ export default function GameLoop(options) {
   let _renderingFps = options.fps || 60;
   let _interval = 1000 / (options.fps || 60);
 
-  const gameLoop = Object.assign({}, {
+  /** @alias module:gameLoop */
+  const gameLoop = {
     fps: 60,
     panicLimit: 240,
 
     /**
      * Damn, something happened and we need to panic!
-     *
-     * @returns {Boolean}
      */
     panic() {
       console.error('PANIC!');
@@ -48,21 +52,25 @@ export default function GameLoop(options) {
       setTimeout(() => {
         this.start();
       }, 0);
-      return true;
     },
 
     /**
      * Trigger a canvas rendering.
+     *
+     * @param {Number} runtime When our render was triggered in relation to the start of our game loop
      */
     render(runtime) {
-      throw new Error(this.name + ' is missing a render callback.');
+      throw new Error(`gameLoop is missing a render callback. [${runtime}]`);
     },
 
     /**
      * Method to trigger anytime an update happens.
+     *
+     * @param {Number} runtime When our render was triggered in relation to the start of our game loop
+     * @param {Number} fps FPS we hit last loop
      */
-    update(fps, runtime, gameLoop) {
-      throw new Error(this.name + ' is missing a render callback. (' + fps + ')');
+    update(fps, runtime) {
+      throw new Error(`gameLoop is missing a render callback. (${fps}, ${runtime})`);
     },
 
     /**
@@ -96,15 +104,17 @@ export default function GameLoop(options) {
     /**
      * Get our rendering fps.
      *
-     * @returns {Number}
+     * @returns {Number} FPS we hit last loop
      */
     getRenderedFps() {
       return _renderingFps;
-    }
-  }, options);
+    },
+
+    ...options
+  };
 
   Object.defineProperty(gameLoop, 'fps', {
-    set: function(value) {
+    set: (value) => {
       this.fps = value;
       _renderingFps = value;
       _interval = 1000 / value;
@@ -115,6 +125,8 @@ export default function GameLoop(options) {
    * Run our GameLoop
    *
    * @param {Number} now
+   * @private
+   * @ignore
    */
   function _run(now) {
     _runtime = window.performance.now();
@@ -138,6 +150,7 @@ export default function GameLoop(options) {
    *
    * @returns {Boolean}
    * @private
+   * @ignore
    */
   function _runUpdate() {
     let numUpdateSteps = 0;
@@ -157,6 +170,7 @@ export default function GameLoop(options) {
    *
    * @param {Number} now
    * @private
+   * @ignore
    */
   function _logFps(now) {
     if (now > _lastFpsUpdate + 1000) {

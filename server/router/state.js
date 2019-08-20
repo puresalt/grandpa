@@ -13,7 +13,11 @@
  *
  */
 
+/** @module router/state */
+
 'use strict';
+
+/* eslint no-console: off */
 
 const express = require('express');
 const router = express.Router();
@@ -23,6 +27,12 @@ const state = State();
 
 /**
  * Get all of the ids from our states.
+ *
+ * @name GET /state
+ * @memberof module:router/state
+ * @inner
+ * @param {String} path
+ * @param {callback} route
  */
 router.get('/', (req, res) => {
   res.status(200).json(state.all());
@@ -30,6 +40,12 @@ router.get('/', (req, res) => {
 
 /**
  * Don't do anything.
+ *
+ * @name PUT /state
+ * @memberof module:router/state
+ * @inner
+ * @param {String} path
+ * @param {callback} route
  */
 router.put('/', (req, res) => {
   res.status(404).json({});
@@ -37,6 +53,12 @@ router.put('/', (req, res) => {
 
 /**
  * Don't do anything.
+ *
+ * @name DELETE /state
+ * @memberof module:router/state
+ * @inner
+ * @param {String} path
+ * @param {callback} route
  */
 router.delete('/', (req, res) => {
   res.status(404).json({});
@@ -44,16 +66,28 @@ router.delete('/', (req, res) => {
 
 /**
  * Save our state data for a given user.
+ *
+ * @name POST /state
+ * @memberof module:router/state
+ * @inner
+ * @param {String} path
+ * @param {callback} route
  */
 router.post('/', (req, res) => {
   const id = helper.generateId();
   state.save(id, req.body);
   console.log('CREATED:', id, state.get(id));
-  res.status(200).json(state.get(id));
+  res.set('Location', `/state/${id}`).status(201).json(state.get(id));
 });
 
 /**
  * Load our state data for a given user.
+ *
+ * @name GET /state/:id
+ * @memberof module:router/state
+ * @inner
+ * @param {String} path
+ * @param {callback} route
  */
 router.get('/:id', (req, res) => {
   const id = req.params.id;
@@ -67,6 +101,12 @@ router.get('/:id', (req, res) => {
 
 /**
  * Save our state data for a given user.
+ *
+ * @name POST /state/:id
+ * @memberof module:router/state
+ * @inner
+ * @param {String} path
+ * @param {callback} route
  */
 router.post('/:id', (req, res) => {
   const id = req.params.id;
@@ -75,11 +115,17 @@ router.post('/:id', (req, res) => {
   }
   state.save(id, req.body);
   console.log('SAVED:', id, state.get(id));
-  res.status(200).json(state.get(id));
+  res.set('Location', `/state/${id}`).status(201).json(state.get(id));
 });
 
 /**
  * Save our state data for a given user.
+ *
+ * @name PUT /state/:id
+ * @memberof module:router/state
+ * @inner
+ * @param {String} path
+ * @param {callback} route
  */
 router.put('/:id', (req, res) => {
   const id = req.params.id;
@@ -93,6 +139,12 @@ router.put('/:id', (req, res) => {
 
 /**
  * Delete save data for a given user.
+ *
+ * @name DELETE /state/:id
+ * @memberof module:router/state
+ * @inner
+ * @param {String} path
+ * @param {callback} route
  */
 router.delete('/:id', (req, res) => {
   const id = req.params.id;

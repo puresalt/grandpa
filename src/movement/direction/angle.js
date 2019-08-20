@@ -13,19 +13,38 @@
  *
  */
 
+/**
+ * Lookup covering absolute directions with their angular value.
+ *
+ * **Movement.DIRECTION_ANGLE:**
+ * ```
+ * RIGHT 0
+ * UP_RIGHT 45
+ * UP 90
+ * UP_LEFT 135
+ * LEFT 180
+ * DOWN_LEFT -135
+ * DOWN -90
+ * DOWN_RIGHT -45
+ * ```
+ *
+ * @module movement/direction/angle
+ */
+
 'use strict';
 
 import DIRECTION from '../direction';
 
-const ANGLE = {};
-ANGLE[DIRECTION.RIGHT] = 0;
-ANGLE[DIRECTION.UP_RIGHT] = 45;
-ANGLE[DIRECTION.UP] = 90;
-ANGLE[DIRECTION.UP_LEFT] = 135;
-ANGLE[DIRECTION.LEFT] = 180;
-ANGLE[DIRECTION.DOWN_LEFT] = -135;
-ANGLE[DIRECTION.DOWN] = -90;
-ANGLE[DIRECTION.DOWN_RIGHT] = -45;
+const ANGLE = {
+  [DIRECTION.RIGHT]: 0,
+  [DIRECTION.UP_RIGHT]: 45,
+  [DIRECTION.UP]: 90,
+  [DIRECTION.UP_LEFT]: 135,
+  [DIRECTION.LEFT]: 180,
+  [DIRECTION.DOWN_LEFT]: -135,
+  [DIRECTION.DOWN]: -90,
+  [DIRECTION.DOWN_RIGHT]: -45
+};
 Object.freeze(ANGLE);
 
 export default ANGLE;

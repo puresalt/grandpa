@@ -13,17 +13,35 @@
  *
  */
 
+/**
+ * ENUM covering absolute directions.
+ *
+ * **Movement.DIRECTION:**
+ * ```
+ * RIGHT
+ * UP_RIGHT
+ * UP
+ * UP_LEFT
+ * LEFT
+ * DOWN_LEFT
+ * DOWN
+ * DOWN_RIGHT
+ * ```
+ *
+ * @module movement/direction
+ */
+
 'use strict';
 
 const DIRECTION = {
-  UP_RIGHT: 'UP_RIGHT',
-  UP_LEFT: 'UP_LEFT',
-  DOWN_RIGHT: 'DOWN_RIGHT',
-  DOWN_LEFT: 'DOWN_LEFT',
   RIGHT: 'RIGHT',
-  LEFT: 'LEFT',
+  UP_RIGHT: 'UP_RIGHT',
   UP: 'UP',
-  DOWN: 'DOWN'
+  UP_LEFT: 'UP_LEFT',
+  LEFT: 'LEFT',
+  DOWN_LEFT: 'DOWN_LEFT',
+  DOWN: 'DOWN',
+  DOWN_RIGHT: 'DOWN_RIGHT'
 };
 Object.freeze(DIRECTION);
 

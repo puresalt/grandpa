@@ -13,8 +13,6 @@
  *
  */
 
-/* exported _,chai,expect */
-
 global._ = require('lodash');
 global.chai = require('chai');
 global.expect = global.chai.expect;

@@ -13,6 +13,27 @@
  *
  */
 
+/**
+ * ENUM covering expected input keys from a player.
+ *
+ * **Input.KEY:**
+ * ```
+ * DIRECTIONAL
+ * RIGHT
+ * LEFT
+ * UP
+ * DOWN
+ * PUNCH
+ * KICK
+ * JUMP
+ * CROUCH
+ * MENU
+ * DEBUG
+ * ```
+ *
+ * @module input/key
+ */
+
 'use strict';
 
 const KEY = {

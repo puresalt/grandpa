@@ -13,6 +13,8 @@
  *
  */
 
+/** @module sprite/npc */
+
 'use strict';
 
 import SPRITE_TYPE from './type';
@@ -27,15 +29,23 @@ const _objectType = {
 Object.freeze(_objectType);
 
 /**
- * Load our player.
+ * Load an NPC.
  *
- * @param {Object?} loadState
+ * @param {Object=} loadState Default data to create an NPC sprite with
+ * @returns module:sprite/npc Our created NPC sprite with its appropriate data loaded
+ * @alias module:sprite/npc
+ * @extends module:sprite
  */
 export default function Npc(loadState) {
+  loadState = loadState || {};
   const baseSprite = BaseSprite();
-  const npc = Object.assign({}, baseSprite, {
+
+  /** @alias module:sprite/npc */
+  const npc = {
+    ...baseSprite,
+
     hp: 20,
-    name:  'Larsson',
+    name: 'Larsson',
     tileset: {
       src: '/assets/sprite/ryan.gif',
       x: 47,
@@ -73,8 +83,10 @@ export default function Npc(loadState) {
       this.tileset.y = 3;
       this.height = 66;
       this.width = 36;
-    }
-  }, loadState || {});
+    },
+
+    ...loadState
+  };
   Object.defineProperty(npc, 'type', _objectType);
 
   return npc;

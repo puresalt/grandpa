@@ -13,9 +13,9 @@
  *
  */
 
-'use strict';
+/** @module sprite */
 
-/* @TODO This is just for testing */
+'use strict';
 
 import DIRECTION from './movement/direction';
 import ANGLE from './movement/direction/angle';
@@ -31,17 +31,19 @@ const _objectType = {
 };
 Object.freeze(_objectType);
 
-const DEGREES_PER_SLICE = 45;
-const JUMP_PEAK_REFERENCE = 0.55;
-
 /**
- * Create a sprite.
- *
- * @param {Object?} loadState
- * @returns {Object}
+ * @param {Object=} loadState
+ * @returns {module:sprite}
  */
 export default function Sprite(loadState) {
-  const sprite = Object.assign({}, {
+  loadState = loadState || {};
+
+  /**
+   * Create a sprite.
+   *
+   * @alias module:sprite
+   */
+  const sprite = {
     type: _objectType,
     equipment: {
       leftHand: null,
@@ -63,7 +65,8 @@ export default function Sprite(loadState) {
     },
     speed: {
       x: 5,
-      y: 5
+      y: 5,
+      running: 2
     },
     x: 0,
     y: 0,
@@ -130,9 +133,9 @@ export default function Sprite(loadState) {
     /**
      * Tell a sprite to render itself.
      *
-     * @param {CanvasRenderingContext2D} canvas
-     * @param {Object} tileset
-     * @param {Number} runtime
+     * @param {CanvasRenderingContext2D} canvas Canvas tag we will render our sprite onto
+     * @param {Object} tileset Tileset to use for drawing
+     * @param {Number} runtime When our render was triggered in relation to the start of our game loop
      */
     render(canvas, tileset, runtime) {
       this._getOffsetPosition(runtime);
@@ -165,19 +168,19 @@ export default function Sprite(loadState) {
           this.jump.control.x,
           this.jump.destination.x,
           step
-        ) - (SIZER.relativeSize(this.width) / 2),
+        ) - (this.width / 2),
         MathUtility.getPointOnQuadraticCurve(
           this.jump.origin.y,
           this.jump.control.y,
           this.jump.destination.y,
           step
-        ) - SIZER.relativeSize(this.height)
+        ) - this.height
       );
       this.movement.jumping = MathUtility.coolDown(this.movement.jumping);
       if (!this.movement.jumping) {
         this.attemptToMoveTo(
-          this.jump.destination.x - (SIZER.relativeSize(this.width) / 2),
-          this.jump.destination.y - SIZER.relativeSize(this.height)
+          this.jump.destination.x - (this.width) / 2,
+          this.jump.destination.y - this.height
         );
         this.movement.guided = false;
         this.jump.origin.x = -1;
@@ -193,95 +196,92 @@ export default function Sprite(loadState) {
       }
 
       const runSpeed = this.movement.running
-        ? 2
+        ? this.speed.running
         : 1;
       const speedX = this.speed.x * runSpeed;
       const speedY = this.speed.y * runSpeed;
       const movingAbs = Math.abs(this.movement.direction);
 
-      let x = this.x;
-      let y = this.y;
-      if (this.movement.direction === ANGLE[DIRECTION.RIGHT]) {
-        x += SIZER.relativeSize(speedX);
-      } else if (this.movement.direction === ANGLE[DIRECTION.LEFT]) {
-        x -= SIZER.relativeSize(speedX);
-      } else if (this.movement.direction === ANGLE[DIRECTION.UP]) {
-        y -= SIZER.relativeSize(speedY);
+      let x = 0;
+      let y = 0;
+      if (this.movement.direction === ANGLE[DIRECTION.UP]) {
+        y -= speedY;
+      } else if (this.movement.direction === ANGLE[DIRECTION.RIGHT]) {
+        x += speedX;
       } else if (this.movement.direction === ANGLE[DIRECTION.DOWN]) {
-        y += SIZER.relativeSize(speedY);
-      } else if (this.movement.direction >= ANGLE[DIRECTION.RIGHT] && this.movement.direction < ANGLE[DIRECTION.UP]) {
-        if (this.movement.direction <= ANGLE[DIRECTION.UP_RIGHT]) {
+        y += speedY;
+      } else if (this.movement.direction === ANGLE[DIRECTION.LEFT]) {
+        x -= speedX;
+      } else {
+        if (this.movement.direction > ANGLE[DIRECTION.DOWN] && this.movement.direction < ANGLE[DIRECTION.UP]) {
           x += speedX;
-          y -= speedY * ((movingAbs - ANGLE[DIRECTION.RIGHT]) / DEGREES_PER_SLICE);
         } else {
-          x += speedX * (1 - ((movingAbs - ANGLE[DIRECTION.UP_RIGHT]) / DEGREES_PER_SLICE));
-          y -= speedY;
+          x -= speedX;
         }
-      } else if (this.movement.direction <= ANGLE[DIRECTION.RIGHT] && this.movement.direction >= ANGLE[DIRECTION.DOWN]) {
-        if (this.movement.direction >= ANGLE[DIRECTION.DOWN_RIGHT]) {
-          x += speedX;
-          y += speedY * ((movingAbs - ANGLE[DIRECTION.RIGHT]) / DEGREES_PER_SLICE);
+
+        if (this.movement.direction > ANGLE[DIRECTION.RIGHT] && this.movement.direction < ANGLE[DIRECTION.LEFT]) {
+          y -= speedY;
         } else {
-          x += speedX * (1 - ((movingAbs - ANGLE[DIRECTION.UP_RIGHT]) / DEGREES_PER_SLICE));
           y += speedY;
         }
-      } else if (this.movement.direction >= ANGLE[DIRECTION.UP] && this.movement.direction < ANGLE[DIRECTION.LEFT]) {
-        if (this.movement.direction >= ANGLE[DIRECTION.UP_LEFT]) {
-          x -= speedX;
-          y -= speedY * (1 - ((movingAbs - ANGLE[DIRECTION.UP_LEFT]) / DEGREES_PER_SLICE));
+
+        if (this.movement.direction >= ANGLE[DIRECTION.RIGHT] && this.movement.direction < ANGLE[DIRECTION.UP]) {
+          if (this.movement.direction <= ANGLE[DIRECTION.UP_RIGHT]) {
+            y *= MathUtility.getTaperedRunningRate(movingAbs, ANGLE[DIRECTION.RIGHT]);
+          } else {
+            x *= (1 - MathUtility.getTaperedRunningRate(movingAbs, ANGLE[DIRECTION.UP_RIGHT]));
+          }
+        } else if (this.movement.direction <= ANGLE[DIRECTION.RIGHT] && this.movement.direction >= ANGLE[DIRECTION.DOWN]) {
+          if (this.movement.direction >= ANGLE[DIRECTION.DOWN_RIGHT]) {
+            y *= MathUtility.getTaperedRunningRate(movingAbs, ANGLE[DIRECTION.RIGHT]);
+          } else {
+            x *= (1 - MathUtility.getTaperedRunningRate(movingAbs, ANGLE[DIRECTION.UP_RIGHT]));
+          }
+        } else if (this.movement.direction >= ANGLE[DIRECTION.UP] && this.movement.direction < ANGLE[DIRECTION.LEFT]) {
+          if (this.movement.direction >= ANGLE[DIRECTION.UP_LEFT]) {
+            y *= (1 - MathUtility.getTaperedRunningRate(movingAbs, ANGLE[DIRECTION.UP_LEFT]));
+          } else {
+            x *= MathUtility.getTaperedRunningRate(movingAbs, ANGLE[DIRECTION.UP]);
+          }
         } else {
-          x -= speedX * ((movingAbs - ANGLE[DIRECTION.UP]) / DEGREES_PER_SLICE);
-          y -= speedY;
-        }
-      } else {
-        if (this.movement.direction <= ANGLE[DIRECTION.DOWN_LEFT]) {
-          x = x - speedX;
-          y = y + speedY * (1 - ((movingAbs - ANGLE[DIRECTION.UP_LEFT]) / DEGREES_PER_SLICE));
-        } else {
-          x = x - speedX * ((movingAbs - ANGLE[DIRECTION.UP]) / DEGREES_PER_SLICE);
-          y = y + speedY;
+          if (this.movement.direction <= ANGLE[DIRECTION.DOWN_LEFT]) {
+            y *= (1 - MathUtility.getTaperedRunningRate(movingAbs, ANGLE[DIRECTION.UP_LEFT]));
+          } else {
+            x *= MathUtility.getTaperedRunningRate(movingAbs, ANGLE[DIRECTION.UP]);
+          }
         }
       }
-      this.attemptToMoveTo(
-        MathUtility.minMax(
-          SIZER.relativeSize(x),
-          0,
-          SIZER.width - SIZER.relativeSize(this.width)
-        ),
-        MathUtility.minMax(
-          SIZER.relativeSize(y),
-          0,
-          SIZER.height - SIZER.relativeSize(this.height)
-        )
-      );
+
+      this.attemptToMoveTo(this.x + x, this.y + y);
     },
 
     /**
      * Attempt to move a sprite to a given location. Do collision detection or other outside influences.
      *
-     * @param x
-     * @param y
+     * @param {Number} x X coordinate to try and move to
+     * @param {Number} y Y coordinate to try and move to
      */
     attemptToMoveTo(x, y) {
       this.x = MathUtility.round(MathUtility.minMax(
-        x,
+        SIZER.relativeSize(x),
         0,
-        SIZER.width - SIZER.relativeSize(this.width)
+        SIZER.relativeSize(SIZER.width - this.width)
       ));
       this.y = MathUtility.round(MathUtility.minMax(
-        y,
+        SIZER.relativeSize(y),
         this.movement.jumping
-          ? this.jump.peak.y - SIZER.relativeSize(this.height)
+          ? SIZER.relativeSize(this.jump.peak.y - this.height)
           : 0,
-        SIZER.height - SIZER.relativeSize(this.height)
+        SIZER.relativeSize(SIZER.height - this.height)
       ));
     },
 
     /**
      * Create our jump trajectory in the cases of a good jump.
+     *
+     * @ignore
      */
     _createJumpTrajectory() {
-      /* jshint maxstatements:24 */
       const distanceModifier = this.movement.running
         ? 1.25
         : 1;
@@ -289,17 +289,17 @@ export default function Sprite(loadState) {
         ? ANGLE[DIRECTION.UP]
         : this.movement.direction;
       const angle = -1 * (degree * Math.PI * 2) / 360;
-      this.jump.origin.x = this.x + (SIZER.relativeSize(this.width) / 2);
-      this.jump.origin.y = this.y + SIZER.relativeSize(this.height);
-      this.jump.air.width = SIZER.relativeSize(120 * distanceModifier);
-      this.jump.air.height = SIZER.relativeSize(30 * distanceModifier);
+      this.jump.origin.x = this.x + this.width / 2;
+      this.jump.origin.y = this.y + this.height;
+      this.jump.air.width = 120 * distanceModifier;
+      this.jump.air.height = 30 * distanceModifier;
       this.jump.air.angle = angle;
-      this.jump.ground.width = SIZER.relativeSize(200 * distanceModifier);
-      this.jump.ground.height = SIZER.relativeSize(50 * distanceModifier);
+      this.jump.ground.width = 200 * distanceModifier;
+      this.jump.ground.height = 50 * distanceModifier;
       this.jump.ground.angle = angle;
 
-      this._gcAvoidance.ellipsePoint.x = this.x + (SIZER.relativeSize(this.width) / 2);
-      this._gcAvoidance.ellipsePoint.y = this.y - SIZER.relativeSize(this.movement.jumpHeight);
+      this._gcAvoidance.ellipsePoint.x = this.x + this.width / 2;
+      this._gcAvoidance.ellipsePoint.y = this.y - this.movement.jumpHeight;
       MathUtility.setPointOnEllipse(this._gcAvoidance.ellipsePoint, this.jump.air, this._gcAvoidance.point);
       this.jump.peak.x = this._gcAvoidance.point.x;
       this.jump.peak.y = this._gcAvoidance.point.y;
@@ -311,12 +311,11 @@ export default function Sprite(loadState) {
         this.jump.destination.x = this._gcAvoidance.point.x;
         this.jump.destination.y = this._gcAvoidance.point.y;
       }
-      this.jump.control.x = _calculateControlPoint(this.jump.origin.x, this.jump.peak.x, this.jump.destination.x);
-      this.jump.control.y = _calculateControlPoint(this.jump.origin.y, this.jump.peak.y, this.jump.destination.y);
+      this.jump.control.x = MathUtility.getQuadraticCurveControlPoint(this.jump.origin.x, this.jump.peak.x, this.jump.destination.x);
+      this.jump.control.y = MathUtility.getQuadraticCurveControlPoint(this.jump.origin.y, this.jump.peak.y, this.jump.destination.y);
     },
 
     _getOffsetPosition(runtime) {
-      /* jshint maxcomplexity:13, maxstatements:29 */
       this.tilesetOffset.x = this.movement.facing === DIRECTION.RIGHT
         ? 20
         : 0;
@@ -372,7 +371,6 @@ export default function Sprite(loadState) {
      * Reset the state of a sprite.
      */
     reset() {
-      /* jshint maxstatements:29 */
       this.movement.reset();
       this.equipment.leftHand = null;
       this.equipment.rightHand = null;
@@ -384,6 +382,7 @@ export default function Sprite(loadState) {
       this.tileset.y = 0;
       this.speed.x = 5;
       this.speed.y = 5;
+      this.speed.running = 2;
       this.x = 0;
       this.y = 0;
       this.height = 30;
@@ -411,24 +410,11 @@ export default function Sprite(loadState) {
       this._gcAvoidance.renderingEllipse.width = -1;
       this._gcAvoidance.point.x = -1;
       this._gcAvoidance.point.y = -1;
-    }
-  }, loadState || {});
+    },
+
+    ...loadState
+  };
   Object.defineProperty(sprite, 'type', _objectType);
 
   return sprite;
-}
-
-/**
- * Calculate the control point for our curve.
- *
- * @param {Number} origin
- * @param {Number} peak
- * @param {Number} destination
- * @returns {Number}
- * @private
- */
-function _calculateControlPoint(origin, peak, destination) {
-  return (peak / (2 * JUMP_PEAK_REFERENCE * (1 - JUMP_PEAK_REFERENCE)))
-    - (origin * JUMP_PEAK_REFERENCE / (2 * (1 - JUMP_PEAK_REFERENCE)))
-    - (destination * (1 - JUMP_PEAK_REFERENCE) / (2 * JUMP_PEAK_REFERENCE));
 }

@@ -13,8 +13,7 @@
  *
  */
 
-/* jshint maxcomplexity:10, maxparams:5, maxstatements:24 */
-/* globals document */
+/** @module input/touch */
 
 'use strict';
 
@@ -45,22 +44,27 @@ Object.freeze(_defaultConfig);
  * Function to first map a configuration to our Input.KEY enum, and then to map that to an event lookup and attach it to
  * our element's event listener.
  *
- * @param {Object} config
- * @param {Object} inputState
- * @param {StateMachine?} context
- * @returns {{getConfig: function(), remove: function()}}
+ * @param {Object} config Game config settings
+ * @param {Object} inputState Default input state (generally loaded from a save state)
+ * @param {StateMachine=} context Our global state machine, if it exists
+ * @returns {{getConfig: Function, remove: Function}}
+ * @alias module:input/touch
  */
 export default function TouchInput(config, inputState, context) {
-  const _extendedConfig = Object.assign({}, _defaultConfig, config || {});
-  _extendedConfig.type = INPUT_TYPE.TOUCH;
+  config = config || {};
+  const _extendedConfig = {
+    ..._defaultConfig,
+    ...config,
+    type: INPUT_TYPE.TOUCH
+  };
   const _elementList = _generateElementList(_extendedConfig.keys);
 
   /**
    * Helper function to add our event listener on press.
    *
    * @param {String} found
-   * @returns {function(event: Event)}
-   * @private
+   * @returns {Function}
+   * @ignore
    */
   const _pressEventListener = (found) => {
     return (event) => {
@@ -84,8 +88,8 @@ export default function TouchInput(config, inputState, context) {
    * Helper function to add our event listener on press.
    *
    * @param {String} found
-   * @returns {function(event: Event)}
-   * @private
+   * @returns {Function}
+   * @ignore
    */
   const _releaseEventListener = (found) => {
     return (event) => {
@@ -123,6 +127,7 @@ export default function TouchInput(config, inputState, context) {
   const _subscribed = globalPubSub.subscribe(EVENT.RESIZE, _resizer);
   _resizer();
 
+  /** @alias module:input/touch */
   const methods = {
     /**
      * Add our event listeners onto our element in the case someone switches back to keyboard.
@@ -149,7 +154,7 @@ export default function TouchInput(config, inputState, context) {
     /**
      * Get the current config.
      *
-     * @returns {*}
+     * @returns {Object} Current config
      */
     getConfig() {
       return _extendedConfig;
@@ -183,6 +188,7 @@ export default function TouchInput(config, inputState, context) {
  *
  * @param {Array} elements
  * @returns {Object}
+ * @ignore
  */
 function _generateElementList(elements) {
   return elements.reduce((gathered, item) => {
@@ -199,7 +205,7 @@ function _generateElementList(elements) {
  * @param {Event} event
  * @param {Object} context
  * @returns {Boolean}
- * @private
+ * @ignore
  */
 function _handleDirectionalEvent(inputState, event, context) {
   const element = event.target || event.srcElement;
@@ -236,6 +242,7 @@ function _handleDirectionalEvent(inputState, event, context) {
  * @param {Number} centerY
  * @param {Number} radius
  * @private
+ * @ignore
  */
 function _insideCircle(x, y, centerX, centerY, radius) {
   const checkX = x - centerX;
@@ -246,8 +253,9 @@ function _insideCircle(x, y, centerX, centerY, radius) {
 /**
  * Create a button if it doesn't already exist.
  *
- * @param id
+ * @param {String} id
  * @private
+ * @ignore
  */
 function _findElementOrCreateIt(id) {
   let element = document.getElementById(id);
