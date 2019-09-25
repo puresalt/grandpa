@@ -47,7 +47,7 @@ export default function Npc(loadState) {
     hp: 20,
     name: 'Larsson',
     tileset: {
-      src: '/assets/sprite/ryan.gif',
+      src: '/asset/sprite/ryan.gif',
       x: 47,
       y: 3
     },
@@ -78,7 +78,7 @@ export default function Npc(loadState) {
       baseSprite.reset.call(this);
       this.hp = 20;
       this.name = 'Larsson';
-      this.tileset.src = '/assets/sprite/ryan.gif';
+      this.tileset.src = '/asset/sprite/ryan.gif';
       this.tileset.x = 47;
       this.tileset.y = 3;
       this.height = 66;

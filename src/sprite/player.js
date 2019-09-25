@@ -51,7 +51,7 @@ export default function Player(loadState) {
       running: 2
     },
     tileset: {
-      src: '/assets/sprite/ryan.gif',
+      src: '/asset/sprite/ryan.gif',
       x: 3,
       y: 2
     },
@@ -69,7 +69,7 @@ export default function Player(loadState) {
       this.speed.x = 2;
       this.speed.y = 3;
       this.speed.running = 2;
-      this.tileset.src = '/assets/sprite/ryan.gif';
+      this.tileset.src = '/asset/sprite/ryan.gif';
       this.tileset.x = 3;
       this.tileset.y = 2;
       this.height = 67;

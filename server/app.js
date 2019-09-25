@@ -29,7 +29,8 @@ const routeState = require('./router/state');
  */
 const createServer = (environment) => {
   const app = express();
-  app.use('/assets', express.static(path.join(__dirname, '../', 'assets')));
+  app.use('/asset', express.static(path.join(__dirname, '../', 'asset' +
+    '')));
   app.use('/build', express.static(path.join(__dirname, '../', 'build')));
   app.use(express.static(path.join(__dirname, '../', '/static')));
   app.use(bodyParser.urlencoded({extended: false}));

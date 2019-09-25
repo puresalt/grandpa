@@ -53,7 +53,7 @@ export default function Sprite(loadState) {
       accessories: []
     },
     tileset: {
-      src: '/assets/sprite/ryan.gif',
+      src: '/asset/sprite/ryan.gif',
       x: 0,
       y: 0
     },
@@ -377,7 +377,7 @@ export default function Sprite(loadState) {
       this.equipment.head = null;
       this.equipment.boots = null;
       this.equipment.accessories.length = 0;
-      this.tileset.src = '/assets/sprite/ryan.gif';
+      this.tileset.src = '/asset/sprite/ryan.gif';
       this.tileset.x = 0;
       this.tileset.y = 0;
       this.speed.x = 5;

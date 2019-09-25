@@ -1,10 +1,10 @@
-/* TEAM */
-	Creator: John Mullanaphy
-	Contact: kandy [at] puresalt.gg
-	Twitter: @KandyCodes
-	From: New Jersey, USA
-
-/* SITE */
-	Language: English
-	Doctype: HTML5
-	IDE: IntelliJ
+Team:
+  Creator:
+    Name: John Mullanaphy
+    Contact: kandy [at] puresalt.gg
+    Twitter: @YourBoyKandy
+    From: New Jersey, USA
+Site:
+  Language: English
+  Doctype: HTML5
+  IDE: IntelliJ
