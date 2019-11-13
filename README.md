@@ -36,14 +36,14 @@ This is where all the fun lives, you can find the full source code in `./src`. T
 code you will need to provide assets in the aptly named `./assets` as well as AI logic, level design, and all the other
 core game content.
 
-Documentation for working on the game source code is in `[./src/README.md](./src/README.md)`.
+Documentation for working on the game source code is in [./src/README.md](./src/README.md).
 
 ### Backend
 
 This does come with a server to load the game in a browser or webview. It's straight forward enough, loads data, serves
 it to the frontend, provides assets. Typical server stuff.
 
-Documentation for utilizing the backend it in `[./server/README.md](./server/README.md)`.
+Documentation for utilizing the backend it in [./server/README.md](./server/README.md).
 
 ## Submitting bugs and feature requests
 
