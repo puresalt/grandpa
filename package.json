@@ -2,15 +2,15 @@
   "name": "number-one-grandpa",
   "license": "OSL-3.0",
   "description": "Source code for the video game NUMBER ONE GRANDPA by Pure Salt Gaming.",
-  "author": "John Mullanaphy <john@jo.mu>",
+  "author": "John Mullanaphy <hi@john.mu>",
   "version": "0.2.0-alpha",
   "bugs": {
-    "url": "https://github.com/PureSalt/grandpa/issues",
-    "email": "john@jo.mu"
+    "url": "https://github.com/puresalt/grandpa/issues",
+    "email": "hi@john.mu"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/PureSalt/grandpa.git"
+    "url": "https://github.com/puresalt/grandpa.git"
   },
   "dependencies": {
     "@babel/cli": "^7.5.5",

@@ -48,11 +48,11 @@ Documentation for utilizing the backend it in `[./server/README.md](./server/REA
 ## Submitting bugs and feature requests
 
 Please send bugs to me via
-[GitHub](https://github.com/PureSalt/grandpa/issues)
+[GitHub](https://github.com/puresalt/grandpa/issues)
 
 ## Author
 
-John Mullanaphy - <john@jo.mu> - <http://jo.mu/>
+John Mullanaphy - <hi@john.mu> - <https://john.mu/>
 
 That's it for now...
 
