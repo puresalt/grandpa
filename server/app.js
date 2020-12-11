@@ -29,8 +29,7 @@ const routeState = require('./router/state');
  */
 const createServer = (environment) => {
   const app = express();
-  app.use('/asset', express.static(path.join(__dirname, '../', 'asset' +
-    '')));
+  app.use('/asset', express.static(path.join(__dirname, '../', 'asset')));
   app.use('/build', express.static(path.join(__dirname, '../', 'build')));
   app.use(express.static(path.join(__dirname, '../', '/static')));
   app.use(bodyParser.urlencoded({extended: false}));
@@ -42,26 +41,28 @@ const createServer = (environment) => {
   if (environment === 'development') {
     const loadIndex = (page) => {
       const properizedPage = page.charAt(0).toUpperCase() + page.slice(1);
-      const html = '<!DOCTYPE html>'
-        + '<html lang="en">'
-        + '<head>'
-        + '<meta charset="utf-8">'
-        + '<meta http-equiv="X-UA-Compatible" content="IE=edge">'
-        + '<meta name="apple-mobile-web-app-capable" content="yes">'
-        + '<meta name="apple-mobile-web-app-status-bar-style" content="black">'
-        + '<meta name="apple-mobile-web-app-title" content="#1 Grandpa">'
-        + '<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, minimal-ui">'
-        + '<title>Development (' + properizedPage + ')</title>'
-        + '</head>'
-        + '<body>'
-        + '<h1>Development (' + properizedPage + ')</h1>'
-        + '<hr/>'
-        + '<ul>'
-        + '<li><a href="/' + page + '/coverage">Coverage</a></li>'
-        + '<li><a href="/' + page + '/documentation">Documentation</a></li>'
-        + '</ul>'
-        + '</body>'
-        + '</html>';
+      const html = [
+        '<!DOCTYPE html>',
+        '<html lang="en">',
+        '<head>',
+        '<meta charset="utf-8">',
+        '<meta http-equiv="X-UA-Compatible" content="IE=edge">',
+        '<meta name="apple-mobile-web-app-capable" content="yes">',
+        '<meta name="apple-mobile-web-app-status-bar-style" content="black">',
+        '<meta name="apple-mobile-web-app-title" content="#1 Grandpa">',
+        '<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, minimal-ui">',
+        `<title>Development (${properizedPage})</title>`,
+        '</head>',
+        '<body>',
+        `<h1>Development (${properizedPage})</h1>`,
+        '<hr/>',
+        '<ul>',
+        `<li><a href="/${page}/coverage">Coverage</a></li>`,
+        `<li><a href="/${page}/documentation">Documentation</a></li>`,
+        '</ul>',
+        '</body>',
+        '</html>'
+      ].join('');
       return (req, res) => res.send(html);
     };
     app.use('/app/coverage', express.static(path.join(__dirname, '../', 'build/app/coverage')));

@@ -69,12 +69,10 @@ const State = () => {
     remove(id, properties) {
       if (!_data[id]) {
         return false;
-      } else if (!properties) {
-        delete _data[id];
+      } else if (properties) {
+        properties.forEach(key => delete _data[id][key]);
       } else {
-        for (let i = 0, count = properties.length; i < count; i = i + 1) {
-          delete _data[id][properties[i]];
-        }
+        delete _data[id];
       }
       return true;
     },
