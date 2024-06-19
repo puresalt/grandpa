@@ -23,8 +23,8 @@
     "body-parser": "^1.19.0",
     "express": "^4.17.1",
     "flake-idgen": "^1.1.2",
-    "pm2": "^3.5.1",
-    "uglifyjs-webpack-plugin": "^2.2.0",
+    "pm2": "^4.5.1",
+    "uglifyjs-webpack-plugin": "^1.1.2",
     "webpack": "^4.39.1",
     "webpack-merge": "^4.2.1"
   },

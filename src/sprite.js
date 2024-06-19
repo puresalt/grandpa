@@ -21,13 +21,14 @@ import DIRECTION from './movement/direction';
 import ANGLE from './movement/direction/angle';
 import GUIDED from './movement/guided';
 import SIZER from './sizer';
+import {UNKNOWN as SPRITE_TYPE} from './sprite/type';
 import MathUtility from './math';
 import movementFactory from './movement';
 
 const _objectType = {
   configurable: false,
   writeable: false,
-  value: 'sprite'
+  value: SPRITE_TYPE
 };
 Object.freeze(_objectType);
 

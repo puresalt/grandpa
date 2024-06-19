@@ -17,13 +17,13 @@
 
 'use strict';
 
-import SPRITE_TYPE from './type';
+import {PLAYER as SPRITE_TYPE} from './type';
 import BaseSprite from '../sprite';
 
 const _objectType = {
   configurable: false,
   writeable: false,
-  value: SPRITE_TYPE.PLAYER
+  value: SPRITE_TYPE
 };
 Object.freeze(_objectType);
 
@@ -51,7 +51,7 @@ export default function Player(loadState) {
       running: 2
     },
     tileset: {
-      src: '/asset/sprite/ryan.gif',
+      src: '/asset/sprite/gramps.gif',
       x: 3,
       y: 2
     },
@@ -69,7 +69,7 @@ export default function Player(loadState) {
       this.speed.x = 2;
       this.speed.y = 3;
       this.speed.running = 2;
-      this.tileset.src = '/asset/sprite/ryan.gif';
+      this.tileset.src = '/asset/sprite/gramps.gif';
       this.tileset.x = 3;
       this.tileset.y = 2;
       this.height = 67;

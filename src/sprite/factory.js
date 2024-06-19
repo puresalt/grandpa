@@ -27,6 +27,27 @@ const _spriteTypes = {
 };
 Object.freeze(_spriteTypes);
 
+const sort = (entity1, entity2) => {
+  if (entity1.x > entity2.x) {
+    return 1;
+  }
+
+  if (entity1.x < entity2.x) {
+    return -1;
+  }
+
+  if (entity1.y > entity2.y) {
+    return 1;
+  }
+
+  if (entity1.y < entity2.y) {
+    return -1;
+  }
+
+  return 0;
+};
+Object.freeze(sort);
+
 /**
  * Keep track of all dead/alive sprites.
  *
@@ -53,28 +74,26 @@ export default function spriteFactory() {
      * @returns {module:sprite[]} A list of all of our living sprites
      */
     all() {
-      return _alive.sort(spriteFactory.sort);
+      return _alive.sort(sort);
     },
 
     /**
-     * Set all of the entities for our canvas.
+     * Set all the entities for our canvas.
      *
      * @param {String} type Type of sprite we should be creating
      * @param {Object=} loadState Default data to create a sprite with
      * @returns {module:sprite} Our created sprite with its appropriate data loaded
      */
     create(type, loadState) {
-      let sprite = _graveyard[type].length
-        ? _graveyard[type].shift()
-        : _spriteTypes[type]();
+      const sprite = _graveyard[type].shift() || _spriteTypes[type]();
       sprite.reset();
-      sprite = Object.assign(sprite, loadState || {});
+      Object.assign(sprite, loadState || {});
       _alive.push(sprite);
       return sprite;
     },
 
     /**
-     * Remove all of the items from our graveyard.
+     * Remove all the items from our graveyard.
      */
     cremate() {
       for (const key in _spriteTypes) {
@@ -93,12 +112,11 @@ export default function spriteFactory() {
      */
     remove(sprite) {
       for (let i = 0, count = _alive.length; i < count; ++i) {
-        /* istanbul ignore if */
-        if (sprite !== _alive[i]) {
-          continue;
+        if (sprite === _alive[i]) {
+          _graveyard[sprite.type].push(_alive[i]);
+          _alive.splice(i, 1);
+          return;
         }
-        _graveyard[sprite.type].push(_alive[i]);
-        _alive.splice(i, 1);
       }
     }
   };
@@ -114,22 +132,4 @@ export default function spriteFactory() {
  * @param {{x: Number, y: Number}} entity2 Element to compare with
  * @returns {Number} Which element should get the nod
  */
-spriteFactory.sort = (entity1, entity2) => {
-  if (entity1.x > entity2.x) {
-    return 1;
-  }
-
-  if (entity1.x < entity2.x) {
-    return -1;
-  }
-
-  if (entity1.y > entity2.y) {
-    return 1;
-  }
-
-  if (entity1.y < entity2.y) {
-    return -1;
-  }
-
-  return 0;
-};
+spriteFactory.sort = sort;

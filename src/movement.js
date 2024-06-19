@@ -21,6 +21,9 @@ import DIRECTION from './movement/direction';
 import ANGLE from './movement/direction/angle';
 import GUIDED from './movement/guided';
 
+// Max amount of time to consider a movement tap. Use for sprinting, combos, etc.
+const TAP_RESPONSE_TIME = 100;
+
 /**
  * Resolve any direction issues and keep the state internal.
  *
@@ -83,7 +86,7 @@ function MovementFactory(loadState) {
       this.direction = angle;
       if (this.direction <= ANGLE[DIRECTION.UP] && this.direction >= ANGLE[DIRECTION.DOWN]) {
         if (_lastDirection[DIRECTION.RIGHT] && (this.direction < ANGLE[DIRECTION.UP_RIGHT] && this.direction > ANGLE[DIRECTION.DOWN_RIGHT])) {
-          this.running = this.running || Date.now() - _lastDirection[DIRECTION.RIGHT] < MovementFactory.TAP_RESPONSE_TIME;
+          this.running = this.running || Date.now() - _lastDirection[DIRECTION.RIGHT] < TAP_RESPONSE_TIME;
         } else if (this.facing !== DIRECTION.RIGHT || this.direction >= ANGLE[DIRECTION.UP_RIGHT] || this.direction <= ANGLE[DIRECTION.DOWN_RIGHT]) {
           this.running = false;
         }
@@ -91,7 +94,7 @@ function MovementFactory(loadState) {
         _lastDirection.direction = DIRECTION.RIGHT;
       } else {
         if (_lastDirection[DIRECTION.LEFT] && (this.direction > ANGLE[DIRECTION.UP_LEFT] || this.direction < ANGLE[DIRECTION.DOWN_LEFT])) {
-          this.running = this.running || Date.now() - _lastDirection[DIRECTION.LEFT] < MovementFactory.TAP_RESPONSE_TIME;
+          this.running = this.running || Date.now() - _lastDirection[DIRECTION.LEFT] < TAP_RESPONSE_TIME;
         } else if (this.facing !== DIRECTION.LEFT || (this.direction <= ANGLE[DIRECTION.UP_LEFT] && this.direction >= ANGLE[DIRECTION.DOWN_LEFT])) {
           this.running = false;
         }
@@ -175,7 +178,7 @@ function MovementFactory(loadState) {
   };
 }
 
-MovementFactory.TAP_RESPONSE_TIME = 100;
+MovementFactory.TAP_RESPONSE_TIME = TAP_RESPONSE_TIME;
 Object.freeze(MovementFactory);
 
 export default MovementFactory;

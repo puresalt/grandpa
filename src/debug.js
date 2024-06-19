@@ -18,7 +18,7 @@
 'use strict';
 
 import INPUT_TYPE from './input/type';
-import {lookup} from './input/key/lookup';
+import { lookup } from './input/key/lookup';
 import MathUtility from './math';
 
 const _movementKeys = [
@@ -75,34 +75,26 @@ const debug = {
     }
     _overlay.style.display = 'block';
 
-    const inputConfig = inputState.getConfig();
-    const inputType = inputConfig.type;
-    const definedKeys = inputState.getConfig().keys;
-    const keys = [
-      '<strong>' + (inputState.getConfig().type === INPUT_TYPE.KEYBOARD ? 'KEYS' : 'BUTTONS') + ':</strong><hr>'
+    const {type, keys} = inputConfig.type;
+    const output = [
+      `<strong>${(type === INPUT_TYPE.KEYBOARD ? 'KEYS' : 'BUTTONS')}:</strong><hr>`
     ];
-    for (let i = 0, count = definedKeys.length; i < count; ++i) {
-      keys.push(stylizeKey(
-        definedKeys[i].input)
-        + '<span class="on">'
-        + (inputType === INPUT_TYPE.KEYBOARD ? lookup(definedKeys[i].key) : '#' + definedKeys[i].element.id)
-        + '</span>'
-      );
-    }
+    keys.forEach(row => output.push([
+      stylizeKey(row.input),
+      '<span class="on">',
+      (type === INPUT_TYPE.KEYBOARD ? lookup(row.key) : '#' + row.element.id),
+      '</span>'
+    ].join('')));
 
     const stats = [
       '<strong>STATE:</strong><hr>',
       stylizeKey('runtime') + stylizeValue(MathUtility.round((runtime / 1000) * 100) / 100),
       stylizeKey('fps') + stylizeValue(MathUtility.round(fps * 100) / 100)
     ];
-
-    for (let i = 0, count = _movementKeys.length; i < count; ++i) {
-      const key = _movementKeys[i];
-      stats.push(stylizeKey(key) + stylizeValue(player.movement[key]));
-    }
+    _movementKeys.forEach(key => stats.push(stylizeKey(key) + stylizeValue(player.movement[key])));
     stats.push(stylizeKey('location') + stylizeValue('(' + player.x + ',' + player.y + ')'));
 
-    _overlay.innerHTML = '<pre>' + stats.join('\n') + '</pre><pre>' + keys.join('\n') + '</pre><br>';
+    _overlay.innerHTML = `<pre>{stats.join('\n')}</pre><pre>${output.join('\n')}</pre><br>`;
   },
 
   /**
@@ -113,6 +105,14 @@ const debug = {
       return;
     }
     _displayed = !_displayed;
+  },
+
+  log: {
+    error: (...args) => _displayed && console.error(...args),
+    debug: (...args) => _displayed && console.debug(...args),
+    log: (...args) => _displayed && console.log(...args),
+    info: (...args) => _displayed && console.info(...args),
+    warn: (...args) => _displayed && console.warn(...args)
   }
 };
 Object.freeze(debug);
@@ -134,7 +134,7 @@ function stylizeKey(key) {
     padding = padding + ' ';
   }
 
-  return '<strong>' + String(key.toUpperCase() + padding).slice(0, length) + ' : </strong>';
+  return `<strong>${String(key.toUpperCase() + padding).slice(0, length)}</strong>`;
 }
 
 /* istanbul ignore next */
@@ -148,9 +148,7 @@ function stylizeKey(key) {
 function stylizeValue(value) {
   if (value === null) {
     return '<em>null</em>';
-  } else if (value === false || value === 0) {
-    return '<span class="off">' + value + '</span>';
-  } else {
-    return '<span class="on">' + value + '</span>';
   }
+
+  return `<span class="${(value === false || value === 0) ? 'off' : 'on'}">${value}</span>`;
 }

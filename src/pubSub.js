@@ -108,8 +108,6 @@ function PubSub() {
   return methods;
 }
 
-const singleton = PubSub();
-
 export default {
   /**
    * Get a global singleton.
@@ -121,9 +119,7 @@ export default {
    *   clear: Function
    * }}
    */
-  singleton() {
-    return singleton;
-  },
+  singleton: PubSub(),
 
   /**
    * Get a single instance.

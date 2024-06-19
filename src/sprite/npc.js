@@ -17,14 +17,14 @@
 
 'use strict';
 
-import SPRITE_TYPE from './type';
+import {NPC as SPRITE_TYPE} from './type';
 import MathUtility from '../math';
 import BaseSprite from '../sprite';
 
 const _objectType = {
   configurable: false,
   writeable: false,
-  value: SPRITE_TYPE.NPC
+  value: SPRITE_TYPE
 };
 Object.freeze(_objectType);
 

@@ -1,4 +1,6 @@
+
 # The Good Stuff
+
 
 Here it is, the documentation for the game source code itself. Nothing too ground breaking in here yet I'll try to make
 this as relevant and helpful as possible. To start it off with some background on the code style.
@@ -30,8 +32,8 @@ Always use `const` when possible and fall back on `let` if a variable must be mu
 anonymous functions use parentheses for parameters unless it is a one line function. If it is a one line function with
 no parameters, prefer `() => ` over `_ =>` yet it is okay to use either.
 
-Variables are to be camelcase, uppercase first letter for a class and factory, lowercase first letter for everything else.
-Constants, enums, and lookup tables are to be all uppercase snake case.
+Variables are to be camelcase, uppercase first letter for a class and factory, lowercase first letter for everything
+else.  Constants, enums, and lookup tables are to be all uppercase snake case.
 
 ```javascript
 // good.
@@ -348,3 +350,6 @@ const someFunction = (name) => {
 // bad.
 console.log.apply(null, someArray);
 ```
+
+*Note:* Webpack will convert this to the appropriate version necessary for browsers. Trying to do it manually can
+sometimes have unexpected side effects as Webpack will do things to try to match the context of `this`.

@@ -20,11 +20,10 @@
 import INPUT_TYPE from './type';
 import KEY from './key';
 import EVENT from '../event';
-import PubSub from '../pubSub';
+import {singleton as globalPubSub} from '../pubSub';
 import SIZER from '../sizer';
 import MathUtility from '../math';
 
-const globalPubSub = PubSub.singleton();
 const INNER_DEADZONE = 0.1;
 
 const _defaultConfig = {

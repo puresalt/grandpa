@@ -18,10 +18,9 @@
 'use strict';
 
 import EVENT from '../event';
-import PubSub from '../pubSub';
+import {singleton as globalPubSub} from '../pubSub';
 import MathUtility from '../math';
 
-const globalPubSub = PubSub.singleton();
 let _canvasElement = null;
 
 /**

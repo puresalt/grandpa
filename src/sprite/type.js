@@ -29,7 +29,8 @@
 
 const SPRITE_TYPE = {
   PLAYER: 'PLAYER',
-  NPC: 'NPC'
+  NPC: 'NPC',
+  UNKNOWN: 'UNKNOWN'
 };
 Object.freeze(SPRITE_TYPE);
 
